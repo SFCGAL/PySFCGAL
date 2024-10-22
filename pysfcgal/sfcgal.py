@@ -3136,6 +3136,18 @@ class PolyhedralSurface(GeometryCollectionBase):
             lib.sfcgal_polyhedral_surface_add_patch(polyhedralsurface, polygon)
         return polyhedralsurface
 
+    @cond_icontract(lambda self, patch: patch.geom_type == "Polygon", "require")
+    def add_patch(self, patch: Polygon) -> None:
+        """Add a patch to the polyhedralsurface.
+
+        Parameters
+        ----------
+        patch: Polygon
+            The patch to add.
+        """
+        patch_clone = lib.sfcgal_geometry_clone(patch._geom)
+        lib.sfcgal_polyhedral_surface_add_patch(self._geom, patch_clone)
+
 
 class Solid(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):

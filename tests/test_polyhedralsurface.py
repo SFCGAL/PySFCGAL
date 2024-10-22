@@ -1,6 +1,7 @@
+import icontract
 import pytest
 
-from pysfcgal.sfcgal import Polygon, PolyhedralSurface
+from pysfcgal.sfcgal import LineString, Polygon, PolyhedralSurface
 
 
 @pytest.fixture
@@ -101,3 +102,20 @@ def test_to_solid():
     solid = poly.to_solid()
     expected_wkt = f"SOLID Z (({coords_str}))"
     assert solid.to_wkt(1) == expected_wkt
+
+
+def test_polyhedralsurface_add_polygon(polyhedralsurface, c100, c010, c001):
+    new_polygon = Polygon([c010, c100, c001])
+    assert len(polyhedralsurface) == 4
+    assert new_polygon not in polyhedralsurface
+
+    polyhedralsurface.add_patch(new_polygon)
+    assert len(polyhedralsurface) == 5
+    assert new_polygon in polyhedralsurface
+
+
+def test_polyhedralsurface_add_linestring_fails(polyhedralsurface, c100, c010, c001):
+    # try to add a linestring to a polyhedral surface
+    # this is expected to fail
+    with pytest.raises(icontract.errors.ViolationError):
+        polyhedralsurface.add_patch(LineString([c100, c010, c001]))
