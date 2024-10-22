@@ -2802,6 +2802,18 @@ class Tin(GeometryCollectionBase):
             lib.sfcgal_triangulated_surface_add_patch(tin, triangle)
         return tin
 
+    @cond_icontract(lambda self, patch: patch.geom_type == "Triangle", "require")
+    def add_patch(self, patch: Triangle) -> None:
+        """Add a triangle to the Tin.
+
+        Parameters
+        ----------
+        patch: Triangle
+            The patch to add.
+        """
+        patch_clone = lib.sfcgal_geometry_clone(patch._geom)
+        lib.sfcgal_triangulated_surface_add_patch(self._geom, patch_clone)
+
 
 class Triangle(Geometry):
     def __init__(self, coords=None):
