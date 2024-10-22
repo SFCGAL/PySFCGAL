@@ -2465,6 +2465,22 @@ class GeometryCollectionBase(Geometry):
         """
         return [geom.to_coordinates() for geom in self]
 
+    def _add_geometry(self, geometry: Geometry) -> None:
+        """Add a geometry to the collection.
+
+        This should not directly be called by a Geometry:
+        - A Geometry which inherits from `GeometryCollectionBase` has
+            a specialized method. For example, `MultiPoint` has `add_point`.
+        - A `GeometryCollection` has `add_geometry`.
+
+        Parameters
+        ----------
+        geometry: Geometry
+            The geometry to add.
+        """
+        clone = lib.sfcgal_geometry_clone(geometry._geom)
+        lib.sfcgal_geometry_collection_add_geometry(self._geom, clone)
+
 
 class MultiPoint(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):
@@ -3297,9 +3313,15 @@ class GeometryCollection(GeometryCollectionBase):
     def __init__(self):
         self._geom = lib.sfcgal_geometry_collection_create()
 
-    def addGeometry(self, geometry):
-        clone = lib.sfcgal_geometry_clone(geometry._geom)
-        lib.sfcgal_geometry_collection_add_geometry(self._geom, clone)
+    def addGeometry(self, geometry: Geometry) -> None:
+        """Add a geometry to the collection.
+
+        Parameters
+        ----------
+        geometry: Geometry
+            The geometry to add.
+        """
+        self._add_geometry(geometry)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, GeometryCollection):
