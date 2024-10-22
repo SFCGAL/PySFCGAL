@@ -1,6 +1,7 @@
+import icontract
 import pytest
 
-from pysfcgal.sfcgal import MultiPolygon, Polygon
+from pysfcgal.sfcgal import LineString, MultiPolygon, Polygon
 
 
 @pytest.fixture
@@ -63,3 +64,20 @@ def test_multipolygon_to_dict(multipolygon):
     multipolygon_data = multipolygon.to_dict()
     other_multipolygon = MultiPolygon.from_dict(multipolygon_data)
     assert other_multipolygon == multipolygon
+
+
+def test_multipolygon_add_polygon(multipolygon, big_ring):
+    new_polygon = Polygon(big_ring)
+    assert len(multipolygon) == 3
+    assert new_polygon not in multipolygon
+
+    multipolygon.add_polygon(new_polygon)
+    assert len(multipolygon) == 4
+    assert new_polygon in multipolygon
+
+
+def test_multipolygon_add_linestring_fails(multipolygon, c000, c100, c010):
+    # try to add a linestring to a multipolygon
+    # this is expected to fail
+    with pytest.raises(icontract.errors.ViolationError):
+        multipolygon.add_polygon(LineString([c000, c100, c010]))
