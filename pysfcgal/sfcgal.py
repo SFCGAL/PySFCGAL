@@ -2521,6 +2521,17 @@ class MultiPoint(GeometryCollectionBase):
             lib.sfcgal_geometry_collection_add_geometry(multipoint, point)
         return multipoint
 
+    @cond_icontract(lambda self, point: point.geom_type == "Point", "require")
+    def add_point(self, point: Point) -> None:
+        """Add a point to the multipoint.
+
+        Parameters
+        ----------
+        point: Point
+            The point to add.
+        """
+        self._add_geometry(point)
+
 
 class MultiLineString(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):

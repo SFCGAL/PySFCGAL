@@ -1,6 +1,7 @@
+import icontract
 import pytest
 
-from pysfcgal.sfcgal import MultiPoint
+from pysfcgal.sfcgal import LineString, MultiPoint
 
 
 @pytest.fixture
@@ -54,3 +55,19 @@ def test_multipoint_to_dict(multipoint):
     multipoint_data = multipoint.to_dict()
     other_multipoint = MultiPoint.from_dict(multipoint_data)
     assert other_multipoint == multipoint
+
+
+def test_multipoint_add_point(multipoint, point001):
+    assert len(multipoint) == 3
+    assert point001 not in multipoint
+
+    multipoint.add_point(point001)
+    assert len(multipoint) == 4
+    assert point001 in multipoint
+
+
+def test_multipoint_add_line_fails(multipoint, c000, c100, c010):
+    # try to add a linestring to a multipoint
+    # this is expected to fail
+    with pytest.raises(icontract.errors.ViolationError):
+        multipoint.add_point(LineString([c000, c100, c010]))
