@@ -2576,6 +2576,18 @@ class MultiLineString(GeometryCollectionBase):
             lib.sfcgal_geometry_collection_add_geometry(multilinestring, linestring)
         return multilinestring
 
+    @cond_icontract(
+        lambda self, linestring: linestring.geom_type == "LineString", "require")
+    def add_linestring(self, linestring: LineString) -> None:
+        """Add a linestring to the multilinestring.
+
+        Parameters
+        ----------
+        linestring: LineString
+            The linestring to add.
+        """
+        self._add_geometry(linestring)
+
 
 class MultiPolygon(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):

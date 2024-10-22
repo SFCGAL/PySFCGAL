@@ -1,6 +1,7 @@
+import icontract
 import pytest
 
-from pysfcgal.sfcgal import MultiLineString
+from pysfcgal.sfcgal import LineString, MultiLineString, Point
 
 
 @pytest.fixture
@@ -63,3 +64,20 @@ def test_multilinestring_to_dict(multilinestring):
     multilinestring_data = multilinestring.to_dict()
     other_multilinestring = MultiLineString.from_dict(multilinestring_data)
     assert other_multilinestring == multilinestring
+
+
+def test_multilinestring_add_linestring(multilinestring, c100, c010):
+    new_line = LineString([c100, c010])
+    assert len(multilinestring) == 3
+    assert new_line not in multilinestring
+
+    multilinestring.add_linestring(new_line)
+    assert len(multilinestring) == 4
+    assert new_line in multilinestring
+
+
+def test_multilinestring_add_point_fails(multilinestring, c100):
+    # try to add a point to a multilinestring
+    # this is expected to fail
+    with pytest.raises(icontract.errors.ViolationError):
+        multilinestring.add_linestring(Point(*c100))
