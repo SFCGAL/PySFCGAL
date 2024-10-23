@@ -3367,6 +3367,18 @@ class MultiSolid(GeometryCollectionBase):
                 lib.sfcgal_geometry_collection_add_geometry(multisolid, solid)
         return multisolid
 
+    @cond_icontract(
+        lambda self, solid: solid.geom_type == "SOLID", "require")
+    def add_solid(self, solid: Solid) -> None:
+        """Add a solid to the multisolid.
+
+        Parameters
+        ----------
+        solid: Solid
+            The sold to add.
+        """
+        self._add_geometry(solid)
+
 
 class GeometryCollection(GeometryCollectionBase):
     def __init__(self):

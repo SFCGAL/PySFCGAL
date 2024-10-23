@@ -1,4 +1,7 @@
-from pysfcgal.sfcgal import MultiSolid
+import icontract
+import pytest
+
+from pysfcgal.sfcgal import MultiSolid, Solid
 
 
 def test_multisolid_iteration(multisolid, expected_solids):
@@ -34,3 +37,20 @@ def test_multisolid_to_dict(multisolid):
     multisolid_data = multisolid.to_dict()
     other_multisolid = MultiSolid.from_dict(multisolid_data)
     assert other_multisolid == multisolid
+
+
+def test_multisolid_add_solid(points_int_1, multisolid, point010):
+    solid = Solid([points_int_1])
+    assert len(multisolid) == 3
+    assert solid not in multisolid
+
+    multisolid.add_solid(solid)
+    assert len(multisolid) == 4
+    assert solid in multisolid
+
+
+def test_multisolid_add_point_fails(multisolid, point010):
+    # try to add a point to a multisolid
+    # this is expected to fail
+    with pytest.raises(icontract.errors.ViolationError):
+        multisolid.add_solid(point010)
