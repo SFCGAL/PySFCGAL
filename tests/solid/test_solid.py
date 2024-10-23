@@ -1,4 +1,7 @@
-from pysfcgal.sfcgal import Solid
+import icontract
+import pytest
+
+from pysfcgal.sfcgal import LineString, PolyhedralSurface, Solid
 
 
 def test_solid(
@@ -50,3 +53,22 @@ def test_tessellate_3d_polyhedralsurface(solid):
         assert shell.is_valid()
         tessellation = shell.tessellate_3d()
         assert tessellation.geom_type == "TIN"
+
+
+def test_solid_set_exterior_shell(solid, points_ext_1, points_ext_2):
+    new_exterior_shell = PolyhedralSurface(points_ext_2)
+
+    assert solid.n_shells == 3
+    assert solid.shells[0] == PolyhedralSurface(points_ext_1)
+    assert new_exterior_shell not in solid
+
+    solid.set_exterior_shell(new_exterior_shell)
+    assert solid.n_shells == 3
+    assert solid.shells[0] == new_exterior_shell
+
+
+def test_solid_set_exterior_shell_from_linestring_fails(solid, c000, c100, c010):
+    # try to set a linestring as exterior shell
+    # this is expected to fail
+    with pytest.raises(icontract.errors.ViolationError):
+        solid.set_exterior_shell(LineString([c000, c100, c010]))

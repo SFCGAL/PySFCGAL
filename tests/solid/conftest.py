@@ -44,6 +44,11 @@ def points_ext_1():
 
 
 @pytest.fixture
+def points_ext_2():
+    yield create_cube_coordinates(12., 25.)
+
+
+@pytest.fixture
 def points_int_1():
     yield create_cube_coordinates(2., 3.)
 

@@ -3331,6 +3331,20 @@ class Solid(GeometryCollectionBase):
                 lib.sfcgal_solid_add_interior_shell(solid, polyhedralsurface)
         return solid
 
+    @cond_icontract(
+        lambda self, shell: shell.geom_type == "PolyhedralSurface", "require")
+    def set_exterior_shell(self, shell: PolyhedralSurface) -> None:
+        """Sets the exterior of the solid.
+
+        Parameters
+        ----------
+        shell : PolyhedralSurface
+            The new exterior shell
+
+        """
+        shell_clone = lib.sfcgal_geometry_clone(shell._geom)
+        lib.sfcgal_solid_set_exterior_shell(self._geom, shell_clone)
+
 
 class MultiSolid(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):
