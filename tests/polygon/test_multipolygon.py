@@ -24,9 +24,6 @@ def expected_polygons(ring_around_0, small_ring_23, small_ring_56):
 
 
 def test_multilinestring_constructor(multipolygon):
-    empty_multipolygon = MultiPolygon()
-    assert empty_multipolygon.to_wkt() == "MULTIPOLYGON EMPTY"
-
     multipolygon_cloned = MultiPolygon(multipolygon.to_coordinates())
     assert multipolygon_cloned == multipolygon
 

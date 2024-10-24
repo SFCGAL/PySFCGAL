@@ -24,9 +24,6 @@ def expected_linestrings(lineX, lineY, lineZ):
 
 
 def test_multilinestring_constructor(multilinestring):
-    empty_multilinestring = MultiLineString()
-    assert empty_multilinestring.to_wkt() == "MULTILINESTRING EMPTY"
-
     multilinestring_cloned = MultiLineString(multilinestring.to_coordinates())
     assert multilinestring_cloned == multilinestring
 

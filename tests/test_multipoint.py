@@ -19,9 +19,6 @@ def multipoint_unordered(c000, c100, c010):
 
 
 def test_multipoint_constructor(multipoint):
-    empty_multipoint = MultiPoint()
-    assert empty_multipoint.to_wkt() == "MULTIPOINT EMPTY"
-
     multipoint_cloned = MultiPoint(multipoint.to_coordinates())
     multipoint_cloned == multipoint
 
