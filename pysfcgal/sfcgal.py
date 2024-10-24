@@ -1336,7 +1336,7 @@ class Geometry:
         return obj_string
 
     def __del__(self):
-        if self._owned:
+        if self._owned and hasattr(self, "_geom"):
             # only free geometries owned by the class
             # this isn't the case when working with geometries contained by
             # a collection (e.g. a GeometryCollection)
@@ -1641,7 +1641,9 @@ class Point(Geometry):
 
     Coord: TypeAlias = Optional[Union[int, float]]
 
-    def __init__(self, x: Coord, y: Coord, z: Coord = None, m: Coord = None):
+    def __init__(
+        self, x: Coord = None, y: Coord = None, z: Coord = None, m: Coord = None
+    ):
         self._geom = self.sfcgal_geom_from_coordinates([x, y, z, m])
 
     def __eq__(self, other: object) -> bool:
@@ -1782,6 +1784,7 @@ class Point(Geometry):
     @staticmethod
     def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
         """Instantiates a SFCGAL Point starting from a list of coordinates.
+        If the coordinates are None or if the list is empty, an empty point is returned.
 
         Parameters
         ----------
@@ -1795,8 +1798,18 @@ class Point(Geometry):
 
         """
         length_coordinates = len(coordinates)
-        if length_coordinates < 2 or length_coordinates > 4:
+        if length_coordinates == 0:
+            return lib.sfcgal_point_create()
+        elif length_coordinates < 2 or length_coordinates > 4:
             raise DimensionError("Coordinates length must be 2, 3 or 4.")
+
+        if all(coord is None for coord in coordinates):
+            return lib.sfcgal_point_create()
+        elif any(coord is None for coord in coordinates[:2]):
+            raise ValueError(
+                f"These coordinate set is unvalid ({coordinates}), "
+                "X and Y must be defined."
+            )
 
         if length_coordinates == 2:
             return lib.sfcgal_point_create_from_xy(*coordinates)
