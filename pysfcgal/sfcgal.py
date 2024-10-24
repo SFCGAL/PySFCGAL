@@ -2574,16 +2574,16 @@ class MultiPolygon(GeometryCollectionBase):
 
 
 class Tin(GeometryCollectionBase):
-    def __init__(self, coords=None):
-        """Initialize the Tin with the given coordinates.
+    def __init__(self, coords: Tuple = ()):
+        """Initialize the Tin with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : list of tuples, optional
+        coords : Tuple
             A list of coordinate tuples that define the vertices of the TIN.
             If None, initializes an empty TIN.
         """
-        self._geom = Tin.sfcgal_geom_from_coordinates(coords)
+        self._geom = Tin.sfcgal_geom_from_coordinates(list(coords))
 
     def __len__(self):
         """Return the number of triangles in the TIN.
@@ -2910,16 +2910,16 @@ class Triangle(Geometry):
 
 
 class PolyhedralSurface(GeometryCollectionBase):
-    def __init__(self, coords=None):
-        """Initialize the PolyhedralSurface with the given coordinates.
+    def __init__(self, coords: Tuple = ()):
+        """Initialize the PolyhedralSurface with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : list of tuples, optional
-            A list of coordinate tuples that define the polygons of the polyhedral
-            surface. If None, initializes an empty polyhedral surface.
+        coords : Tuple
+            A tuple of coordinates that define the polygons of the polyhedral
+            surface. If empty, initializes an empty polyhedral surface.
         """
-        self._geom = PolyhedralSurface.sfcgal_geom_from_coordinates(coords)
+        self._geom = PolyhedralSurface.sfcgal_geom_from_coordinates(list(coords))
 
     def __len__(self):
         """Get the number of polygons in the polyhedral surface.
