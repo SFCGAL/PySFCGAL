@@ -1833,8 +1833,8 @@ class Point(Geometry):
 
 
 class LineString(Geometry):
-    def __init__(self, coords):
-        """Initialize a LineString with given coordinates.
+    def __init__(self, coords: Tuple = ()):
+        """Initialize a LineString with a tuple of point coordinates.
 
         Parameters
         ----------
@@ -1842,7 +1842,7 @@ class LineString(Geometry):
             A list of tuples where each tuple represents the coordinates of a point in
             the LineString.
         """
-        self._geom = self.sfcgal_geom_from_coordinates(coords)
+        self._geom = self.sfcgal_geom_from_coordinates(list(coords))
 
     def __eq__(self, other: object) -> bool:
         """Two LineStrings are equals if they contain the same points in the same
