@@ -815,6 +815,35 @@ class Geometry:
         )
         return Geometry.from_sfcgal_geometry(geom)
 
+    @cond_icontract(
+        lambda self, relative_alpha, relative_offset=0: (
+            self.is_valid() and relative_alpha > 0 and relative_offset >= 0
+        ),
+        "require",
+    )
+    def alpha_wrapping_3d(
+            self, relative_alpha: int, relative_offset: int = 0) -> Optional[Geometry]:
+        """
+        Compute the 3D alpha wrapping of a geometry
+
+        Parameters
+        ----------
+        relative_alpha : int
+            The relative_alpha parameter
+        relative_offset : int, optional
+            The alpha parameter (default is 0).
+            If relative_offset is equal, it is automatically computed
+            from the relative_alpha parameter.
+
+        Returns
+        -------
+        Geometry
+            The resulting 3D alpha wrapping geometry as a PolyhedralSurface.
+        """
+        geom = lib.sfcgal_geometry_alpha_wrapping_3d(
+            self._geom, relative_alpha, relative_offset)
+        return Geometry.from_sfcgal_geometry(geom)
+
     @cond_icontract(lambda self, allow_holes, nb_components: self.is_valid(), "require")
     def y_monotone_partition_2(
         self, allow_holes: bool = False, nb_components: int = 1
