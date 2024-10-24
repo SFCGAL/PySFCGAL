@@ -2052,19 +2052,19 @@ class Polygon(Geometry):
         geometry are done at the SFCGAL lower level.
     """
 
-    def __init__(self, exterior, interiors=None):
+    def __init__(self, exterior: Tuple = (), interiors: Optional[Tuple] = None):
         """Initialize a Polygon with given exterior and optional interior rings.
 
         Parameters
         ----------
-        exterior : list of tuples
+        exterior : tuples of tuples
             A list of coordinates defining the exterior ring of the polygon.
-        interiors : list of list of tuples, optional
+        interiors : tuple of tuple of tuples, optional
             A list of interior rings, where each interior is defined by a list of
             coordinates. Default is None, which initializes to an empty list.
         """
         if interiors is None:
-            interiors = []
+            interiors = ()
         self._geom = self.sfcgal_geom_from_coordinates(
             [
                 exterior,
@@ -2265,7 +2265,10 @@ class Polygon(Geometry):
             The Polygon that corresponds to the provided coordinates
 
         """
-        return cls(coordinates[0], coordinates[1:] if len(coordinates) > 0 else None)
+        return cls(
+            tuple(coordinates[0]),
+            tuple(coordinates[1:]) if len(coordinates) > 0 else None,
+        )
 
     @staticmethod
     def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
@@ -2282,6 +2285,8 @@ class Polygon(Geometry):
             A pointer towards a SFCGAL Polygon
 
         """
+        if len(coordinates) == 0 or len(coordinates[0]) == 0:
+            return lib.sfcgal_polygon_create()
         exterior = LineString.sfcgal_geom_from_coordinates(coordinates[0], True)
         polygon = lib.sfcgal_polygon_create_from_exterior_ring(exterior)
         for n in range(1, len(coordinates)):
