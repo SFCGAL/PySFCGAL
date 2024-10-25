@@ -30,6 +30,8 @@ markdown_extensions:
 
 plugins:
 - search
+- macros:
+        module_name: macros
 - mkdocstrings:
     default_handler: python  # optional
     handlers:
@@ -44,3 +46,4 @@ nav:
   - Home: index.md
   - Installation: build.md
   - API Reference: api.md
+  - Cookbook: cookbook/cookbook.md
