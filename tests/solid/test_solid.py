@@ -40,3 +40,18 @@ def test_solid_to_dict(solid):
     solid_data = solid.to_dict()
     other_solid = Solid.from_dict(solid_data)
     assert other_solid == solid
+
+
+def test_tessellate_3d_solid(solid_without_holes):
+    assert solid_without_holes.is_valid()
+    tessellation = solid_without_holes.tessellate_3d()
+    assert tessellation.geom_type == "GeometryCollection"
+
+
+def test_tessellate_3d_polyhedralsurface(solid):
+    """Solid is not valid, we test the tessellate on its shells."""
+    assert not solid.is_valid()
+    for shell in solid:
+        assert shell.is_valid()
+        tessellation = shell.tessellate_3d()
+        assert tessellation.geom_type == "TIN"
