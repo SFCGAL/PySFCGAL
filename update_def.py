@@ -66,7 +66,6 @@ def try_to_parse_doxygen_block(
     # In the windows version, remove the functions
     # not handled by msvc
     while line_nr < len(lines) and ");" not in lines[line_nr]:
-        # print("parse1", lines[line_nr])
         if "[[deprecated" in lines[line_nr] or "[[__deprecated" in lines[line_nr]:
             is_deprecated = True
         elif windows_version and any(
