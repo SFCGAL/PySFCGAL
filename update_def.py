@@ -27,7 +27,8 @@ def check_line_and_add_to_output(cleaned_lines: list[str], line: str) -> None:
     """
     # Apply transformations
     line = line.replace("SFCGAL_API ", "")
-    if not (line.strip().startswith("#if") or line.strip().startswith("#endif")):
+    ignored_macros = ("#define", "#pragma", "#if", "#elif", "#else", "#endif")
+    if not line.strip().startswith(ignored_macros):
         cleaned_lines.append(line)
 
 
@@ -65,8 +66,9 @@ def try_to_parse_doxygen_block(
     # Remove the deprecated functions
     # In the windows version, remove the functions
     # not handled by msvc
+    deprecations = ["[[deprecated", "[[__deprecated", "SFCGAL_DEPRECATED"]
     while line_nr < len(lines) and ");" not in lines[line_nr]:
-        if "[[deprecated" in lines[line_nr] or "[[__deprecated" in lines[line_nr]:
+        if any(deprecation in lines[line_nr] for deprecation in deprecations):
             is_deprecated = True
         elif windows_version and any(
             func_name in lines[line_nr] for func_name in MSVC_IGNORED_FUNCTIONS
