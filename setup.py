@@ -7,6 +7,7 @@ setup(
     long_description="""Python binding of SFCGAL. SFCGAL is a C++ wrapper
     library around CGAL with the aim of supporting ISO 191007:2013 and OGC
     Simple Features for 3D operations.""",
+    long_description_content_type='text/plain',
     url="https://gitlab.com/SFCGAL/pysfcgal",
     author="Joshua Arnott (initial work) and Loïc Bartoletti (Oslandia)",
     author_email="infos@sfcgal.org",
