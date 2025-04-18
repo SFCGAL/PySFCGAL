@@ -30,7 +30,7 @@ lint:commit:
   image: ${PYTHON_DOCKER_IMAGE}
   before_script:
     - apt-get update && apt-get install -y git
-    - pip install commitizen
+    - pip install commitizen==4.6.3
   script:
     - cz check --rev-range $CI_MERGE_REQUEST_DIFF_BASE_SHA..HEAD
   only:
