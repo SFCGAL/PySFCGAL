@@ -2572,7 +2572,7 @@ class Tin(GeometryCollectionBase):
         int
             The number of triangles that comprise the TIN.
         """
-        return lib.sfcgal_triangulated_surface_num_triangles(self._geom)
+        return lib.sfcgal_triangulated_surface_num_patches(self._geom)
 
     def __iter__(self):
         """Iterate over the triangles in the TIN.
@@ -2584,7 +2584,7 @@ class Tin(GeometryCollectionBase):
         """
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
-                lib.sfcgal_triangulated_surface_triangle_n(self._geom, n),
+                lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
                 owned=False,
             )
 
@@ -2604,7 +2604,7 @@ class Tin(GeometryCollectionBase):
             The triangle at the specified index as a Geometry object.
         """
         return Geometry.from_sfcgal_geometry(
-            lib.sfcgal_triangulated_surface_triangle_n(self._geom, n),
+            lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
             owned=False,
         )
 
@@ -2679,9 +2679,9 @@ class Tin(GeometryCollectionBase):
             A MultiPolygon representation of the TIN.
         """
         multipolygon = lib.sfcgal_multi_polygon_create()
-        num_geoms = lib.sfcgal_triangulated_surface_num_triangles(self._geom)
+        num_geoms = lib.sfcgal_triangulated_surface_num_patches(self._geom)
         for geom_idx in range(num_geoms):
-            triangle_geom = lib.sfcgal_triangulated_surface_triangle_n(
+            triangle_geom = lib.sfcgal_triangulated_surface_patch_n(
                 self._geom, geom_idx
             )
             triangle_clone = lib.sfcgal_geometry_clone(triangle_geom)
@@ -2908,7 +2908,7 @@ class PolyhedralSurface(GeometryCollectionBase):
         int
             The number of polygons contained within the polyhedral surface.
         """
-        return lib.sfcgal_polyhedral_surface_num_polygons(self._geom)
+        return lib.sfcgal_polyhedral_surface_num_patches(self._geom)
 
     def __iter__(self):
         """Iterate over the polygons of the polyhedral surface.
@@ -2920,7 +2920,7 @@ class PolyhedralSurface(GeometryCollectionBase):
         """
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
-                lib.sfcgal_polyhedral_surface_polygon_n(self._geom, n),
+                lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
                 owned=False,
             )
 
@@ -2940,7 +2940,7 @@ class PolyhedralSurface(GeometryCollectionBase):
             The polygon at the specified index as a Geometry object.
         """
         return Geometry.from_sfcgal_geometry(
-            lib.sfcgal_polyhedral_surface_polygon_n(self._geom, n),
+            lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
             owned=False,
         )
 
@@ -3031,7 +3031,7 @@ class PolyhedralSurface(GeometryCollectionBase):
         polyhedralsurface = lib.sfcgal_polyhedral_surface_create()
         for coords in coordinates:
             polygon = Polygon.sfcgal_geom_from_coordinates(coords)
-            lib.sfcgal_polyhedral_surface_add_polygon(polyhedralsurface, polygon)
+            lib.sfcgal_polyhedral_surface_add_patch(polyhedralsurface, polygon)
         return polyhedralsurface
 
 
@@ -3181,10 +3181,10 @@ class Solid(GeometryCollectionBase):
         phs_geom = lib.sfcgal_polyhedral_surface_create()
 
         for shell in self.shells:
-            num_geoms = lib.sfcgal_polyhedral_surface_num_polygons(shell._geom)
+            num_geoms = lib.sfcgal_polyhedral_surface_num_patches(shell._geom)
             for geom_idx in range(num_geoms):
-                polygon = lib.sfcgal_polyhedral_surface_polygon_n(shell._geom, geom_idx)
-                lib.sfcgal_polyhedral_surface_add_polygon(
+                polygon = lib.sfcgal_polyhedral_surface_patch_n(shell._geom, geom_idx)
+                lib.sfcgal_polyhedral_surface_add_patch(
                     phs_geom, lib.sfcgal_geometry_clone(polygon)
                 )
         return Geometry.from_sfcgal_geometry(phs_geom) if wrapped else phs_geom
@@ -3374,7 +3374,7 @@ class GeometrySequence:
         int
             The number of geometries in the collection.
         """
-        return lib.sfcgal_geometry_collection_num_geometries(self._parent._geom)
+        return lib.sfcgal_geometry_num_geometries(self._parent._geom)
 
     def __get_geometry_n(self, n):
         """Retrieve the n-th geometry in the sequence.
