@@ -762,3 +762,9 @@ def test_is_valid_detail():
     invalid_polygon = Polygon.from_wkt(invalid_polygon_wkt)
     invalid_detail_msg, _ = invalid_polygon.is_valid_detail()
     assert invalid_detail_msg == "ring 0 self intersects"
+
+
+def test_simplify():
+    ls = LineString.from_wkt("LINESTRING(1 4, 4 9, 4 12, 4 16, 2 19, -4 20)")
+    result = ls.simplify(5, False)
+    assert result.to_wkt(0) == "LINESTRING (1 4,2 19,-4 20)"

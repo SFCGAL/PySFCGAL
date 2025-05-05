@@ -1250,6 +1250,27 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate_z(self._geom, angle)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @cond_icontract(lambda self, tolerance: (self.is_valid() and tolerance > 0),
+                    "require")
+    def simplify(self, tolerance: float, preserveTopology: bool) -> Optional[Geometry]:
+        """
+        Compute the simplication of the geometry.
+
+        Parameters
+        ----------
+        tolerance : float
+            The simplification threshold.
+        preserveTopology : bool
+            Preserve topology or not.
+
+        Returns
+        -------
+        Geometry
+            The simplified geometry.
+        """
+        geom = lib.sfcgal_geometry_simplify(self._geom, tolerance, preserveTopology)
+        return Geometry.from_sfcgal_geometry(geom)
+
     def write_vtk(self, filename: str) -> None:
         """
         Export the geometry to a VTK file.
