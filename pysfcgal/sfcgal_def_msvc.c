@@ -700,17 +700,6 @@ void
 sfcgal_triangulated_surface_add_patch(sfcgal_geometry_t *tin,
                                       sfcgal_geometry_t *patch);
 
-/**
- * Adds a Triangle to a given TriangulatedSurface
- * @pre tin must be a TriangulatedSurface
- * @pre triangle must be a Triangle
- * @post the ownership of the Triangle is taken. The caller is not responsible
- * anymore of its deallocation
- * @ingroup capi
- */
-void
-sfcgal_triangulated_surface_add_triangle(sfcgal_geometry_t *tin,
-                                         sfcgal_geometry_t *triangle);
 
 /**
  * Creates an empty Solid

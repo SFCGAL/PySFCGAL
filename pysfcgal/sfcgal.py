@@ -2748,7 +2748,7 @@ class Tin(GeometryCollectionBase):
         tin = lib.sfcgal_triangulated_surface_create()
         for coords in coordinates:
             triangle = Triangle.sfcgal_geom_from_coordinates(coords)
-            lib.sfcgal_triangulated_surface_add_triangle(tin, triangle)
+            lib.sfcgal_triangulated_surface_add_patch(tin, triangle)
         return tin
 
 
