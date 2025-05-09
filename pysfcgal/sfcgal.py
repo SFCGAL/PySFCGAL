@@ -3026,28 +3026,28 @@ class PolyhedralSurface(Geometry):
         Parameters
         ----------
         coords : Tuple
-            A tuple of coordinates that define the polygons of the polyhedral
+            A tuple of coordinates that define the patches of the polyhedral
             surface. If empty, initializes an empty polyhedral surface.
         """
         self._geom = PolyhedralSurface.sfcgal_geom_from_coordinates(list(coords))
 
     def __len__(self):
-        """Get the number of polygons in the polyhedral surface.
+        """Get the number of patches in the polyhedral surface.
 
         Returns
         -------
         int
-            The number of polygons contained within the polyhedral surface.
+            The number of patches contained within the polyhedral surface.
         """
         return lib.sfcgal_polyhedral_surface_num_patches(self._geom)
 
     def __iter__(self):
-        """Iterate over the polygons of the polyhedral surface.
+        """Iterate over the patches of the polyhedral surface.
 
         Yields
         ------
         Geometry
-            Each polygon of the polyhedral surface as a Geometry object.
+            Each patch of the polyhedral surface as a Geometry object.
         """
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
@@ -3076,7 +3076,7 @@ class PolyhedralSurface(Geometry):
         )
 
     def __getitem__(self, key):
-        """Get a polygon (or several) within the polyhedral surface, identified through
+        """Get a patch (or several) within the polyhedral surface, identified through
         an index or a slice.
 
         Raises an IndexError if the key is invalid for the geometry.
@@ -3091,7 +3091,7 @@ class PolyhedralSurface(Geometry):
         Returns
         -------
         Geometry or list of Geometry
-            The polygon(s) at the specified index or slice.
+            The patch(es) at the specified index or slice.
         """
         length = self.__len__()
         if isinstance(key, int):
@@ -3116,7 +3116,7 @@ class PolyhedralSurface(Geometry):
             )
 
     def __eq__(self, other: object) -> bool:
-        """Check if two polyhedral surfaces are equal based on their polygons.
+        """Check if two polyhedral surfaces are equal based on their patches.
 
         Parameters
         ----------
