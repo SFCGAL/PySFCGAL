@@ -2684,22 +2684,22 @@ class Tin(Geometry):
         self._geom = Tin.sfcgal_geom_from_coordinates(list(coords))
 
     def __len__(self):
-        """Return the number of triangles in the TIN.
+        """Return the number of patches in the TIN.
 
         Returns
         -------
         int
-            The number of triangles that comprise the TIN.
+            The number of patches that comprise the TIN.
         """
         return lib.sfcgal_triangulated_surface_num_patches(self._geom)
 
     def __iter__(self):
-        """Iterate over the triangles in the TIN.
+        """Iterate over the patches in the TIN.
 
         Yields
         ------
         Geometry
-            Each triangle in the TIN as a Geometry object.
+            Each patch in the TIN as a Geometry object.
         """
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
@@ -2708,7 +2708,7 @@ class Tin(Geometry):
             )
 
     def __get_geometry_n(self, n):
-        """Returns the n-th triangle within the TIN.
+        """Returns the n-th patch within the TIN.
 
         This method assumes that the index is valid for the TIN.
 
@@ -2720,7 +2720,7 @@ class Tin(Geometry):
         Returns
         -------
         Geometry
-            The triangle at the specified index as a Geometry object.
+            The patch at the specified index as a Geometry object.
         """
         return Geometry.from_sfcgal_geometry(
             lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
@@ -2728,7 +2728,7 @@ class Tin(Geometry):
         )
 
     def __getitem__(self, key):
-        """Get a triangle (or several) within the TIN, identified through an index or a
+        """Get a patch (or several) within the TIN, identified through an index or a
         slice.
 
         Raises an IndexError if the key is invalid for the TIN.
@@ -2738,12 +2738,12 @@ class Tin(Geometry):
         Parameters
         ----------
         key : int or slice
-            Index (or slice) of the triangle(s) to recover.
+            Index (or slice) of the patch(es) to recover.
 
         Returns
         -------
         Geometry or list of Geometry
-            The triangle(s) at the specified index or slice.
+            The patch(es) at the specified index or slice.
         """
         length = self.__len__()
         if isinstance(key, int):
@@ -2768,7 +2768,7 @@ class Tin(Geometry):
             )
 
     def __eq__(self, other: object) -> bool:
-        """Check if two TINs are equal based on their triangles.
+        """Check if two TINs are equal based on their patches.
 
         Parameters
         ----------
@@ -2778,7 +2778,7 @@ class Tin(Geometry):
         Returns
         -------
         bool
-            True if both TINs contain the same triangles, False otherwise.
+            True if both TINs contain the same patches, False otherwise.
         """
         if not isinstance(other, Tin):
             return False
