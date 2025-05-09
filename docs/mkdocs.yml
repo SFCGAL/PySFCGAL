@@ -27,6 +27,9 @@ theme:
 markdown_extensions:
   - attr_list
   - admonition
+  - codehilite
+  - pymdownx.highlight
+  - pymdownx.superfences
 
 plugins:
 - search
