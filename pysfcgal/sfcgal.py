@@ -3202,7 +3202,7 @@ class PolyhedralSurface(Geometry):
         return [patch.to_coordinates() for patch in self]
 
 
-class Solid(GeometryCollectionBase):
+class Solid(Geometry):
     def __init__(self, coords: Tuple = ()):
         """Initialize the Solid with the given coordinates.
 
@@ -3285,6 +3285,16 @@ class Solid(GeometryCollectionBase):
             return False
         return all(phs == other_phs for phs, other_phs in zip(self, other))
 
+    def __len__(self):
+        """Return the number of shells in the solid.
+
+        Returns
+        -------
+        int
+            The number of shells contained within the solid.
+        """
+        return lib.sfcgal_solid_num_shells(self._geom)
+
     @property
     def n_shells(self):
         """Get the number of shells in the solid.
@@ -3294,7 +3304,7 @@ class Solid(GeometryCollectionBase):
         int
             The number of shells contained within the solid.
         """
-        return lib.sfcgal_solid_num_shells(self._geom)
+        return len(self)
 
     @property
     def shells(self):
@@ -3411,6 +3421,18 @@ class Solid(GeometryCollectionBase):
         """
         shell_clone = lib.sfcgal_geometry_clone(shell._geom)
         lib.sfcgal_solid_add_interior_shell(self._geom, shell_clone)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the Solid.
+
+        Uses the __iter__ property of the Solid to iterate over shells.
+
+        Returns
+        -------
+        list
+            List of shells' coordinates.
+        """
+        return [shells.to_coordinates() for shells in self]
 
 
 class MultiSolid(GeometryCollectionBase):

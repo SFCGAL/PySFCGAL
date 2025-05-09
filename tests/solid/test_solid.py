@@ -8,6 +8,7 @@ def test_solid(
     solid, expected_polyhedralsurfaces, solid_without_holes, solid_unordered
 ):
     assert solid.n_shells == 3
+    assert len(solid) == 3
     # iteration
     for shell, expected_polyhedral in zip(solid, expected_polyhedralsurfaces):
         assert shell == expected_polyhedral
