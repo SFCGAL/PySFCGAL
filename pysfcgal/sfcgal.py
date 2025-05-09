@@ -2671,7 +2671,7 @@ class MultiPolygon(GeometryCollectionBase):
         self._add_geometry(polygon)
 
 
-class Tin(GeometryCollectionBase):
+class Tin(Geometry):
     def __init__(self, coords: Tuple = ()):
         """Initialize the Tin with a tuple of coordinates.
 
@@ -2842,6 +2842,18 @@ class Tin(GeometryCollectionBase):
         """
         patch_clone = lib.sfcgal_geometry_clone(patch._geom)
         lib.sfcgal_triangulated_surface_add_patch(self._geom, patch_clone)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the TIN
+
+        Uses the __iter__ property of the TIN to iterate over patches.
+
+        Returns
+        -------
+        list
+            List of patches' coordinates.
+        """
+        return [patch.to_coordinates() for patch in self]
 
 
 class Triangle(Geometry):
