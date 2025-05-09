@@ -3019,7 +3019,7 @@ class Triangle(Geometry):
         return triangle
 
 
-class PolyhedralSurface(GeometryCollectionBase):
+class PolyhedralSurface(Geometry):
     def __init__(self, coords: Tuple = ()):
         """Initialize the PolyhedralSurface with a tuple of coordinates.
 
@@ -3176,6 +3176,18 @@ class PolyhedralSurface(GeometryCollectionBase):
         """
         patch_clone = lib.sfcgal_geometry_clone(patch._geom)
         lib.sfcgal_polyhedral_surface_add_patch(self._geom, patch_clone)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the PolyhedralSurface.
+
+        Uses the __iter__ property of the PolyhedralSurface to iterate over patches.
+
+        Returns
+        -------
+        list
+            List of patches' coordinates.
+        """
+        return [patch.to_coordinates() for patch in self]
 
 
 class Solid(GeometryCollectionBase):
