@@ -39,7 +39,7 @@ def create_cube_coordinates(min_val=0, max_val=1):
 
 
 @pytest.fixture
-def points_ext():
+def points_ext_1():
     yield create_cube_coordinates(0., 10.)
 
 
@@ -54,32 +54,32 @@ def points_int_2():
 
 
 @pytest.fixture
-def expected_polyhedralsurfaces(points_ext, points_int_1, points_int_2):
+def expected_polyhedralsurfaces(points_ext_1, points_int_1, points_int_2):
     yield [
-        PolyhedralSurface(points_ext),
+        PolyhedralSurface(points_ext_1),
         PolyhedralSurface(points_int_1),
         PolyhedralSurface(points_int_2),
     ]
 
 
 @pytest.fixture
-def composed_polyhedralsurface(points_ext, points_int_1, points_int_2):
-    yield PolyhedralSurface(points_ext + points_int_1 + points_int_2)
+def composed_polyhedralsurface(points_ext_1, points_int_1, points_int_2):
+    yield PolyhedralSurface(points_ext_1 + points_int_1 + points_int_2)
 
 
 @pytest.fixture
-def solid(points_ext, points_int_1, points_int_2):
-    yield Solid([points_ext, points_int_1, points_int_2])
+def solid(points_ext_1, points_int_1, points_int_2):
+    yield Solid([points_ext_1, points_int_1, points_int_2])
 
 
 @pytest.fixture
-def solid_without_holes(points_ext):
-    yield Solid([points_ext])
+def solid_without_holes(points_ext_1):
+    yield Solid([points_ext_1])
 
 
 @pytest.fixture
-def solid_unordered(points_ext, points_int_1, points_int_2):
-    yield Solid([points_ext, points_int_2, points_int_1])
+def solid_unordered(points_ext_1, points_int_1, points_int_2):
+    yield Solid([points_ext_1, points_int_2, points_int_1])
 
 
 @pytest.fixture

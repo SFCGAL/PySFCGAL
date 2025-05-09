@@ -25,8 +25,8 @@ def test_solid_to_polyhedralsurface(solid, composed_polyhedralsurface):
     assert phs == composed_polyhedralsurface
 
 
-def test_solid_to_coordinates(solid, points_ext, points_int_1, points_int_2):
-    assert solid.to_coordinates() == [points_ext, points_int_1, points_int_2]
+def test_solid_to_coordinates(solid, points_ext_1, points_int_1, points_int_2):
+    assert solid.to_coordinates() == [points_ext_1, points_int_1, points_int_2]
     other_solid = Solid.from_coordinates(solid.to_coordinates())
     assert other_solid == solid
 
