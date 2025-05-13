@@ -33,3 +33,7 @@ Create a GeometryCollection
 {{ include_python_file("../cookbook/geom_from_wkt.py") }}
 
 ## Calculate a [Straight Skeleton](https://en.wikipedia.org/wiki/Straight_skeleton)
+
+{{ include_python_file("../cookbook/straight_skeleton.py") }}
+
+![Straight Skeleton](assets/img/cookbook/straight_skeleton.png){: width=500 }
