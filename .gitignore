@@ -41,6 +41,8 @@ coverage.xml
 *.log
 # Sphinx documentation
 docs/_build/
+# mkdocs documentation
+docs/site/
 # PyBuilder
 target/
 # Mac
