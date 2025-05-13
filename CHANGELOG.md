@@ -1,5 +1,56 @@
 # PySFCGAL Changelog
 
+## v2.1.0 (2025-05-14)
+
+### BREAKING CHANGE
+
+- `straight_skeleton` method now returns a polyhedral surface instead of a multi-polygon
+
+### Feat
+
+- **docs**: Add straight_skeleton cookbook example
+- **docs**: Add a cookbook section to provide some examples
+- **sfcgal**: Add support for alpha_wrapping_3d
+- **sfcgal**: Add a method to add an interior shell to a solid
+- **sfcgal**: Add a method to set the exterior shell of a solid
+- **sfcgal**: Allow to add a solid to a multisolid
+- **sfcgal**: Allow to add a patch to a polyhedralsurface
+- **sfcgal**: Allow to add a patch to a tin
+- **sfcgal**: Allow to add a polygon to a multipolygon
+- **sfcgal**: Allow to add a linestring to a multilinestring
+- **sfcgal**: Allow to add a point to a multipoint
+- **sfcgal**: Add add_geometry to GeometryCollection
+- **sfcgal**: Allow to add geometry in a GeometryCollectionBase
+- add simplify function from SFCGAL
+- 3D tessellation support
+- **update_def**: Add support for the new SFCGAL deprecated mechanism
+- **sfcgal.py**: Added an alias method for translate. | To ensure consistency in function naming, do not use 2d in function names.
+
+### Fix
+
+- **sfcgal**: A Solid is not a geometry collection
+- **sfcgal**: Rename TIN docstring according to patch terminology
+- **sfcgal**: A TIN is not a geometry collection
+- **sfcgal**: Rename PolyhedralSurface docstring according to patch
+- **sfcgal**: A PolyhedralSurface is not a geometry collection
+- **sfcgal**: builds an empty Polygon
+- **sfcgal**: builds an empty LineString
+- **sfcgal**: handle wrong Point constructor parametrization
+- **sfcgal**: builds empty Tin and PolyhedralSurface
+- **test_straight_skeleton**: skeleton is now a polyhedralSurface
+- **build**: Add missing long_description_content_type to setup.py
+- **update_def**: Remove spurious print
+- **docs/docs/build.md**: do not recommend to directly invoke setup.py
+- prevent a segfault in CoordinateSequence
+- wrong documentation dependency version
+- **sfcgal**: Fix multisolid default constructor
+- **sfcgal**: Fix solid default constructor
+- **sfcgal**: Fix multipolygon default constructor
+- **sfcgal**: Fix multilinestring default constructor
+- **sfcgal**: Fix multipoint default constructor
+- **sfcgal**: Fix is_valid_detail
+- buffer_3d should not accept segments=3
+
 ## v2.0.0 (2024-09-26)
 
 ### BREAKING CHANGE
