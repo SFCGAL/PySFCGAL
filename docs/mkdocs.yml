@@ -49,4 +49,4 @@ nav:
   - Home: index.md
   - Installation: build.md
   - API Reference: api.md
-  - Cookbook: cookbook/cookbook.md
+  - Cookbook: cookbook.md
