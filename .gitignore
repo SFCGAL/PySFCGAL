@@ -57,8 +57,5 @@ target/
 # Venv
 .venv
 
-# Docs
-./docs/site
-
 # VS Code
 .vscode
