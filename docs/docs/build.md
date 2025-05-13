@@ -111,12 +111,28 @@ sudo ldconfig
 
 ## How to build the documentation?
 
-The project documentation is built with [MkDocs](https://www.mkdocs.org/).
+Project uses [MkDocs](https://www.mkdocs.org/) to generate documentation with themes [MkDocs Material](https://squidfunk.github.io/mkdocs-material/). Pages are written in Markdown.
 
-You may built it locally by doing:
+### Install requirements
 
 ```bash
-pip install -r requirements/documentation.txt
-cd docs
-mkdocs serve  # Serving on http://127.0.0.1:8000/
+python -m pip install -U -r requirements/documentation.txt
 ```
+
+### Build documentation website
+
+To build it:
+
+```bash
+cd docs && mkdocs build --verbose --strict
+```
+
+Then open `docs/site/index.html` in a web browser.
+
+## Write documentation using live render
+
+```bash
+cd docs && mkdocs serve
+```
+
+Open <http://localhost:8000> in a web browser to see the HTML render updated when a file is saved.

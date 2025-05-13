@@ -33,3 +33,9 @@ pip install -r requirements/unit_tests.txt
 ```
 
 In particular, we use `icontract` in this context (this dependency is set as an extra dependency, as it might be unpackaged on some environments). The unit tests are run through `pytest`. This testing mode is actually used in the CI.
+
+## Build documentation
+
+The project documentation is built with [MkDocs](https://www.mkdocs.org/).
+
+For more information on how to build documentation, see this [section](https://sfcgal.gitlab.io/pysfcgal/build/#how-to-build-the-documentation) in build page.
