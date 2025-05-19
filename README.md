@@ -12,7 +12,7 @@ Documentation is automatically generated and deployed from the CI: https://sfcga
 
 ## Installation
 
-See the [installation page](https://sfcgal.gitlab.io/pysfcgal/user_guide/build/) in the documentation.
+See the [installation page](https://sfcgal.gitlab.io/pysfcgal/build/) in the documentation.
 
 ## How to contribute
 
