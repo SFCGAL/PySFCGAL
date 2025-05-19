@@ -13,7 +13,7 @@ source .venv/bin/activate
 pip install pysfcgal
 ```
 
-## Install from scratch
+## Install from scratch on Linux
 
 ### Build dependencies
 
@@ -121,6 +121,21 @@ and run this command to apply the changes:
 ```shell
 sudo ldconfig
 ```
+
+??? note "Install from scratch on MacOS"
+
+    ```bash
+    brew install cmake gmp mpfr boost ninja
+    wget "https://github.com/CGAL/cgal/releases/download/v6.0/CGAL-6.0.tar.xz" -O CGAL-6.0.tar.xz
+    tar -xf ./CGAL-6.0.tar.xz
+    git clone git@gitlab.com:sfcgal/SFCGAL.git && cd SFCGAL
+    cmake -GNinja -S . -B build -DSFCGAL_BUILD_TESTS=ON -DCGAL_DIR=/Users/your_name/path/to/CGAL-6.0
+    cmake --build build
+    git clone git@gitlab.com:sfcgal/pysfcgal.git && cd pysfcgal
+    python3 -m pip install build
+    env CFLAGS=-I/Users/your_name/path/to/SFCGAL/build/include LDFLAGS="-L/Users/your_name/path/to/SFCGAL/build/src -Wl,-rpath,/Users/your_name/path/to/SFCGAL/build/src" python3 -m build
+    python3 -m pip install pysfcgal-2.1.0-cp39-cp39-macosx_10_9_universal2.whl
+    ```
 
 ## How to build the documentation?
 

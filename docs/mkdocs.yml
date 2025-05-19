@@ -30,6 +30,8 @@ markdown_extensions:
   - codehilite
   - pymdownx.highlight
   - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.superfences
 
 plugins:
 - search
