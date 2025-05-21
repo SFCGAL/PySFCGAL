@@ -713,6 +713,22 @@ def test_vtk(tmp_test_dir):
     assert cmp(out_filepath, expected_vtk)
 
 
+def test_stl(tmp_test_dir):
+    """Test stl output"""
+    geom = PolyhedralSurface.from_wkt(
+        "POLYHEDRALSURFACE Z ("
+        "((0.0 0.0 0.0, 0.0 5.0 0.0, 5.0 5.0 0.0, 5.0 0.0 0.0, 0.0 0.0 0.0)), "
+        "((0.0 0.0 5.0, 5.0 0.0 5.0, 5.0 5.0 5.0, 0.0 5.0 5.0, 0.0 0.0 5.0)), "
+        "((0.0 0.0 0.0, 0.0 0.0 5.0, 0.0 5.0 5.0, 0.0 5.0 0.0, 0.0 0.0 0.0)), "
+        "((0.0 5.0 0.0, 0.0 5.0 5.0, 5.0 5.0 5.0, 5.0 5.0 0.0, 0.0 5.0 0.0)), "
+        "((5.0 5.0 0.0, 5.0 5.0 5.0, 5.0 0.0 5.0, 5.0 0.0 0.0, 5.0 5.0 0.0)), "
+        "((5.0 0.0 0.0, 5.0 0.0 5.0, 0.0 0.0 5.0, 0.0 0.0 0.0, 5.0 0.0 0.0)))")
+    out_filepath = str(tmp_test_dir / "out.stl")
+    geom.write_stl(out_filepath)
+    expected_stl = pathlib.Path(__file__).parent.resolve() / "expected.stl"
+    assert cmp(out_filepath, expected_stl)
+
+
 def test_rhr_lhr():
     """Test Force_LHR and Force_RHR"""
     extCW_intCCW = "POLYGON ((0 5,5 5,5 0,0 0,0 5),(2 1,2 2,1 2,1 1,2 1),(4 3,4 4,3 4,3 3,4 3))"  # noqa: E501

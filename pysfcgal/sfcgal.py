@@ -1364,6 +1364,38 @@ class Geometry:
                 lib.free(buf[0])
         return obj_string
 
+    def write_stl(self, filename: str) -> None:
+        """
+        Export the geometry to a STL file.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to which the geometry will be exported.
+
+        """
+        return lib.sfcgal_geometry_as_stl_file(self._geom, bytes(filename, 'utf-8'))
+
+    def to_stl(self) -> str:
+        """
+        Export the geometry to a STL string, i.e. basically the content of a STL file.
+
+        Returns
+        -------
+        str
+            STL representation of the geometry
+        """
+        try:
+            buf = ffi.new("char**")
+            length = ffi.new("size_t*")
+            lib.sfcgal_geometry_as_stl(self._geom, buf, length)
+            stl_string = ffi.string(buf[0], length[0]).decode("utf-8")
+        finally:
+            # we're responsible for free'ing the memory
+            if not buf[0] == ffi.NULL:
+                lib.free(buf[0])
+        return stl_string
+
     def __del__(self):
         if self._owned and hasattr(self, "_geom"):
             # only free geometries owned by the class
