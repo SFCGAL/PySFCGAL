@@ -176,6 +176,42 @@ build:linux-wheel-python:
     paths:
       - dist_linux_$PYTHON_VERSION
 
+build:macos-wheel-python:
+  stage: 📦 build
+  tags:
+    - saas-macos-large-m2pro
+  image: macos-15-xcode-16
+  variables:
+    HOMEBREW_NO_AUTO_UPDATE: 1
+    HOMEBREW_NO_INSTALL_UPGRADE: 1
+    HOMEBREW_NO_INSTALL_CLEANUP: 1
+    HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+  rules:
+    # on default branch
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      when: always
+    # on a tag
+    - if: $CI_COMMIT_TAG
+      when: always
+    # on a MR if previous jobs are successful
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      when: manual
+      allow_failure: true
+  parallel:
+    matrix:
+      - PYTHON_VERSION: ['3.9', '3.10', '3.11', '3.12', '3.13']
+  script:
+    - |
+      if [ -z "$CI_COMMIT_TAG" ]; then
+        DEVEL_VERSION=true
+      else
+        DEVEL_VERSION=false
+      fi
+      ./ci/build-macos-wheel.sh "${PYTHON_VERSION}" "${DEVEL_VERSION}" "${CI_COMMIT_TIMESTAMP}"
+  artifacts:
+    paths:
+      - dist_macos_$PYTHON_VERSION
+
 build:documentation:
   stage: 📦 build
   image: ${PYTHON_DOCKER_IMAGE}
@@ -228,6 +264,8 @@ pages:
     - job: build:windows-osgeo4w-wheel
       artifacts: true
     - job: build:linux-wheel-python
+      artifacts: true
+    - job: build:macos-wheel-python
       artifacts: true
 
 deploy:pypi:
