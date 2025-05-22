@@ -209,21 +209,33 @@ pages:
     paths:
       - public
 
-deploy:pypi:
+.common-deploy-wheel: &common-deploy-wheel
   stage: 🚀 deploy
   image: ${PYTHON_DOCKER_IMAGE}
-  rules:
-    # on a tag
-    - if: $CI_COMMIT_TAG
   needs:
     - job: build:windows-osgeo4w-wheel
       artifacts: true
     - job: build:linux-wheel-python
       artifacts: true
-  before_script:
-    - pip install twine
+
+deploy:pypi:
+  <<: *common-deploy-wheel
+  rules:
+    - if: $CI_COMMIT_TAG
   script:
-    - mkdir dist
-    - cp -r dist_windows/* dist/
-    - cp -r dist_linux_*/* dist/
+    - ./ci/prepare-deploy.sh
     - twine upload --password ${PYPI_API_TOKEN} dist/*
+
+deploy:registry:
+  <<: *common-deploy-wheel
+  rules:
+    # on default branch
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    # on a tag
+    - if: $CI_COMMIT_TAG
+  variables:
+    TWINE_USERNAME: gitlab-ci-token
+    TWINE_PASSWORD: ${CI_JOB_TOKEN}
+  script:
+    - ./ci/prepare-deploy.sh
+    - twine upload --repository-url ${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/pypi dist/*
