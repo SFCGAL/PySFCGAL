@@ -11,11 +11,11 @@ setup(
     url="https://gitlab.com/SFCGAL/pysfcgal",
     author="Joshua Arnott (initial work) and Loïc Bartoletti (Oslandia)",
     author_email="infos@sfcgal.org",
+    license="GPL-3.0-or-later",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: Implementation :: PyPy",
-        "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
     ],
     packages=["pysfcgal"],
     package_data={"pysfcgal": ["*.c"]},
