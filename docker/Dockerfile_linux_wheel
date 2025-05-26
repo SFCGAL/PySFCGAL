@@ -1,3 +1,5 @@
+ARG DEVEL_DATE
+ARG DEVEL_VERSION=true
 ARG PYTHON_WHEEL_VERSION
 ARG SFCGAL_REGISTRY
 
@@ -5,6 +7,8 @@ FROM ${SFCGAL_REGISTRY}:debian-latest as sfcgal_build
 
 FROM python:${PYTHON_WHEEL_VERSION}-slim-bookworm AS container
 
+ARG DEVEL_DATE
+ARG DEVEL_VERSION
 ARG PYTHON_WHEEL_VERSION
 
 # copy sfcgal build
@@ -16,8 +20,11 @@ RUN echo "/SFCGAL/build/src" > /etc/ld.so.conf.d/sfcgal.conf && \
 RUN apt update && apt install --yes --no-install-recommends gcc libboost-serialization1.74.0 libgmpxx4ldbl libstdc++-12-dev patchelf
 
 # copy files
-COPY setup.py README.md ./
+COPY setup.py README.md ci/increment_version.py ./
 COPY ./pysfcgal ./pysfcgal
+
+# Increase the dev version number to upload the wheel to gitlab package registry
+RUN if [ "$DEVEL_VERSION" = "true" ]; then python3 increment_version.py ${DEVEL_DATE}; fi
 
 # generate the wheel
 RUN python3 -m venv venv && \

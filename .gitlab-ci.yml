@@ -119,15 +119,19 @@ build:windows-osgeo4w-wheel:
     paths:
       - dist_windows
   script:
-    # gitlab ci on widows does not handle the 'image' keyword
-    # use docker build to be able to pull sfcgal/sfcgal-build-deps image
-    - $env:dir = $pwd
-    - docker run
-      --rm
-      --mount type=bind,source=$env:dir,target=c:\pysfcgal
-      --workdir "c:\pysfcgal"
-      $env:SFCGAL_REGISTRY':'windows-latest
-      ".\ci\build.ps1"
+    - |
+      $dir = $pwd
+      if ($env:CI_COMMIT_TAG) {
+        $dev_version = 0
+      } else {
+        $dev_version = 1
+      }
+      docker run `
+        --rm `
+        --mount type=bind,source=$dir,target=c:\pysfcgal `
+        --workdir "c:\pysfcgal" `
+        $env:SFCGAL_REGISTRY":windows-latest" `
+        powershell -Command ".\ci\build.ps1 -DEVEL_VERSION $dev_version -DEVEL_DATE $env:CI_COMMIT_TIMESTAMP"
 
 build:linux-wheel-python:
   stage: 📦 build
@@ -151,8 +155,16 @@ build:linux-wheel-python:
     matrix:
       - PYTHON_VERSION: ['3.9', '3.10', '3.11', '3.12', '3.13']
   script:
+    - |
+      if [ -z "$CI_COMMIT_TAG" ]; then
+        DEVEL_VERSION=true
+      else
+        DEVEL_VERSION=false
+      fi
     - docker build
       --tag build_linux_wheel
+      --build-arg="DEVEL_DATE=${CI_COMMIT_TIMESTAMP}"
+      --build-arg="DEVEL_VERSION=${DEVEL_VERSION}"
       --build-arg="SFCGAL_REGISTRY=${SFCGAL_REGISTRY}"
       --build-arg="PYTHON_WHEEL_VERSION=${PYTHON_VERSION}"
       -f "docker/Dockerfile_linux_wheel"
