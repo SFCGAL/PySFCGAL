@@ -129,6 +129,13 @@ def test_approximate_medial_axis():
 
 
 def test_straight_skeleton():
+    # Ensure that it works if the input is empty
+    empty_polygon = Polygon()
+    assert empty_polygon.is_empty
+    empty_res = empty_polygon.straight_skeleton()
+    assert empty_res.geom_type == "MultiLineString"
+    assert empty_res.is_empty
+
     poly = Polygon(
         [
             (190, 190),
@@ -161,6 +168,13 @@ def test_straight_skeleton():
 def test_extrude_straight_skeleton_polygon():
     """Inspired from testExtrudeStraightSkeleton SFCGAL unit test
     """
+    # Ensure that it works if the input is empty
+    empty_polygon = Polygon()
+    assert empty_polygon.is_empty
+    empty_res = empty_polygon.extrude_straight_skeleton(2.0)
+    assert empty_res.geom_type == "PolyhedralSurface"
+    assert empty_res.is_empty
+
     geom = Polygon.from_wkt("POLYGON (( 0 0, 5 0, 5 5, 4 5, 4 4, 0 4, 0 0 ))")
     expected_wkt = (
           "POLYHEDRALSURFACE Z (((4.00 5.00 0.00,5.00 5.00 0.00,4.00 4.00 0.00,4.00 "
@@ -239,6 +253,13 @@ def test_extrude_straight_skeleton_polygon_with_hole():
 def test_extrude_straight_skeleton_building():
     """Inspired from testExtrudeStraightSkeletonGenerateBuilding SFCGAL unit test
     """
+    # Ensure that it works if the input is empty
+    empty_polygon = Polygon()
+    assert empty_polygon.is_empty
+    empty_res = empty_polygon.extrude_polygon_straight_skeleton(9.0, 2.0)
+    assert empty_res.geom_type == "PolyhedralSurface"
+    assert empty_res.is_empty
+
     geom = Polygon.from_wkt(
         "POLYGON (( 0 0, 5 0, 5 5, 4 5, 4 4, 0 4, 0 0 ), (1 1, 1 2, 2 2, 2 1, 1 1))"
     )
