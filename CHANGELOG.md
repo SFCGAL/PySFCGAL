@@ -1,5 +1,19 @@
 # PySFCGAL Changelog
 
+## v2.2.0 (2025-07-31)
+
+### Feat
+
+- **IO**: Add STL export
+
+### Fix
+
+- **sfcgal**: Adapt to Extrude Straigth Skeleton roof fixed
+
+### Build
+
+- **ci**: Build a macos wheel
+
 ## v2.1.0 (2025-05-14)
 
 ### BREAKING CHANGE
