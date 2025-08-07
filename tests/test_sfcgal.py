@@ -5,9 +5,9 @@ import geom_data
 import pytest
 
 import pysfcgal.sfcgal as sfcgal
-from pysfcgal.sfcgal import (GeometryCollection, LineString, MultiLineString,
-                             MultiPoint, Point, Polygon, PolyhedralSurface,
-                             Solid, Triangle)
+from pysfcgal.sfcgal import (Geometry, GeometryCollection, LineString,
+                             MultiLineString, MultiPoint, Point, Polygon,
+                             PolyhedralSurface, Solid, Triangle)
 
 
 def test_version():
@@ -581,6 +581,18 @@ def test_is_closed():
     geom_closed_2 = LineString.from_wkt(
         "LINESTRING(2 2, 3 2, 3 3, 2 2)")
     assert geom_closed_2.is_closed()
+
+
+@pytest.mark.parametrize(
+    "wkt,expected_is_simple", [
+        ("LINESTRING (0.0 0.0, 2.0 0.0, 1.0 1.0)", True),
+        ("MULTIPOLYGON (((0 0, 20 0, 20 10, 0 10, 0 0)),((100 0,200 0,150 100,100 0)))", True),  # noqa: E501
+        ("LINESTRING (0 0, 2 2, 2 0, 0 2, 0 0)", False)
+    ],
+)
+def test_is_simple(wkt, expected_is_simple):
+    geom = Geometry.from_wkt(wkt)
+    assert geom.is_simple() == expected_is_simple
 
 
 def test_is_planar():

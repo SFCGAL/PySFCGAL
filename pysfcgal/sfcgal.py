@@ -603,6 +603,17 @@ class Geometry:
         geom = lib.sfcgal_geometry_force_rhr(self._geom)
         return Geometry.from_sfcgal_geometry(geom)
 
+    def is_simple(self) -> bool:
+        """
+        Test if the geometry is simple.
+
+        Returns
+        -------
+        bool
+            True if the geometry is simple, False otherwise.
+        """
+        return lib.sfcgal_geometry_is_simple(self._geom) != 0
+
     def is_valid(self) -> bool:
         """
         Check if the geometry is valid.
