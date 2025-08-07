@@ -42,6 +42,10 @@
 
 ## Algorithms
 
+### Area
+
+{{ include_python_file("../cookbook/area.py") }}
+
 ### Calculate a [Straight Skeleton](https://en.wikipedia.org/wiki/Straight_skeleton)
 
 {{ include_python_file("../cookbook/straight_skeleton.py") }}
