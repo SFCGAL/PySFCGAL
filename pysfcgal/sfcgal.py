@@ -491,6 +491,8 @@ class Geometry:
     def is_valid_detail(self) -> Tuple[Optional[str], None]:
         """
         Provide detailed information about the validity of the geometry.
+        At the moment, the invalidity location is not returned (set to
+        None) because it is not implemented by the C API.
 
         Returns
         -------
