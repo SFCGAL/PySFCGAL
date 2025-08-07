@@ -614,6 +614,31 @@ class Geometry:
         """
         return lib.sfcgal_geometry_is_simple(self._geom) != 0
 
+    def is_simple_detail(self) -> Tuple[bool, str]:
+        """
+        Test if the geometry is simple and return details in case of
+        complexity.
+
+        Returns
+        -------
+        tuple
+            - True if the geometry is simple, False otherwise.
+            - If not simple, a string which contains the reason of the
+              complexity
+        """
+        complex_reason = ffi.new("char **")
+        lib.sfcgal_geometry_is_simple_detail(self._geom, complex_reason)
+
+        ffi_complex_reason = complex_reason[0]
+
+        # If ffi_complex_reason is Null, the geometry is simple.
+        if ffi_complex_reason == ffi.NULL:
+            return (True, "")
+
+        complex_reason_str = ffi.string(ffi_complex_reason).decode("utf-8")
+        lib.sfcgal_free_buffer(ffi_complex_reason)
+        return (False, complex_reason_str)
+
     def is_valid(self) -> bool:
         """
         Check if the geometry is valid.

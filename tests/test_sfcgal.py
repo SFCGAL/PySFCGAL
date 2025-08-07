@@ -595,6 +595,18 @@ def test_is_simple(wkt, expected_is_simple):
     assert geom.is_simple() == expected_is_simple
 
 
+def test_is_simple_detail():
+    line1 = LineString.from_wkt("LINESTRING (0.0 0.0, 2.0 0.0, 1.0 1.0)")
+    is_simple, reason = line1.is_simple_detail()
+    assert is_simple
+    assert reason == ""
+
+    line2 = LineString.from_wkt("LINESTRING (0 0, 2 2, 2 0, 0 2, 0 0)")
+    is_simple, reason = line2.is_simple_detail()
+    assert not is_simple
+    assert reason == "linestring self intersects"
+
+
 def test_is_planar():
     geom_planar = Polygon.from_wkt(
         "Polygon((0.0 0.0 1.0, 0.0 1.0 1.0, 1.0 1.0 1.0, 1.0 0.0 1.0, 0.0 0.0 1.0))")
