@@ -24,7 +24,7 @@
 
 {{ include_python_file("../cookbook/multipolygon.py") }}
 
-Create a GeometryCollection
+## Create a GeometryCollection
 
 {{ include_python_file("../cookbook/geometry_collection.py") }}
 
