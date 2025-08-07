@@ -186,6 +186,18 @@ class Geometry:
         """
         return geom_types_r[lib.sfcgal_geometry_type_id(self._geom)]
 
+    @property
+    def dimension(self) -> int:
+        """
+        Return the dimension of a given geometry as an integer.
+
+        Returns
+        -------
+        int
+            The dimension as an integer (0 : punctual, 1 : curve, …)
+        """
+        return lib.sfcgal_geometry_dimension(self._geom)
+
     def drop_z(self, inplace: bool = False) -> Optional[Geometry]:
         """
         Drop the z coordinate of the geometry

@@ -607,6 +607,18 @@ def test_is_simple_detail():
     assert reason == "linestring self intersects"
 
 
+@pytest.mark.parametrize(
+    "wkt,expected_dimension", [
+        ("POINT (3.1 3.2)", 0),
+        ("LINESTRING Z (1 1 1,5 5 5)", 1),
+        ("POLYGON ((0.0 0.0 1.0, 1.0 0.0 1.0, 1.0 1.0 1.0, 0.0 1.0 1.0, 0.0 0.0 1.0))", 2)  # noqa: E501
+    ],
+)
+def test_dimension(wkt, expected_dimension):
+    geom = Geometry.from_wkt(wkt)
+    assert geom.dimension == expected_dimension
+
+
 def test_is_planar():
     geom_planar = Polygon.from_wkt(
         "Polygon((0.0 0.0 1.0, 0.0 1.0 1.0, 1.0 1.0 1.0, 1.0 0.0 1.0, 0.0 0.0 1.0))")
