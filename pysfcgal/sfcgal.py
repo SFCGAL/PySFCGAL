@@ -509,7 +509,14 @@ class Geometry:
         if ffi_invalidity_reason == ffi.NULL:
             return (None, None)
 
-        return (ffi.string(ffi_invalidity_reason).decode("utf-8"), None)
+        invalidity_reason_str = ffi.string(ffi_invalidity_reason).decode("utf-8")
+        lib.sfcgal_free_buffer(ffi_invalidity_reason)
+
+        ffi_invalidity_location = invalidity_location[0]
+        if ffi_invalidity_location != ffi.NULL:
+            lib.sfcgal_geometry_delete(ffi_invalidity_location)
+
+        return (invalidity_reason_str, None)
 
     def is_planar(self) -> bool:
         """
