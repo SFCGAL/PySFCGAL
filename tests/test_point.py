@@ -119,3 +119,74 @@ def test_point_drop_z_m(point_3d, point_3dm, point_4d):
     point_4d.drop_m(True)
     assert not point_4d.has_z
     assert not point_4d.has_m
+
+
+def test_point_force_z_m(coords, point_2d, point_3d, point_3dm, point_4d):
+    x, y, z, m = coords
+
+    # point 2d
+    assert not point_2d.has_z
+    assert not point_2d.has_m
+    new_pt = point_2d.force_z()
+    assert new_pt.has_z
+    assert not new_pt.has_m
+    assert not point_2d.has_z
+    assert not point_2d.has_m
+    assert new_pt == Point(x, y, 0)
+
+    new_pt = point_2d.force_z(1.2)
+    assert new_pt.has_z
+    assert not new_pt.has_m
+    assert new_pt == Point(x, y, 1.2)
+
+    point_2d.force_z(inplace=True)
+    assert point_2d.has_z
+    assert not point_2d.has_m
+    assert point_2d == Point(x, y, 0)
+
+    new_pt = point_2d.force_m(4.2)
+    assert point_2d.has_z
+    assert not point_2d.has_m
+    assert new_pt.has_m
+    assert new_pt == Point(x, y, 0, 4.2)
+
+    # point 3d
+    assert point_3d.has_z
+    assert not point_3d.has_m
+    new_pt = point_3d.force_z()  # no effect
+    assert new_pt == point_3d
+    new_pt = point_3d.force_z(4.5)  # no effect
+    assert new_pt == point_3d
+
+    new_pt = point_3d.force_m(1.2)  # no effect
+    assert new_pt == Point(x, y, z, 1.2)
+
+    # point 3dm
+    assert not point_3dm.has_z
+    assert point_3dm.has_m
+    new_pt = point_3dm.force_z(-2.1)
+    assert new_pt.has_z
+    assert new_pt.has_m
+    assert not point_3dm.has_z
+    assert point_3dm.has_m
+    assert new_pt == Point(x, y, -2.1, m)
+
+    point_3dm.force_z(4.4, True)
+    assert point_3dm.has_z
+    assert point_3dm.has_m
+    assert point_3dm == Point(x, y, 4.4, m=m)
+
+    point_3dm.force_z(-5.6, True)  # no effect
+    assert point_3dm == Point(x, y, 4.4, m=m)
+
+    # point 4d
+    assert point_4d.has_z
+    assert point_4d.has_m
+    new_pt = point_4d.force_z()  # no effect
+    assert new_pt == point_4d
+    new_pt = point_4d.force_z(4.5)  # no effect
+    assert new_pt == point_4d
+    new_pt = point_4d.force_m()  # no effect
+    assert new_pt == point_4d
+    new_pt = point_4d.force_m(2.04)  # no effect
+    assert new_pt == point_4d

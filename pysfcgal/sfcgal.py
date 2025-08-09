@@ -234,6 +234,60 @@ class Geometry:
                 lib.sfcgal_geometry_drop_m(new_geom._geom)
             return new_geom
 
+    def force_z(self, z: float = 0., inplace: bool = False) -> Optional[Geometry]:
+        """
+        Add a z-dimension to the geometry, initialized to a preset value.
+        Existing Z values remains unchanged.
+
+        Parameters
+        ----------
+        z: float
+            z-value to use
+        inplace : bool
+            If False, return a copy. Otherwise, do operation in
+            place and return None.
+        Returns
+        -------
+        Geometry or None
+            Geometry with the z coordinate set or None if
+            inplace=True
+        """
+        if inplace:
+            lib.sfcgal_geometry_force_z(self._geom, z)
+            return None
+        else:
+            new_geom = self.wrap()
+            if new_geom:
+                lib.sfcgal_geometry_force_z(new_geom._geom, z)
+            return new_geom
+
+    def force_m(self, m: float = 0., inplace: bool = False) -> Optional[Geometry]:
+        """
+        Add a m-dimension to the geometry, initialized to a preset value.
+        Existing M values remains unchanged.
+
+        Parameters
+        ----------
+        m: float
+            m-value to use
+        inplace : bool
+            If False, return a copy. Otherwise, do operation in
+            place and return None.
+        Returns
+        -------
+        Geometry or None
+            Geometry with the m coordinate set or None if
+            inplace=True
+        """
+        if inplace:
+            lib.sfcgal_geometry_force_m(self._geom, m)
+            return None
+        else:
+            new_geom = self.wrap()
+            if new_geom:
+                lib.sfcgal_geometry_force_m(new_geom._geom, m)
+            return new_geom
+
     @cond_icontract(lambda self: self.is_valid(), "require")
     def area_3d(self) -> float:
         """
