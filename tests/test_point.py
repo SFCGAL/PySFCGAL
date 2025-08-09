@@ -82,3 +82,40 @@ def test_point_to_dict(point_3d):
 def test_point_equivalence(point_2d, point_3d, point_3dm):
     assert not point_2d == point_3d
     assert not point_3dm == point_3d
+
+
+def test_point_drop_z_m(point_3d, point_3dm, point_4d):
+    assert point_3d.has_z
+    assert not point_3d.has_m
+    new_pt = point_3d.drop_z()
+    assert point_3d.has_z
+    assert not new_pt.has_z
+    point_3d.drop_z(True)
+    assert not point_3d.has_z
+
+    assert not point_3dm.has_z
+    assert point_3dm.has_m
+    new_pt = point_3dm.drop_m()
+    assert point_3dm.has_m
+    assert not new_pt.has_m
+    point_3dm.drop_m(True)
+    assert not point_3dm.has_m
+
+    assert point_4d.has_z
+    assert point_4d.has_m
+    new_pt = point_4d.drop_z()
+    assert not new_pt.has_z
+    assert new_pt.has_m
+    assert point_4d.has_z
+    assert point_4d.has_m
+    point_4d.drop_z(True)
+    assert not point_4d.has_z
+    assert point_4d.has_m
+    new_pt = point_4d.drop_m()
+    assert not new_pt.has_z
+    assert not new_pt.has_m
+    assert not point_4d.has_z
+    assert point_4d.has_m
+    point_4d.drop_m(True)
+    assert not point_4d.has_z
+    assert not point_4d.has_m

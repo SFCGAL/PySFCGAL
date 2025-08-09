@@ -186,6 +186,54 @@ class Geometry:
         """
         return geom_types_r[lib.sfcgal_geometry_type_id(self._geom)]
 
+    def drop_z(self, inplace: bool = False) -> Optional[Geometry]:
+        """
+        Drop the z coordinate of the geometry
+
+        Parameters
+        ----------
+        inplace : bool
+            If False, return a copy. Otherwise, do operation in
+            place and return None.
+        Returns
+        -------
+        Geometry or None
+            Geometry with the z coordinate dropped or None if
+            inplace=True
+        """
+        if inplace:
+            lib.sfcgal_geometry_drop_z(self._geom)
+            return None
+        else:
+            new_geom = self.wrap()
+            if new_geom:
+                lib.sfcgal_geometry_drop_z(new_geom._geom)
+            return new_geom
+
+    def drop_m(self, inplace: bool = False) -> Optional[Geometry]:
+        """
+        Drop the m coordinate of the geometry
+
+        Parameters
+        ----------
+        inplace : bool
+            If False, return a copy. Otherwise, do operation in
+            place and return None.
+        Returns
+        -------
+        Geometry or None
+            Geometry with the m coordinate dropped or None if
+            inplace=True
+        """
+        if inplace:
+            lib.sfcgal_geometry_drop_m(self._geom)
+            return None
+        else:
+            new_geom = self.wrap()
+            if new_geom:
+                lib.sfcgal_geometry_drop_m(new_geom._geom)
+            return new_geom
+
     @cond_icontract(lambda self: self.is_valid(), "require")
     def area_3d(self) -> float:
         """
