@@ -288,6 +288,30 @@ class Geometry:
                 lib.sfcgal_geometry_force_m(new_geom._geom, m)
             return new_geom
 
+    def swap_xy(self, inplace: bool = False) -> Optional[Geometry]:
+        """
+        Swap the x and y coordinates of the geometry
+
+        Parameters
+        ----------
+        inplace : bool
+            If False, return a copy. Otherwise, do operation in
+            place and return None.
+        Returns
+        -------
+        Geometry or None
+            Geometry with the x and y coordinates swapped or None if
+            inplace=True
+        """
+        if inplace:
+            lib.sfcgal_geometry_swap_xy(self._geom)
+            return None
+        else:
+            new_geom = self.wrap()
+            if new_geom:
+                lib.sfcgal_geometry_swap_xy(new_geom._geom)
+            return new_geom
+
     @cond_icontract(lambda self: self.is_valid(), "require")
     def area_3d(self) -> float:
         """

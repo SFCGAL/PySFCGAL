@@ -190,3 +190,59 @@ def test_point_force_z_m(coords, point_2d, point_3d, point_3dm, point_4d):
     assert new_pt == point_4d
     new_pt = point_4d.force_m(2.04)  # no effect
     assert new_pt == point_4d
+
+
+def test_point_swap_xy(coords, point_2d, point_3d, point_3dm, point_4d):
+    x, y, z, m = coords
+
+    # point 2d
+    new_pt = point_2d.swap_xy()
+    assert point_2d.x == x
+    assert point_2d.y == y
+    assert new_pt.x == y
+    assert new_pt.y == x
+    point_2d.swap_xy(True)
+    assert point_2d.x == y
+    assert point_2d.y == x
+
+    # point 3d
+    new_pt = point_3d.swap_xy()
+    assert point_3d.x == x
+    assert point_3d.y == y
+    assert point_3d.z == z
+    assert new_pt.x == y
+    assert new_pt.y == x
+    assert new_pt.z == z
+    point_3d.swap_xy(True)
+    assert point_3d.x == y
+    assert point_3d.y == x
+    assert point_3d.z == z
+
+    # point 3dm
+    new_pt = point_3dm.swap_xy()
+    assert point_3dm.x == x
+    assert point_3dm.y == y
+    assert point_3dm.m == m
+    assert new_pt.x == y
+    assert new_pt.y == x
+    assert new_pt.m == m
+    point_3dm.swap_xy(True)
+    assert point_3dm.x == y
+    assert point_3dm.y == x
+    assert point_3dm.m == m
+
+    # point 4d
+    new_pt = point_4d.swap_xy()
+    assert point_4d.x == x
+    assert point_4d.y == y
+    assert point_4d.z == z
+    assert point_4d.m == m
+    assert new_pt.x == y
+    assert new_pt.y == x
+    assert new_pt.z == z
+    assert new_pt.m == m
+    point_4d.swap_xy(True)
+    assert point_4d.x == y
+    assert point_4d.y == x
+    assert point_4d.z == z
+    assert point_4d.m == m
