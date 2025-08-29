@@ -646,6 +646,30 @@ class Geometry:
 
         return (invalidity_reason_str, None)
 
+    def is_closed(self) -> bool:
+        """
+        Check if the geometry is closed.
+        Definition of "closed" varies by geometry type:
+          - Point: Always closed
+          - LineString: Closed if first and last points are identical
+          - Polygon: Always closed (rings are closed by definition)
+          - Triangle: Always closed
+          - PolyhedralSurface: Closed if it forms a closed volume (no boundary edges)
+          - TriangulatedSurface: Closed if it forms a closed volume
+          - Solid: Always closed (by definition, but we test if the shells are closed)
+          - MultiPoint: Always closed
+          - MultiLineString: Closed if all LineStrings are closed
+          - MultiPolygon: Always closed
+          - MultiSolid: Always closed (by definition, cf Solid)
+          - GeometryCollection: Closed if all contained geometries are closed
+
+        Returns
+        -------
+        bool
+            True if the geometry is closed, False otherwise.
+        """
+        return lib.sfcgal_geometry_is_closed(self._geom) == 1
+
     def is_planar(self) -> bool:
         """
         Check if the geometry is planar.

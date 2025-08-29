@@ -569,6 +569,20 @@ def test_covers_3d():
     assert not geom1.covers_3d(geom2)
 
 
+def test_is_closed():
+    geom_closed = Polygon.from_wkt(
+        "POLYGON((0 0, 5 0, 5 5, 0 5, 0 0), (1 1, 2 1, 3 3, 1 2, 1 1))")
+    assert geom_closed.is_closed()
+
+    geom_open = LineString.from_wkt(
+        "LINESTRING(2 2, 3 2, 3 3)")
+    assert not geom_open.is_closed()
+
+    geom_closed_2 = LineString.from_wkt(
+        "LINESTRING(2 2, 3 2, 3 3, 2 2)")
+    assert geom_closed_2.is_closed()
+
+
 def test_is_planar():
     geom_planar = Polygon.from_wkt(
         "Polygon((0.0 0.0 1.0, 0.0 1.0 1.0, 1.0 1.0 1.0, 1.0 0.0 1.0, 0.0 0.0 1.0))")
