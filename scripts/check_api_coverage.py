@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+
+import re
+import sys
+from pathlib import Path
+from typing import List, Tuple
+
+
+def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
+    """
+    Extract all the function declaration from a .c/.h file
+
+    Parameters
+    ----------
+    c_file_path : Path
+        .c/.h file location
+
+    Returns
+    -------
+    List[str]
+        the name of the C functions as string
+    """
+    functions: List[str] = []
+
+    try:
+        with open(c_file_path, "r") as c_file:
+            content = c_file.read()
+
+        # Regex to detect function declaration
+        # Patters: type function_name(parameters);
+        patterns = [
+            r"^\s*[a-zA-Z_][a-zA-Z0-9_*\s]*\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*;",
+            r"^\s*extern\s+[a-zA-Z_][a-zA-Z0-9_*\s]*\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*;",  # noqa: E501
+        ]
+
+        for pattern in patterns:
+            matches = re.findall(pattern, content, re.MULTILINE)
+            functions.extend(matches)
+
+    except FileNotFoundError:
+        print(f"Error: Unable to find C file {c_file_path}", file=sys.stderr)
+        return []
+    except Exception as exception:
+        print(f"Error while reading C file: {exception}", file=sys.stderr)
+        return []
+
+    # Drop duplicates and sort
+    return sorted(list(set(functions)))
+
+
+def check_function_usage_in_python(
+    py_file_path: Path, function_names: List[str]
+) -> Tuple[List[str], List[str]]:
+    """
+    Check that all the C functions are used in the python file
+
+    Parameters
+    ----------
+    py_file_path : Path
+        python file location
+    function_names : List[str]
+        c functions to check
+
+    Returns
+    -------
+    Tuple[List[str], List[str]]
+        used C functions
+        unused C functions
+    """
+    used_functions: List[str] = []
+    unused_functions: List[str] = []
+
+    try:
+        with open(py_file_path, "r") as py_file:
+            py_content = py_file.read()
+
+        for func_name in function_names:
+            # Look for the c function in the python code
+            # Possible patterns: func_name(, .func_name(, lib.func_name(
+            patterns = [
+                rf"\b{re.escape(func_name)}\s*\(",  # direct calls
+                rf"\.{re.escape(func_name)}\s*\(",  # appel via module/objet
+                rf'"{re.escape(func_name)}"',  # literal string
+                rf"'{re.escape(func_name)}'",  # literal string
+            ]
+
+            found = False
+            for pattern in patterns:
+                if re.search(pattern, py_content):
+                    used_functions.append(func_name)
+                    found = True
+                    break
+
+            if not found:
+                unused_functions.append(func_name)
+
+    except FileNotFoundError:
+        print(f"Error: Unable to find python file {py_file_path}", file=sys.stderr)
+        return [], []
+    except Exception as exception:
+        print(f"Error while reading python file: {exception}", file=sys.stderr)
+        return [], []
+
+    return used_functions, unused_functions
+
+
+def main():
+    if len(sys.argv) != 1:
+        print("Usage: python check_api_coverage.py")
+        sys.exit(1)
+
+    current_dir = Path(__file__).resolve().parent
+    src_dir = current_dir.parent / "pysfcgal"
+    c_file = src_dir / "sfcgal_def.c"
+    py_file = src_dir / "sfcgal.py"
+
+    print(f"Analysing C file: {c_file}")
+    print(f"Checking python file: {py_file}")
+    print("-" * 50)
+
+    # Extract functions from the .c file
+    c_functions = extract_functions_from_c_file(c_file)
+
+    if not c_functions:
+        print("Error: No function found in the C file", file=sys.stderr)
+        exit(1)
+
+    print(f"{len(c_functions)} found functions in C file {c_file}")
+
+    # Check usage in the python file
+    used, unused = check_function_usage_in_python(py_file, c_functions)
+
+    print(f"\n✅ USED functions ({len(used)}):")
+    for used_func in used:
+        print(f"  - {used_func}")
+
+    print(f"\n❌ UNUSED functions ({len(unused)}):")
+    for unused_func in unused:
+        print(f"  - {unused_func}")
+
+    if unused:
+        print(f"\n⚠️  {len(unused)} function(s) seem to be unused.")
+    else:
+        print("\n✅ All the C functions seem to be used.")
+
+
+if __name__ == "__main__":
+    main()
