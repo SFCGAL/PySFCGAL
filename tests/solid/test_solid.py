@@ -94,3 +94,20 @@ def test_vertical_centroid(
     assert (
         solid_without_holes.centroid(compute_2d_area) is not None
     ) ^ compute_2d_area
+
+
+def test_solid_memory_management(points_ext_1, points_int_1, points_int_2):
+    first_shell_wkt = (
+        "POLYHEDRALSURFACE Z (((0 0 0,0 10 0,10 10 0,10 0 0,0 0 0)),"
+        "((0 0 10,10 0 10,10 10 10,0 10 10,0 0 10)),"
+        "((0 0 0,0 0 10,0 10 10,0 10 0,0 0 0)),"
+        "((0 10 0,0 10 10,10 10 10,10 10 0,0 10 0)),"
+        "((10 10 0,10 10 10,10 0 10,10 0 0,10 10 0)),"
+        "((10 0 0,10 0 10,0 0 10,0 0 0,10 0 0)))"
+    )
+
+    shells = list(Solid([points_ext_1, points_int_1, points_int_2]))
+    assert shells[0].to_wkt(0) == first_shell_wkt
+
+    first_shell = Solid([points_ext_1, points_int_1, points_int_2])[0]
+    assert first_shell.to_wkt(0) == first_shell_wkt

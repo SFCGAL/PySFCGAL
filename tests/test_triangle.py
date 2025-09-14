@@ -57,3 +57,13 @@ def test_centroid(
     vertical_triangle: Triangle, compute_2d_area: bool
 ) -> None:
     assert (vertical_triangle.centroid(compute_2d_area) is not None) ^ compute_2d_area
+
+
+def test_triange_memory_management(c000, c100, c010):
+    first_point_wkt = "POINT Z (0 0 0)"
+
+    pts_list = list(Triangle([c000, c100, c010]))
+    assert pts_list[0].to_wkt(0) == first_point_wkt
+
+    first_pt = Triangle([c000, c100, c010])[0]
+    assert first_pt.to_wkt(0) == first_point_wkt

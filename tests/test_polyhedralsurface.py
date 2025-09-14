@@ -129,3 +129,17 @@ def test_vertical_centroid(
     assert (
         polyhedralsurface.centroid(compute_2d_area) is not None
     ) ^ compute_2d_area
+
+
+def test_polyhedralsurface_memory_management(c000, c100, c010, c001):
+    first_patch_wkt = "POLYGON Z ((0 0 0,1 0 0,0 1 0,0 0 0))"
+
+    patches = list(PolyhedralSurface(
+        [[[c000, c100, c010]], [[c000, c100, c001]], [[c000, c010, c001]]])
+    )
+    assert patches[0].to_wkt(0) == first_patch_wkt
+
+    first_patch = PolyhedralSurface(
+        [[[c000, c100, c010]], [[c000, c100, c001]], [[c000, c010, c001]]]
+    )[0]
+    assert first_patch.to_wkt(0) == first_patch_wkt

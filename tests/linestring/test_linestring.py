@@ -87,3 +87,12 @@ def test_vertical_centroid(
     assert (
         closed_vertical_line.centroid(compute_2d_area) is not None
     ) ^ compute_2d_area
+
+
+def test_linestring_memory_management():
+    points = list(LineString(((0, 0), (1, 0), (5, 2))))
+    assert len(points) == 3
+    assert points[0].to_wkt(1) == "POINT (0.0 0.0)"
+
+    last_point = LineString(((0, 0), (1, 0), (5, 2)))[-1]
+    assert last_point.to_wkt(1) == "POINT (5.0 2.0)"

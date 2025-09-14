@@ -99,3 +99,13 @@ def test_centroid(
     tin: Tin, compute_2d_area: bool
 ) -> None:
     assert (tin.centroid(compute_2d_area) is not None) ^ compute_2d_area
+
+
+def test_tin_memory_management(tin_coordinates):
+    first_triangle_wkt = "TRIANGLE Z ((0 0 0,1 0 0,0 1 0,0 0 0))"
+
+    triangles_list = list(Tin(tin_coordinates))
+    assert triangles_list[0].to_wkt(0) == first_triangle_wkt
+
+    first_triangle = Tin(tin_coordinates)[0]
+    assert first_triangle.to_wkt(0) == first_triangle_wkt

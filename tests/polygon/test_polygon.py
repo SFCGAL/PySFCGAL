@@ -202,3 +202,12 @@ def test_centroid(polygon1: Polygon, compute_2d_area: bool) -> None:
 @pytest.mark.parametrize("compute_2d_area", [True, False])
 def test_centroid_vertical(vertical_polygon: Polygon, compute_2d_area: bool) -> None:
     assert (vertical_polygon.centroid(compute_2d_area) is not None) ^ compute_2d_area
+
+
+def test_polygon_memory_management(big_ring_ccw, small_ring_23_cw, small_ring_56_cw):
+    poly_exterior = Polygon(big_ring_ccw).exterior
+    assert poly_exterior.to_wkt(0) == "LINESTRING (0 0,10 0,10 10,0 10,0 0)"
+
+    interiors = Polygon(
+        exterior=big_ring_ccw, interiors=[small_ring_23_cw, small_ring_56_cw]).interiors
+    assert interiors[0].to_wkt(0) == "LINESTRING (2 2,3 3,3 2,2 2)"

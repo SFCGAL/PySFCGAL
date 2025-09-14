@@ -95,9 +95,16 @@ class Geometry:
         SFCGAL geometry associated to the Python Geometry. The operations on the
         geometry are done at the SFCGAL lower level.
 
+    _parent : Optional[Geometry], default None
+        Optional parent Geometry that this geometry depends on.
+        This ensures that the parent geometry is not garbage collected by the Python
+        interpreter while it is still in use.
+        For example, a point extracted from a linestring.
+
     """
     _geom: ffi.CData
     _owned = True
+    _parent: Optional[Geometry] = None
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
     def distance(self, other: Geometry) -> float:
@@ -1680,7 +1687,9 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(lib.sfcgal_geometry_clone(self._geom))
 
     @staticmethod
-    def from_sfcgal_geometry(geom: ffi.CData, owned: bool = True) -> Optional[Geometry]:
+    def from_sfcgal_geometry(
+            geom: ffi.CData, owned: bool = True,
+            parent: Optional[Geometry] = None) -> Optional[Geometry]:
         """Wrap the SFCGAL geometry passed as a parameter in a new geometry instance.
 
         This method allows to build a new Python object from a SFCGAL geometry (which
@@ -1695,6 +1704,12 @@ class Geometry:
             If True, the new Geometry owns the SFCGAL pointer. Be careful, if a SFCGAL
             pointer is owned by several Geometry instances, there might be some trouble
             after removing one of them (or after the garbage collector action).
+
+        parent : Optional[Geometry], default None
+            Optional parent Geometry that this geometry depends on.
+            This ensures that the parent geometry is not garbage collected by the Python
+            interpreter while it is still in use.
+            For example, a point extracted from a linestring.
 
         Returns
         -------
@@ -1711,6 +1726,7 @@ class Geometry:
         geometry: Geometry = object.__new__(cls)
         geometry._geom = geom
         geometry._owned = owned
+        geometry._parent = parent
         return geometry
 
     def to_coordinates(self):
@@ -2199,7 +2215,7 @@ class LineString(Geometry):
         for n in range(len(self)):
             yield Geometry.from_sfcgal_geometry(
                 lib.sfcgal_linestring_point_n(self._geom, n),
-                owned=False,
+                owned=False, parent=self,
             )
 
     def __get_point_n(self, n):
@@ -2217,7 +2233,7 @@ class LineString(Geometry):
             Point at the index n.
         """
         return Geometry.from_sfcgal_geometry(
-            lib.sfcgal_linestring_point_n(self._geom, n), owned=False
+            lib.sfcgal_linestring_point_n(self._geom, n), owned=False, parent=self,
         )
 
     def __getitem__(self, key):
@@ -2478,7 +2494,7 @@ class Polygon(Geometry):
             The exterior ring of the Polygon.
         """
         return Geometry.from_sfcgal_geometry(
-            lib.sfcgal_polygon_exterior_ring(self._geom), owned=False
+            lib.sfcgal_polygon_exterior_ring(self._geom), owned=False, parent=self,
         )
 
     @cond_icontract(
@@ -2519,7 +2535,8 @@ class Polygon(Geometry):
         for idx in range(self.n_interiors):
             interior_rings.append(
                 Geometry.from_sfcgal_geometry(
-                    lib.sfcgal_polygon_interior_ring_n(self._geom, idx), owned=False
+                    lib.sfcgal_polygon_interior_ring_n(self._geom, idx), owned=False,
+                    parent=self
                 )
             )
         return interior_rings
@@ -3025,7 +3042,7 @@ class Tin(Geometry):
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
                 lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
-                owned=False,
+                owned=False, parent=self,
             )
 
     def __get_geometry_n(self, n):
@@ -3045,7 +3062,7 @@ class Tin(Geometry):
         """
         return Geometry.from_sfcgal_geometry(
             lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
-            owned=False,
+            owned=False, parent=self
         )
 
     def __getitem__(self, key):
@@ -3211,7 +3228,7 @@ class Triangle(Geometry):
         for n in range(3):
             yield Geometry.from_sfcgal_geometry(
                 lib.sfcgal_triangle_vertex(self._geom, n),
-                owned=False,
+                owned=False, parent=self,
             )
 
     def __get_geometry_n(self, n):
@@ -3231,7 +3248,7 @@ class Triangle(Geometry):
         """
         return Geometry.from_sfcgal_geometry(
             lib.sfcgal_triangle_vertex(self._geom, n),
-            owned=False,
+            owned=False, parent=self,
         )
 
     def __getitem__(self, key):
@@ -3385,7 +3402,7 @@ class PolyhedralSurface(Geometry):
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
                 lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
-                owned=False,
+                owned=False, parent=self,
             )
 
     def __get_geometry_n(self, n):
@@ -3405,7 +3422,7 @@ class PolyhedralSurface(Geometry):
         """
         return Geometry.from_sfcgal_geometry(
             lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
-            owned=False,
+            owned=False, parent=self,
         )
 
     def __getitem__(self, key):
@@ -3664,7 +3681,7 @@ class Solid(Geometry):
         for idx in range(self.n_shells):
             _shells.append(
                 Geometry.from_sfcgal_geometry(
-                    lib.sfcgal_solid_shell_n(self._geom, idx), owned=False
+                    lib.sfcgal_solid_shell_n(self._geom, idx), owned=False, parent=self,
                 )
             )
         return _shells
@@ -3954,7 +3971,7 @@ class GeometrySequence:
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
                 lib.sfcgal_geometry_collection_geometry_n(self._parent._geom, n),
-                owned=False,
+                owned=False, parent=self,
             )
 
     def __len__(self):
@@ -3982,7 +3999,7 @@ class GeometrySequence:
         """
         return Geometry.from_sfcgal_geometry(
             lib.sfcgal_geometry_collection_geometry_n(self._parent._geom, n),
-            owned=False,
+            owned=False, parent=self,
         )
 
     def __getitem__(self, key):
