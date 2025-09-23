@@ -8,8 +8,8 @@ from __future__ import annotations
 import functools
 import platform
 import typing
-from enum import Enum
-from typing import Optional, Tuple, Union, cast
+from enum import IntEnum
+from typing import Optional, Tuple, Type, Union, cast
 
 if typing.TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -44,10 +44,21 @@ def cond_icontract(lambda_func, contract_name):
 lib.sfcgal_init()
 
 
-class BufferType(Enum):
-    SFCGAL_BUFFER3D_ROUND = 0
-    SFCGAL_BUFFER3D_CYLSPHERE = 1
-    SFCGAL_BUFFER3D_FLAT = 2
+class BufferType(IntEnum):
+    label: str
+
+    SFCGAL_BUFFER3D_ROUND = 0, "Round"
+    SFCGAL_BUFFER3D_CYLSPHERE = 1, "CylSphere"
+    SFCGAL_BUFFER3D_FLAT = 2, "Flat"
+
+    def __new__(cls: Type["BufferType"], value: int, label: str) -> "BufferType":
+        obj = int.__new__(cls, value)
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+    def __str__(self) -> str:
+        return f"{self.label} ({self.value})"
 
 
 class DimensionError(Exception):

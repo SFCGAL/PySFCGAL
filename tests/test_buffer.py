@@ -4,6 +4,14 @@ import pytest
 from pysfcgal.sfcgal import BufferType, LineString, Point
 
 
+def test_buffer_3d_enum():
+    expected_labels = ["Round", "CylSphere", "Flat"]
+    assert len(BufferType) == 3
+    for idx, buffer_type in enumerate(BufferType):
+        assert buffer_type.value == idx
+        assert buffer_type.label == expected_labels[idx]
+
+
 def test_buffer_3d_point():
     point = Point(0, 0, 0)
     radius = 10.
