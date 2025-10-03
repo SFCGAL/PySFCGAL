@@ -67,7 +67,7 @@ def try_to_parse_doxygen_block(
     # In the windows version, remove the functions
     # not handled by msvc
     deprecations = ["[[deprecated", "[[__deprecated", "SFCGAL_DEPRECATED"]
-    while line_nr < len(lines) and ");" not in lines[line_nr]:
+    while line_nr < len(lines) and not lines[line_nr].strip().endswith(";"):
         if any(deprecation in lines[line_nr] for deprecation in deprecations):
             is_deprecated = True
         elif windows_version and any(
