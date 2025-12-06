@@ -2427,6 +2427,20 @@ class Polygon(Geometry):
             lib.sfcgal_polygon_exterior_ring(self._geom), owned=False
         )
 
+    @cond_icontract(
+        lambda self, ring: ring.geom_type == "LineString", "require")
+    def set_exterior_ring(self, ring: LineString) -> None:
+        """Sets the exterior ring of the polygon.
+
+        Parameters
+        ----------
+        ring : LineString
+            The new exterior ring
+
+        """
+        ring_clone = lib.sfcgal_geometry_clone(ring._geom)
+        lib.sfcgal_polygon_set_exterior_ring(self._geom, ring_clone)
+
     @property
     def n_interiors(self):
         """Get the number of interior rings in the Polygon.

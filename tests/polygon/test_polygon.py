@@ -40,6 +40,11 @@ def linestring1_ccw(big_ring_ccw):
 
 
 @pytest.fixture
+def linestring2_ccw(small_ring_23_ccw):
+    yield LineString(small_ring_23_ccw)
+
+
+@pytest.fixture
 def linestring2_cw(small_ring_23_cw):
     yield LineString(small_ring_23_cw)
 
@@ -165,6 +170,17 @@ def test_obj(tmp_test_dir, polygon1):
     with open(obj_filepath) as obj_fobj:
         for obj_str_line, obj_file_line in zip(obj.split("\n"), obj_fobj):
             assert obj_str_line + "\n" == obj_file_line
+
+
+def test_set_exterior_ring(polygon1, linestring1_ccw, linestring2_ccw):
+    assert polygon1.n_interiors == 0
+    assert polygon1.rings == [linestring1_ccw]
+    assert polygon1.is_valid()
+
+    polygon1.set_exterior_ring(linestring2_ccw)
+    assert polygon1.n_interiors == 0
+    assert polygon1.rings == [linestring2_ccw]
+    assert polygon1.is_valid()
 
 
 def test_add_interior_ring(polygon1, linestring1_ccw, linestring2_cw):
