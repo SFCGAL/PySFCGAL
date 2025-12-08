@@ -2384,6 +2384,20 @@ class Polygon(Geometry):
             )
         return interior_rings
 
+    @cond_icontract(
+        lambda self, ring: ring.geom_type == "LineString", "require")
+    def add_interior_ring(self, ring: LineString) -> None:
+        """Adds an interior ring to the polygon.
+
+        Parameters
+        ----------
+        ring : LineString
+            The interior ring to add
+
+        """
+        ring_clone = lib.sfcgal_geometry_clone(ring._geom)
+        lib.sfcgal_polygon_add_interior_ring(self._geom, ring_clone)
+
     @property
     def rings(self):
         """Get all the rings of the Polygon, including the exterior and interior rings.

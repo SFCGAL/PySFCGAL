@@ -154,3 +154,13 @@ def test_obj(tmp_test_dir, polygon1):
     with open(obj_filepath) as obj_fobj:
         for obj_str_line, obj_file_line in zip(obj.split("\n"), obj_fobj):
             assert obj_str_line + "\n" == obj_file_line
+
+
+def test_add_interior_ring(polygon1, linestring1, linestring2):
+    assert polygon1.n_interiors == 0
+    assert polygon1.rings == [linestring1]
+
+    polygon1.add_interior_ring(linestring2)
+    assert polygon1.n_interiors == 1
+    assert polygon1.interiors == [linestring2]
+    assert polygon1.rings == [linestring1, linestring2]
