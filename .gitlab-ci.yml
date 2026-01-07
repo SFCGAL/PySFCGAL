@@ -153,7 +153,7 @@ build:linux-wheel-python:
     SFCGAL_REGISTRY: registry.gitlab.com/sfcgal/sfcgal
   parallel:
     matrix:
-      - PYTHON_VERSION: ['3.9', '3.10', '3.11', '3.12', '3.13']
+      - PYTHON_VERSION: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
   script:
     - |
       if [ -z "$CI_COMMIT_TAG" ]; then
@@ -199,7 +199,7 @@ build:macos-wheel-python:
       allow_failure: true
   parallel:
     matrix:
-      - PYTHON_VERSION: ['3.9', '3.10', '3.11', '3.12', '3.13']
+      - PYTHON_VERSION: ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14']
   script:
     - |
       if [ -z "$CI_COMMIT_TAG" ]; then
