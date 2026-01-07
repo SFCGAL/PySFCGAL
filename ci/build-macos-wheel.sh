@@ -27,6 +27,9 @@ else
     echo "DEVEL VERSION is disabled"
 fi
 
+# Update package definitions
+brew update
+
 # install SFCGAL
 curl -L -o sfcgal.rb https://sfcgal.gitlab.io/SFCGAL/homebrew/sfcgal-latest.rb
 brew tap-new local/sfcgal
