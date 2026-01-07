@@ -5,6 +5,23 @@ import sys
 from pathlib import Path
 from typing import List, Tuple
 
+IGNORED_FUNCTIONS = {
+    "free",
+    "sfcgal_io_read_binary_prepared",
+    "sfcgal_io_read_ewkt",
+    "sfcgal_io_write_binary_prepared",
+    "sfcgal_prepared_geometry_create",
+    "sfcgal_prepared_geometry_create_from_geometry",
+    "sfcgal_prepared_geometry_as_ewkt",
+    "sfcgal_prepared_geometry_delete",
+    "sfcgal_prepared_geometry_geometry",
+    "sfcgal_prepared_geometry_set_geometry",
+    "sfcgal_prepared_geometry_set_srid",
+    "sfcgal_prepared_geometry_srid",
+    "sfcgal_set_alloc_handlers",
+    "sfcgal_set_error_handlers",
+}
+
 
 def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
     """
@@ -27,15 +44,23 @@ def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
             content = c_file.read()
 
         # Regex to detect function declaration
-        # Patters: type function_name(parameters);
-        patterns = [
-            r"^\s*[a-zA-Z_][a-zA-Z0-9_*\s]*\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*;",
-            r"^\s*extern\s+[a-zA-Z_][a-zA-Z0-9_*\s]*\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*;",  # noqa: E501
-        ]
+        # Pattern: Standard function declaration
+        #   Matches: double sfcgal_point_x(const sfcgal_geometry_t *geom);
+        #            void sfcgal_linestring_add_point(sfcgal_geometry_t *linestring, sfcgal_geometry_t *point);   # noqa: E501
+        #   Captures: "sfcgal_point_x", "sfcgal_linestring_add_point"
+        #
+        # Breakdown of the regex:
+        #   ^\s*                         - Start of the line, optional whitespace.
+        #   [a-zA-Z_][a-zA-Z0-9_*\s]*    - The return type (e.g., int, void, ..).
+        #   \s+                          - spaces before the function name.
+        #   ([a-zA-Z_][a-zA-Z0-9_]*)     - CAPTURE GROUP: The function name itself.
+        #   \s*\([^)]*\)\s*;             - The parameter list in parentheses
+        pattern = r"^\s*[a-zA-Z_][a-zA-Z0-9_*\s]*\s+([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*;"  # noqa: E501
+        matches = re.findall(pattern, content, re.MULTILINE)
+        functions.extend(matches)
 
-        for pattern in patterns:
-            matches = re.findall(pattern, content, re.MULTILINE)
-            functions.extend(matches)
+        # Drop ignored functions
+        functions = list(set(functions) - IGNORED_FUNCTIONS)
 
     except FileNotFoundError:
         print(f"Error: Unable to find C file {c_file_path}", file=sys.stderr)
