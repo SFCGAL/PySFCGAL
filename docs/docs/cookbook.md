@@ -47,3 +47,9 @@
 {{ include_python_file("../cookbook/triangulation.py") }}
 
 ![Triangulation - tessellation difference](assets/img/cookbook/triangulate_tessellate.png){: width=500 }
+
+## Integration with other libraries
+
+### Export a Geometry to GeoPackage with GDAL
+
+{{ include_python_file("../cookbook/export_gpkg.py") }}
