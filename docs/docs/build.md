@@ -35,7 +35,7 @@ apt install -y cmake libgmp-dev libmpfr-dev libboost-dev libboost-timer-dev libb
 
 ### CGAL
 
-To be done if your distribution does not provide the updated package (minimum `5.6`), otherwise you can skip this step.
+Only required if your distribution does not provide the updated package (version `5.6` or later), otherwise you can direclty install `CGAL` from your package manager.
 
 ```shell
 wget "https://github.com/CGAL/cgal/releases/download/v5.6/CGAL-5.6.tar.xz" -O CGAL-5.6.tar.xz
