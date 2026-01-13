@@ -33,7 +33,7 @@ def test_multipolygon_valid(multipolygon, other_multipolygon):
     assert other_multipolygon.is_valid()
 
 
-def test_multilinestring_constructor(multipolygon):
+def test_multipolygon_constructor(multipolygon):
     multipolygon_cloned = MultiPolygon(multipolygon.to_coordinates())
     assert multipolygon_cloned.is_valid()
     assert multipolygon_cloned == multipolygon
