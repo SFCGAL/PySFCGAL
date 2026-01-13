@@ -10,8 +10,8 @@ def multipolygon(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
 
 
 @pytest.fixture
-def other_multipolygon(ring_around_0_ccw, small_ring_23_ccw, big_ring_ccw):
-    yield MultiPolygon([[ring_around_0_ccw], [small_ring_23_ccw], [big_ring_ccw]])
+def other_multipolygon(ring_around_0_ccw, small_ring_23_ccw, small_ring_67_ccw):
+    yield MultiPolygon([[ring_around_0_ccw], [small_ring_23_ccw], [small_ring_67_ccw]])
 
 
 @pytest.fixture
