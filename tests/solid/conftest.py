@@ -1,41 +1,7 @@
-import itertools
-
 import pytest
 
 from pysfcgal.sfcgal import MultiSolid, PolyhedralSurface, Solid
-
-
-def from_point_list_to_cube_coordinates(points):
-    return [
-        [
-            [points[0], points[2], points[6], points[4], points[0]]
-        ],  # bottom face
-        [
-            [points[1], points[5], points[7], points[3], points[1]]
-        ],  # up face
-        [
-            [points[0], points[1], points[3], points[2], points[0]]
-        ],  # left face
-        [
-            [points[2], points[3], points[7], points[6], points[2]]
-        ],  # front face
-        [
-            [points[6], points[7], points[5], points[4], points[6]]
-        ],  # right face
-        [
-            [points[4], points[5], points[1], points[0], points[4]]
-        ],  # back face
-    ]
-
-
-def create_cube_coordinates(min_val=0, max_val=1):
-    return from_point_list_to_cube_coordinates(
-        [
-            point_coord
-            for point_coord
-            in itertools.product((min_val, max_val), repeat=3)
-        ]
-    )
+from tests.utils import create_cube_coordinates
 
 
 @pytest.fixture
