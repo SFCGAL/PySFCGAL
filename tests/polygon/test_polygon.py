@@ -35,6 +35,11 @@ def polygon_with_hole_unclosed(big_ring_ccw, small_ring_23_cw, small_ring_56_cw)
 
 
 @pytest.fixture
+def vertical_polygon(vertical_ring):
+    yield Polygon(exterior=vertical_ring)
+
+
+@pytest.fixture
 def linestring1_ccw(big_ring_ccw):
     yield LineString(big_ring_ccw)
 
@@ -193,3 +198,13 @@ def test_add_interior_ring(polygon1, linestring1_ccw, linestring2_cw):
     assert polygon1.interiors == [linestring2_cw]
     assert polygon1.rings == [linestring1_ccw, linestring2_cw]
     assert polygon1.is_valid()
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid(polygon1: Polygon, compute_2d_area: bool) -> None:
+    assert polygon1.centroid(compute_2d_area) == Point(5, 5)
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid_vertical(vertical_polygon: Polygon, compute_2d_area: bool) -> None:
+    assert (vertical_polygon.centroid(compute_2d_area) is not None) ^ compute_2d_area

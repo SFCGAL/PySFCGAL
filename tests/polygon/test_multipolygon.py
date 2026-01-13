@@ -20,6 +20,11 @@ def multipolygon_unordered(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_c
 
 
 @pytest.fixture
+def vertical_multipolygon(vertical_ring):
+    yield MultiPolygon([[vertical_ring]])
+
+
+@pytest.fixture
 def expected_polygons(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_ccw):
     yield [
         Polygon(ring_around_0_ccw),
@@ -91,3 +96,12 @@ def test_multipolygon_add_linestring_fails(multipolygon, c000, c100, c010):
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         multipolygon.add_polygon(LineString([c000, c100, c010]))
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid_vertical(
+    vertical_multipolygon: MultiPolygon, compute_2d_area: bool
+) -> None:
+    assert (
+        vertical_multipolygon.centroid(compute_2d_area) is not None
+    ) ^ compute_2d_area

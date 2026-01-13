@@ -347,6 +347,38 @@ class Geometry:
             return new_geom
 
     @cond_icontract(lambda self: self.is_valid(), "require")
+    def centroid(self, compute_2d_area: bool = False) -> Optional[Geometry]:
+        """Return the centroid of the geometry.
+
+        The result is the weighted centroid of a geometry. The implementation follows
+        the PostGIS one (https://postgis.net/docs/ST_Centroid.html).
+
+        The weight is computed either in the XY space or the 3D space depending on the
+        value of `compute_2d_area` parameter. If the Z-component is ignored, the
+        projected 2D geometries must be valid (vertical geometries will generate an
+        error).
+
+        Parameters
+        ----------
+        compute_2d_area: bool
+            If True, the centroid is computed with respect to the area of 2D-projected
+            geometries. Otherwise the centroid is computed with respect to the area of
+            native 3D geometries. Warning: setting this parameter to True is not
+            compatible with "vertical" geometries.
+
+        Returns
+        -------
+        sfcgal.Point
+            Centroid of the geometry
+
+        """
+        if compute_2d_area:
+            geom = lib.sfcgal_geometry_centroid(self._geom)
+        else:
+            geom = lib.sfcgal_geometry_centroid_3d(self._geom)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    @cond_icontract(lambda self: self.is_valid(), "require")
     def area_3d(self) -> float:
         """
         Return the 3D area of the geometry.

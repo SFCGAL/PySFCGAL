@@ -27,9 +27,9 @@ def other_polyhedralsurface(c000, c100, c010, c001):
 def polyhedralsurface_unordered(c000, c100, c010, c001):
     yield PolyhedralSurface(
         [
-            [[c100, c010, c001]],
+            [[c100, c001, c010]],
             [[c000, c100, c010]],
-            [[c000, c100, c001]],
+            [[c100, c000, c001]],
             [[c000, c010, c001]],
         ]
     )
@@ -126,3 +126,12 @@ def test_polyhedralsurface_add_linestring_fails(polyhedralsurface, c100, c010, c
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         polyhedralsurface.add_patch(LineString([c100, c010, c001]))
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_vertical_centroid(
+    polyhedralsurface: PolyhedralSurface, compute_2d_area: bool
+) -> None:
+    assert (
+        polyhedralsurface.centroid(compute_2d_area) is not None
+    ) ^ compute_2d_area

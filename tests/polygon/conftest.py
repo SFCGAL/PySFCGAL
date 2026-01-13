@@ -34,3 +34,8 @@ def small_ring_56_cw():
 @pytest.fixture
 def small_ring_67_ccw():
     yield [(6., 6.), (7., 6.), (7., 7.), (6., 6.)]
+
+
+@pytest.fixture
+def vertical_ring():
+    yield [(0., 0., 0.), (10., 10., 0.), (10., 10., 10.), (0., 0., 10.), (0., 0., 0.)]

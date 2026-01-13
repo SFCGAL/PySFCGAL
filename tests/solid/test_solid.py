@@ -91,3 +91,12 @@ def test_solid_add_interior_shell_from_linestring_fails(solid, c000, c100, c010)
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         solid.add_interior_shell(LineString([c000, c100, c010]))
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_vertical_centroid(
+    solid_without_holes: Solid, compute_2d_area: bool
+) -> None:
+    assert (
+        solid_without_holes.centroid(compute_2d_area) is not None
+    ) ^ compute_2d_area

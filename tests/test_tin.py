@@ -98,3 +98,10 @@ def test_tin_add_linestring_fails(tin, c000, c100, c010):
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         tin.add_patch(LineString([c000, c100, c010]))
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid(
+    tin: Tin, compute_2d_area: bool
+) -> None:
+    assert (tin.centroid(compute_2d_area) is not None) ^ compute_2d_area

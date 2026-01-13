@@ -24,6 +24,22 @@ def expected_linestrings(lineX, lineY, lineZ):
     yield [lineX, lineY, lineZ]
 
 
+@pytest.fixture
+def vertical_multilinestring(c000, c100, c001):
+    yield MultiLineString([[c000, c100, c001]])
+
+
+@pytest.fixture
+def closed_vertical_multilinestring(vertical_multilinestring):
+    vertical_multilinestring_coords = vertical_multilinestring.to_coordinates()
+    yield MultiLineString(
+        [
+            coords + [coords[0]]
+            for coords in vertical_multilinestring_coords
+        ]
+    )
+
+
 def test_multilinestring_constructor(multilinestring):
     multilinestring_cloned = MultiLineString(multilinestring.to_coordinates())
     assert multilinestring_cloned == multilinestring
@@ -81,3 +97,16 @@ def test_multilinestring_add_point_fails(multilinestring, c100):
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         multilinestring.add_linestring(Point(*c100))
+
+
+def test_centroid(multilinestring: MultiLineString) -> None:
+    assert multilinestring.centroid() == multilinestring.centroid(True)
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_vertical_centroid(
+    closed_vertical_multilinestring: MultiLineString, compute_2d_area: bool
+) -> None:
+    assert (
+        closed_vertical_multilinestring.centroid(compute_2d_area) is not None
+    ) ^ compute_2d_area

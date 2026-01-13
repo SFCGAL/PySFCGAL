@@ -54,3 +54,14 @@ def test_multisolid_add_point_fails(multisolid, point010):
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         multisolid.add_solid(point010)
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_vertical_centroid(
+    solid_without_holes: Solid, compute_2d_area: bool
+) -> None:
+    multisolid = MultiSolid()
+    multisolid.add_solid(solid_without_holes)
+    assert (
+        solid_without_holes.centroid(compute_2d_area) is not None
+    ) ^ compute_2d_area

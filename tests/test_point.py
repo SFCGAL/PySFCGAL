@@ -246,3 +246,15 @@ def test_point_swap_xy(coords, point_2d, point_3d, point_3dm, point_4d):
     assert point_4d.y == x
     assert point_4d.z == z
     assert point_4d.m == m
+
+
+@pytest.mark.parametrize(
+    "point_fixture_name",
+    ["point_2d", "point_3d", "point_3dm", "point_4d"]
+)
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid(
+    compute_2d_area: bool, point_fixture_name: str, request: pytest.FixtureRequest
+) -> None:
+    point = request.getfixturevalue(point_fixture_name)
+    assert point.centroid(compute_2d_area) == point

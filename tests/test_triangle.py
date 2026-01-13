@@ -9,7 +9,7 @@ def triangle(c000, c100, c010):
 
 
 @pytest.fixture
-def triangle_2(c000, c100, c001):
+def vertical_triangle(c000, c100, c001):
     yield Triangle([c000, c100, c001])
 
 
@@ -23,7 +23,7 @@ def expected_polygon(c000, c100, c010):
     yield Polygon([c000, c100, c010])
 
 
-def test_triangle(triangle, expected_points, triangle_2, triangle_unordered):
+def test_triangle(triangle, expected_points, vertical_triangle, triangle_unordered):
     # iteration
     for point, expected_point in zip(triangle, expected_points):
         assert point == expected_point
@@ -33,7 +33,7 @@ def test_triangle(triangle, expected_points, triangle_2, triangle_unordered):
     assert triangle[-1] == expected_points[-1]
     assert triangle[1:3] == expected_points[1:3]
     # equality
-    assert triangle != triangle_2
+    assert triangle != vertical_triangle
     assert triangle != triangle_unordered
 
 
@@ -56,3 +56,10 @@ def test_triangle_to_dict(triangle):
     triangle_data = triangle.to_dict()
     other_triangle = Triangle.from_dict(triangle_data)
     assert other_triangle == triangle
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid(
+    vertical_triangle: Triangle, compute_2d_area: bool
+) -> None:
+    assert (vertical_triangle.centroid(compute_2d_area) is not None) ^ compute_2d_area

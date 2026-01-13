@@ -71,3 +71,19 @@ def test_multipoint_add_line_fails(multipoint, c000, c100, c010):
     # this is expected to fail
     with pytest.raises(icontract.errors.ViolationError):
         multipoint.add_point(LineString([c000, c100, c010]))
+
+
+@pytest.mark.parametrize("compute_2d_area", [True, False])
+def test_centroid(multipoint: MultiPoint, compute_2d_area: bool) -> None:
+    x_coords = [coords[0] for coords in multipoint.to_coordinates()]
+    y_coords = [coords[1] for coords in multipoint.to_coordinates()]
+    z_coords = [coords[2] for coords in multipoint.to_coordinates()]
+    avg_coords = [
+        coord / len(multipoint)
+        for coord in [sum(x_coords), sum(y_coords), sum(z_coords)]
+    ]
+    mp_centroid = multipoint.centroid(compute_2d_area)
+    assert all(
+        mpc == pytest.approx(avg, 1e-6)  # some floating point artefacts
+        for mpc, avg in zip(mp_centroid.to_coordinates(), avg_coords)
+    )
