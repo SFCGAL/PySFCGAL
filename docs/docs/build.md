@@ -46,11 +46,11 @@ apt install libcgal-dev
 Manual installation
 
 ```shell
-wget "https://github.com/CGAL/cgal/releases/download/v5.6/CGAL-5.6.tar.xz" -O CGAL-5.6.tar.xz
-tar xJf CGAL-5.6.tar.xz
+wget "https://github.com/CGAL/cgal/releases/download/v6.1/CGAL-6.1.tar.xz" -O CGAL-6.1.tar.xz
+tar xJf CGAL-6.1.tar.xz
 ```
 
-Remember your path to CGAL - we'll need it later. Example: `/home/foo/CGAL-5.6`.
+Remember your path to CGAL - we'll need it later. Example: `/home/foo/CGAL-6.1`.
 
 ### SFCGAL
 
@@ -63,7 +63,7 @@ git clone git@gitlab.com:sfcgal/SFCGAL.git && cd SFCGAL
 Then build SFCGAL considering the path to CGAL:
 
 ```shell
-cmake -GNinja -S . -B build -DSFCGAL_BUILD_TESTS=ON -DCGAL_DIR=/home/foo/CGAL-5.6
+cmake -GNinja -S . -B build -DSFCGAL_BUILD_TESTS=ON -DCGAL_DIR=/home/foo/CGAL-6.1
 cmake --build build
 ```
 
