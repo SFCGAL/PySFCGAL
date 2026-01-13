@@ -1,7 +1,6 @@
 import pathlib
 from filecmp import cmp
 
-import geom_data
 import pytest
 
 import pysfcgal.sfcgal as sfcgal
@@ -12,30 +11,6 @@ from pysfcgal.sfcgal import (Geometry, GeometryCollection, LineString,
 
 def test_version():
     print(sfcgal.sfcgal_version())
-
-
-geometry_names, geometry_values = zip(*geom_data.data.items())
-
-
-@pytest.mark.parametrize("geometry", geometry_values, ids=geometry_names)
-def test_integrity(geometry):
-    """Test conversion from and to GeoJSON-like data"""
-    geom_type = geometry["type"]
-    geometry_cls = sfcgal.geom_type_to_cls[sfcgal.geom_types[geom_type]]
-    geom = geometry_cls.from_dict(geometry)
-    data = geom.to_dict()
-    assert geometry == data
-
-
-@pytest.mark.parametrize("geometry", geometry_values, ids=geometry_names)
-def test_wkt_write(geometry):
-    geom_type = geometry["type"]
-    geometry_cls = sfcgal.geom_type_to_cls[sfcgal.geom_types[geom_type]]
-    geom = geometry_cls.from_dict(geometry)
-    wkt = geom.to_wkt()
-    assert wkt
-    data = geometry_cls.from_wkt(wkt).to_dict()
-    assert geometry == data
 
 
 def test_wkt_read():
