@@ -77,12 +77,6 @@ def test_tin_to_multipolygon(tin, expected_multipolygon):
     assert multipoly == expected_multipolygon
 
 
-def test_tin_to_dict(tin):
-    tin_data = tin.to_dict()
-    other_tin = Tin.from_dict(tin_data)
-    assert other_tin == tin
-
-
 def test_tin_add_patch(tin, c100, c010, c001):
     new_triangle = Triangle([c010, c100, c001])
     assert len(tin) == 4

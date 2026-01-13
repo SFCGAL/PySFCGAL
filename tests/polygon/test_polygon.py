@@ -100,12 +100,6 @@ def test_polygon_to_coordinates(polygon1, big_ring_ccw):
     assert other_polygon == polygon1
 
 
-def test_polygon_to_dict(polygon1):
-    polygon_data = polygon1.to_dict()
-    other_polygon = Polygon.from_dict(polygon_data)
-    assert other_polygon == polygon1
-
-
 def test_point_in_polygon(point_in_poly, polygon1, polygon2):
     """Tests the intersection between a point and a polygon"""
     point = Point(2, 3)

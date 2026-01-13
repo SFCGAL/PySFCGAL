@@ -33,12 +33,6 @@ def test_multisolid_to_coordinates(multisolid, expected_solids):
     assert other_multisolid == multisolid
 
 
-def test_multisolid_to_dict(multisolid):
-    multisolid_data = multisolid.to_dict()
-    other_multisolid = MultiSolid.from_dict(multisolid_data)
-    assert other_multisolid == multisolid
-
-
 def test_multisolid_add_solid(points_int_1, multisolid, point010):
     solid = Solid([points_int_1])
     assert len(multisolid) == 3

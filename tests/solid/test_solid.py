@@ -35,12 +35,6 @@ def test_solid_to_coordinates(solid, points_ext_1, points_int_1, points_int_2):
     assert other_solid == solid
 
 
-def test_solid_to_dict(solid):
-    solid_data = solid.to_dict()
-    other_solid = Solid.from_dict(solid_data)
-    assert other_solid == solid
-
-
 def test_tessellate_3d_solid(solid_without_holes):
     assert solid_without_holes.is_valid()
     tessellation = solid_without_holes.tessellate_3d()

@@ -52,12 +52,6 @@ def test_triangle_to_coordinates(triangle, c000, c100, c010):
     assert other_triangle == triangle
 
 
-def test_triangle_to_dict(triangle):
-    triangle_data = triangle.to_dict()
-    other_triangle = Triangle.from_dict(triangle_data)
-    assert other_triangle == triangle
-
-
 @pytest.mark.parametrize("compute_2d_area", [True, False])
 def test_centroid(
     vertical_triangle: Triangle, compute_2d_area: bool

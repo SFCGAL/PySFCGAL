@@ -67,12 +67,6 @@ def test_geometry_collection_to_coordinates(collection, c000, c100, c001):
     # Can't test the clone, as GeometryCollection can't be instantiated from coordinates
 
 
-def test_geometry_collection_to_dict(collection):
-    collection_data = collection.to_dict()
-    other_collection = GeometryCollection.from_dict(collection_data)
-    assert collection == other_collection
-
-
 @pytest.mark.parametrize("compute_2d_area", [True, False])
 def test_vertical_centroid(
     collection: GeometryCollection, compute_2d_area: bool

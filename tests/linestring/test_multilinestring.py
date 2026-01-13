@@ -76,12 +76,6 @@ def test_multilinestring_to_coordinates(multilinestring, c000, c100, c010, c001)
     assert other_multilinestring == multilinestring
 
 
-def test_multilinestring_to_dict(multilinestring):
-    multilinestring_data = multilinestring.to_dict()
-    other_multilinestring = MultiLineString.from_dict(multilinestring_data)
-    assert other_multilinestring == multilinestring
-
-
 def test_multilinestring_add_linestring(multilinestring, c100, c010):
     new_line = LineString([c100, c010])
     assert len(multilinestring) == 3

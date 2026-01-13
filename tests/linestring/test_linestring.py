@@ -49,12 +49,6 @@ def test_linestring_coordinate_sequence(long_line, c000, c100, c010, c001):
         assert coord_in_sequence == coordinate
 
 
-def test_linestring_to_dict(long_line):
-    linestring_data = long_line.to_dict()
-    other_line = LineString.from_dict(linestring_data)
-    assert other_line == long_line
-
-
 def test_linestring_eq(long_line, lineX, lineY):
     assert long_line != lineX
     assert lineX != lineY

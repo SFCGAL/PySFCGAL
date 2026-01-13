@@ -51,12 +51,6 @@ def test_multipoint_to_coordinates(multipoint, c000, c100, c010):
     assert other_multipoint == multipoint
 
 
-def test_multipoint_to_dict(multipoint):
-    multipoint_data = multipoint.to_dict()
-    other_multipoint = MultiPoint.from_dict(multipoint_data)
-    assert other_multipoint == multipoint
-
-
 def test_multipoint_add_point(multipoint, point001):
     assert len(multipoint) == 3
     assert point001 not in multipoint

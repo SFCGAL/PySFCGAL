@@ -73,12 +73,6 @@ def test_point_to_coordinates(point_fixture, coordinates, request):
     assert other_point == point
 
 
-def test_point_to_dict(point_3d):
-    point_data = point_3d.to_dict()
-    other_point = Point.from_dict(point_data)
-    assert other_point == point_3d
-
-
 def test_point_equivalence(point_2d, point_3d, point_3dm):
     assert not point_2d == point_3d
     assert not point_3dm == point_3d

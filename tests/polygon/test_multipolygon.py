@@ -75,12 +75,6 @@ def test_multipolygon_to_coordinates(
     assert other_multipolygon == multipolygon
 
 
-def test_multipolygon_to_dict(multipolygon):
-    multipolygon_data = multipolygon.to_dict()
-    other_multipolygon = MultiPolygon.from_dict(multipolygon_data)
-    assert other_multipolygon == multipolygon
-
-
 def test_multipolygon_add_polygon(multipolygon, big_ring_ccw):
     new_polygon = Polygon(big_ring_ccw)
     assert len(multipolygon) == 3

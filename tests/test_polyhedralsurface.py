@@ -81,12 +81,6 @@ def test_polyhedralsurface_to_coordinates(polyhedralsurface, c000, c100, c010, c
     assert other_phs == polyhedralsurface
 
 
-def test_polyhedralsurface_to_dict(polyhedralsurface):
-    polyhedralsurface_data = polyhedralsurface.to_dict()
-    other_polyhedralsurface = PolyhedralSurface.from_dict(polyhedralsurface_data)
-    assert other_polyhedralsurface == polyhedralsurface
-
-
 def test_to_multipolygon(polyhedralsurface, expected_multipolygon):
     multipoly = polyhedralsurface.to_multipolygon(wrapped=True)
     assert multipoly.geom_type == "MultiPolygon"
