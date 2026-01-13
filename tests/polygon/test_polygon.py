@@ -19,18 +19,18 @@ def polygon2(ring_around_0_ccw):
 
 
 @pytest.fixture
-def polygon_with_hole(big_ring_ccw, small_ring_23_ccw, small_ring_56_cw):
+def polygon_with_hole(big_ring_ccw, small_ring_23_cw, small_ring_56_cw):
     yield Polygon(
         exterior=big_ring_ccw,
-        interiors=[small_ring_23_ccw, small_ring_56_cw]
+        interiors=[small_ring_23_cw, small_ring_56_cw]
     )
 
 
 @pytest.fixture
-def polygon_with_hole_unclosed(big_ring_ccw, small_ring_23_ccw, small_ring_56_cw):
+def polygon_with_hole_unclosed(big_ring_ccw, small_ring_23_cw, small_ring_56_cw):
     yield Polygon(
         exterior=big_ring_ccw[:-1],
-        interiors=[small_ring_23_ccw[:-1], small_ring_56_cw[:-1]]
+        interiors=[small_ring_23_cw[:-1], small_ring_56_cw[:-1]]
     )
 
 
@@ -40,8 +40,8 @@ def linestring1_ccw(big_ring_ccw):
 
 
 @pytest.fixture
-def linestring2_ccw(small_ring_23_ccw):
-    yield LineString(small_ring_23_ccw)
+def linestring2_cw(small_ring_23_cw):
+    yield LineString(small_ring_23_cw)
 
 
 @pytest.fixture
@@ -50,29 +50,31 @@ def linestring3_cw(small_ring_56_cw):
 
 
 def test_polygon_rings(
-        polygon_with_hole, linestring1_ccw, linestring2_ccw, linestring3_cw):
+        polygon_with_hole, linestring1_ccw, linestring2_cw, linestring3_cw):
     # exterior ring
     assert polygon_with_hole.exterior == linestring1_ccw
     # interior rings
     assert polygon_with_hole.n_interiors == 2
-    assert polygon_with_hole.interiors == [linestring2_ccw, linestring3_cw]
-    assert polygon_with_hole.rings == [linestring1_ccw, linestring2_ccw, linestring3_cw]
+    assert polygon_with_hole.interiors == [linestring2_cw, linestring3_cw]
+    assert polygon_with_hole.rings == [linestring1_ccw, linestring2_cw, linestring3_cw]
+
+    assert polygon_with_hole.is_valid()
 
 
 def test_polygon_iteration(
-        polygon_with_hole, linestring1_ccw, linestring2_ccw, linestring3_cw):
-    lines = [linestring1_ccw, linestring2_ccw, linestring3_cw]
+        polygon_with_hole, linestring1_ccw, linestring2_cw, linestring3_cw):
+    lines = [linestring1_ccw, linestring2_cw, linestring3_cw]
     for line, ring in zip(lines, polygon_with_hole):
         assert line == ring
 
 
 def test_polygon_indexing(
-        polygon_with_hole, linestring1_ccw, linestring2_ccw, linestring3_cw):
+        polygon_with_hole, linestring1_ccw, linestring2_cw, linestring3_cw):
     assert polygon_with_hole[0] == linestring1_ccw
-    assert polygon_with_hole[1] == linestring2_ccw
+    assert polygon_with_hole[1] == linestring2_cw
     assert polygon_with_hole[-1] == linestring3_cw
-    assert polygon_with_hole[:] == [linestring1_ccw, linestring2_ccw, linestring3_cw]
-    assert polygon_with_hole[-1:-3:-1] == [linestring3_cw, linestring2_ccw]
+    assert polygon_with_hole[:] == [linestring1_ccw, linestring2_cw, linestring3_cw]
+    assert polygon_with_hole[-1:-3:-1] == [linestring3_cw, linestring2_cw]
 
 
 def test_polygon_equality(polygon_with_hole, polygon1, polygon_with_hole_unclosed):
@@ -165,11 +167,13 @@ def test_obj(tmp_test_dir, polygon1):
             assert obj_str_line + "\n" == obj_file_line
 
 
-def test_add_interior_ring(polygon1, linestring1_ccw, linestring2_ccw):
+def test_add_interior_ring(polygon1, linestring1_ccw, linestring2_cw):
     assert polygon1.n_interiors == 0
     assert polygon1.rings == [linestring1_ccw]
+    assert polygon1.is_valid()
 
-    polygon1.add_interior_ring(linestring2_ccw)
+    polygon1.add_interior_ring(linestring2_cw)
     assert polygon1.n_interiors == 1
-    assert polygon1.interiors == [linestring2_ccw]
-    assert polygon1.rings == [linestring1_ccw, linestring2_ccw]
+    assert polygon1.interiors == [linestring2_cw]
+    assert polygon1.rings == [linestring1_ccw, linestring2_cw]
+    assert polygon1.is_valid()

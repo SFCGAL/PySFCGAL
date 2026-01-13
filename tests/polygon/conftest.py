@@ -17,6 +17,11 @@ def small_ring_23_ccw():
 
 
 @pytest.fixture
+def small_ring_23_cw():
+    yield [(2., 2.), (3., 3.), (3., 2.), (2., 2.)]
+
+
+@pytest.fixture
 def small_ring_56_ccw():
     yield [(5., 5.), (6., 6.), (5., 6.), (5., 5.)]
 
