@@ -5,8 +5,8 @@ from pysfcgal.sfcgal import LineString, MultiPolygon, Polygon
 
 
 @pytest.fixture
-def multipolygon(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
-    yield MultiPolygon([[ring_around_0_ccw], [small_ring_23_ccw], [small_ring_56_cw]])
+def multipolygon(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_ccw):
+    yield MultiPolygon([[ring_around_0_ccw], [small_ring_23_ccw], [small_ring_56_ccw]])
 
 
 @pytest.fixture
@@ -15,21 +15,27 @@ def other_multipolygon(ring_around_0_ccw, small_ring_23_ccw, small_ring_67_ccw):
 
 
 @pytest.fixture
-def multipolygon_unordered(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
-    yield MultiPolygon([[small_ring_56_cw], [ring_around_0_ccw], [small_ring_23_ccw]])
+def multipolygon_unordered(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_ccw):
+    yield MultiPolygon([[small_ring_56_ccw], [ring_around_0_ccw], [small_ring_23_ccw]])
 
 
 @pytest.fixture
-def expected_polygons(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
+def expected_polygons(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_ccw):
     yield [
         Polygon(ring_around_0_ccw),
         Polygon(small_ring_23_ccw),
-        Polygon(small_ring_56_cw)
+        Polygon(small_ring_56_ccw)
     ]
+
+
+def test_multipolygon_valid(multipolygon, other_multipolygon):
+    assert multipolygon.is_valid()
+    assert other_multipolygon.is_valid()
 
 
 def test_multilinestring_constructor(multipolygon):
     multipolygon_cloned = MultiPolygon(multipolygon.to_coordinates())
+    assert multipolygon_cloned.is_valid()
     assert multipolygon_cloned == multipolygon
 
 
@@ -53,10 +59,10 @@ def test_multipolygon_equality(
 
 
 def test_multipolygon_to_coordinates(
-    multipolygon, ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw
+    multipolygon, ring_around_0_ccw, small_ring_23_ccw, small_ring_56_ccw
 ):
     assert multipolygon.to_coordinates() == [
-        [ring_around_0_ccw], [small_ring_23_ccw], [small_ring_56_cw]
+        [ring_around_0_ccw], [small_ring_23_ccw], [small_ring_56_ccw]
     ]
     cloned_multipolygon = MultiPolygon(multipolygon.to_coordinates())
     assert cloned_multipolygon == multipolygon
