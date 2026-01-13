@@ -5,23 +5,27 @@ from pysfcgal.sfcgal import LineString, MultiPolygon, Polygon
 
 
 @pytest.fixture
-def multipolygon(ring_around_0, small_ring_23, small_ring_56):
-    yield MultiPolygon([[ring_around_0], [small_ring_23], [small_ring_56]])
+def multipolygon(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
+    yield MultiPolygon([[ring_around_0_ccw], [small_ring_23_ccw], [small_ring_56_cw]])
 
 
 @pytest.fixture
-def other_multipolygon(ring_around_0, small_ring_23, big_ring):
-    yield MultiPolygon([[ring_around_0], [small_ring_23], [big_ring]])
+def other_multipolygon(ring_around_0_ccw, small_ring_23_ccw, big_ring_ccw):
+    yield MultiPolygon([[ring_around_0_ccw], [small_ring_23_ccw], [big_ring_ccw]])
 
 
 @pytest.fixture
-def multipolygon_unordered(ring_around_0, small_ring_23, small_ring_56):
-    yield MultiPolygon([[small_ring_56], [ring_around_0], [small_ring_23]])
+def multipolygon_unordered(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
+    yield MultiPolygon([[small_ring_56_cw], [ring_around_0_ccw], [small_ring_23_ccw]])
 
 
 @pytest.fixture
-def expected_polygons(ring_around_0, small_ring_23, small_ring_56):
-    yield [Polygon(ring_around_0), Polygon(small_ring_23), Polygon(small_ring_56)]
+def expected_polygons(ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw):
+    yield [
+        Polygon(ring_around_0_ccw),
+        Polygon(small_ring_23_ccw),
+        Polygon(small_ring_56_cw)
+    ]
 
 
 def test_multilinestring_constructor(multipolygon):
@@ -49,10 +53,10 @@ def test_multipolygon_equality(
 
 
 def test_multipolygon_to_coordinates(
-    multipolygon, ring_around_0, small_ring_23, small_ring_56
+    multipolygon, ring_around_0_ccw, small_ring_23_ccw, small_ring_56_cw
 ):
     assert multipolygon.to_coordinates() == [
-        [ring_around_0], [small_ring_23], [small_ring_56]
+        [ring_around_0_ccw], [small_ring_23_ccw], [small_ring_56_cw]
     ]
     cloned_multipolygon = MultiPolygon(multipolygon.to_coordinates())
     assert cloned_multipolygon == multipolygon
@@ -66,8 +70,8 @@ def test_multipolygon_to_dict(multipolygon):
     assert other_multipolygon == multipolygon
 
 
-def test_multipolygon_add_polygon(multipolygon, big_ring):
-    new_polygon = Polygon(big_ring)
+def test_multipolygon_add_polygon(multipolygon, big_ring_ccw):
+    new_polygon = Polygon(big_ring_ccw)
     assert len(multipolygon) == 3
     assert new_polygon not in multipolygon
 
