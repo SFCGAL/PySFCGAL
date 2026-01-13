@@ -420,7 +420,7 @@ def test_intersection_3d():
 
     res_intersection = p1e.intersection_3d(p2e)
 
-    assert res_intersection.geom_type == "SOLID"
+    assert res_intersection.geom_type == "Solid"
 
     expected_intersection = Polygon.from_wkt(
         "POLYGON ((0.5 0.5, 0.5 1, 1 1, 1 0.5, 0.5 0.5))").extrude(0, 0, 30)
@@ -765,7 +765,7 @@ def test_extrude():
     p1 = Polygon.from_wkt('POLYGON ( (0 0, 0 1, 1 1, 1 0, 0 0) )')
     p1e = p1.extrude(0, 0, 30)
 
-    assert p1e.geom_type == "SOLID"
+    assert p1e.geom_type == "Solid"
 
 
 def test_vtk(tmp_test_dir):

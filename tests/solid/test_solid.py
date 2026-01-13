@@ -53,7 +53,7 @@ def test_tessellate_3d_polyhedralsurface(solid):
     for shell in solid:
         assert shell.is_valid()
         tessellation = shell.tessellate_3d()
-        assert tessellation.geom_type == "TIN"
+        assert tessellation.geom_type == "TriangulatedSurface"
 
 
 def test_solid_set_exterior_shell(solid, points_ext_1, points_ext_2):

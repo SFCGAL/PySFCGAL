@@ -195,7 +195,18 @@ class Geometry:
         str
             The geometry type as a string (e.g., 'Point', 'Polygon').
         """
-        return geom_types_r[lib.sfcgal_geometry_type_id(self._geom)]
+        geom_type = ffi.new("char **")
+        geom_type_size = ffi.new("size_t *")
+        lib.sfcgal_geometry_type(self._geom, geom_type, geom_type_size)
+        ffi_geom_type = geom_type[0]
+
+        if ffi_geom_type == ffi.NULL:
+            return "Geometry"
+
+        geom_type_str = ffi.string(ffi_geom_type).decode("utf-8")
+        lib.sfcgal_free_buffer(ffi_geom_type)
+
+        return geom_type_str
 
     @property
     def dimension(self) -> int:
@@ -3749,7 +3760,7 @@ class MultiSolid(GeometryCollectionBase):
         return multisolid
 
     @cond_icontract(
-        lambda self, solid: solid.geom_type == "SOLID", "require")
+        lambda self, solid: solid.geom_type == "Solid", "require")
     def add_solid(self, solid: Solid) -> None:
         """Add a solid to the multisolid.
 
@@ -4004,12 +4015,9 @@ geom_types = {
     "TIN": lib.SFCGAL_TYPE_TRIANGULATEDSURFACE,
     "Triangle": lib.SFCGAL_TYPE_TRIANGLE,
     "PolyhedralSurface": lib.SFCGAL_TYPE_POLYHEDRALSURFACE,
-    "SOLID": lib.SFCGAL_TYPE_SOLID,
+    "Solid": lib.SFCGAL_TYPE_SOLID,
     "MultiSolid": lib.SFCGAL_TYPE_MULTISOLID,
 }
-
-# Reverse mapping from type IDs to geometry names
-geom_types_r = dict((v, k) for k, v in geom_types.items())
 
 
 def is_segment_in_coordsequence(coords: list, point_a: Point, point_b: Point) -> bool:
