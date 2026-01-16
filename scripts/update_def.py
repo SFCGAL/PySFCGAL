@@ -33,7 +33,7 @@ def check_line_and_add_to_output(cleaned_lines: list[str], line: str) -> None:
 
 
 def try_to_parse_doxygen_block(
-    lines: list[str], line_nr: int, windows_version: int
+    lines: list[str], line_nr: int, windows_version: bool
 ) -> tuple[bool, int]:
     """
     Inspects a Doxygen block to check if the current function is deprecated or needs to
