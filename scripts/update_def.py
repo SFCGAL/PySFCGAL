@@ -40,6 +40,9 @@ def try_to_parse_doxygen_block(
     be skipped.
     If the current line is not the start of a Doxygen block, nothing happens
 
+    This function ignores C functions that depend on CGAL 6 so that PySFCGAL
+    remains compatible with both CGAL 5 and CGAL 6.
+
     Parameters
     ----------
     lines : list[str]
@@ -102,6 +105,7 @@ def clean_header(
     cleaned_lines: list[str] = []
     line_nr = 0
     skip_initial = True
+    skip_cgal6 = False
 
     # Skip initial lines (equivalent to '4,/endif/d')
     while line_nr < len(lines) and skip_initial:
@@ -113,6 +117,23 @@ def clean_header(
         # Stop if we find "__cplusplus"
         if "__cplusplus" in lines[line_nr]:
             break
+
+        # Start of CGAL 6 block
+        if lines[line_nr].startswith("#if SFCGAL_CGAL_VERSION_MAJOR >= 6"):
+            skip_cgal6 = True
+            line_nr += 1
+            continue
+
+        # End of CGAL 6 block
+        if skip_cgal6 and "#endif" in lines[line_nr]:
+            skip_cgal6 = False
+            line_nr += 1
+            continue
+
+        # Skip everything inside CGAL 6 block
+        if skip_cgal6:
+            line_nr += 1
+            continue
 
         # If we find a Doxygen block, check if it contains [[deprecated
         # or if is not handled by mscv
