@@ -39,6 +39,51 @@ class BufferType(IntEnum):
         return f"{self.label} ({self.value})"
 
 
+class SimplificationStrategy(IntEnum):
+    """Edge collapsing strategies.
+
+    The geometry simplification may be done following several strategies, which give
+    the possible Enum values:
+
+        - EDGE_LENGTH: the default one uses edge length as cost function and midpoint
+          placement for vertex positioning. This strategy is compatible with exact
+          kernels and provides good simplification results while maintaining geometric
+          accuracy.
+
+        - GARLAND_HECKBERT: the Garland-Heckbert strategy uses quadric error metrics
+          for cost calculation and optimal vertex placement. This strategy requires
+          Eigen support and uses inexact constructions for improved performance on
+          large meshes.
+
+        - LINDSTROM_TURK: the Lindstrom-Turk strategy uses cost and placement policies
+          optimized for preserving volume and boundary features. This strategy requires
+          Eigen support and uses inexact constructions for improved performance on
+          complex meshes.
+
+    Attributes
+    ----------
+    label : str
+        Printed name of the simplification strategy.
+
+    """
+    label: str
+
+    EDGE_LENGTH = 0, "EdgeLength"
+    GARLAND_HECKBERT = 1, "GarlandHeckbert"
+    LINDSTROM_TURK = 2, "LindstromTurk"
+
+    def __new__(
+        cls: Type["SimplificationStrategy"], value: int, label: str
+    ) -> "SimplificationStrategy":
+        obj = int.__new__(cls, value)
+        obj._value_ = value
+        obj.label = label
+        return obj
+
+    def __str__(self) -> str:
+        return f"{self.label} ({self.value})"
+
+
 class DimensionError(Exception):
     """Indicates a dimension error, e.g. requesting for the Z coordinates in
     a 2D-point."""
@@ -1838,6 +1883,94 @@ class Geometry:
             The simplified geometry.
         """
         geom = lib.sfcgal_geometry_simplify(self._geom, tolerance, preserve_topology)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    @cond_icontract(
+        lambda self, edge_count, edge_ratio, strategy: self.is_valid(), "require"
+    )
+    @cond_icontract(
+        lambda self, edge_count, edge_ratio, strategy: (
+            edge_count is None or edge_count > 0
+        ),
+        "require",
+    )
+    @cond_icontract(
+        lambda self, edge_count, edge_ratio, strategy: (
+                edge_ratio is None or (edge_ratio > 0 and edge_ratio < 1)
+        ),
+        "require",
+    )
+    @cond_icontract(
+        lambda self, edge_count, edge_ratio, strategy: (
+                isinstance(strategy, SimplificationStrategy)
+                or (isinstance(strategy, int) and strategy in (0, 1, 2))
+        ),
+        "require",
+    )
+    def simplify_surface(
+        self,
+        edge_count: Optional[int] = None,
+        edge_ratio: Optional[float] = None,
+        strategy: Union[
+            SimplificationStrategy, int
+        ] = SimplificationStrategy.EDGE_LENGTH,
+    ) -> Optional[Geometry]:
+        """Simplify a surface mesh using CGAL edge collapse algorithm.
+
+        Two stop predicates may be used: an edge quantity (between 0 and the edge amount
+        ) or a ratio regarding the total amount of edges (between 0 and 1).
+
+        Several CGAL strategies may be used in order to remove edges:
+
+        - the default one uses edge length as cost function and midpoint placement for
+          vertex positioning. This strategy is compatible with exact kernels and
+          provides good simplification results while maintaining geometric accuracy.
+
+        - the Garland-Heckbert strategy uses quadric error metrics for cost calculation
+          and optimal vertex placement. This strategy requires Eigen support and uses
+          inexact constructions for improved performance on large meshes.
+
+        - the Lindstrom-Turk strategy uses cost and placement policies optimized for
+          preserving volume and boundary features. This strategy requires Eigen support
+          and uses inexact constructions for improved performance on complex meshes.
+
+        The Garland-Heckbert and the Lindstrom-Turk strategies needs SFCGAL to be built
+        with SFCGAL_WITH_EIGEN compilation option. If the function is called with these
+        strategies, whilst using a version of SFCGAL that is not compiled with the
+        SFCGAL_WITH_EIGEN option, SFCGAL will return a null pointer, traduced as a None
+        value on the PySFCGAL-side.
+
+        Parameters
+        ----------
+        edge_count : int
+            The targeted amount of edges in the output geometry. If it is greater than
+            the actual geometry edge quantity, the function has no effect. The edge
+            count stop predicates is used by default is this parameter is not None.
+        edge_ratio : float
+            The targeted edge ratio to keep in the output geometry. It should be
+            defined between 0 and 1. The edge ratio is not used if edge_count is not
+            None.
+        strategy : SimplificationStrategy
+            Either 0 (EDGE_LENGTH, default value), 1 (Garland-Heckbert) or 2
+            (Lindstrom-Turk).
+
+        Returns
+        -------
+        A simplified geometry, with less edge than the original geometry.
+
+        """
+        if isinstance(strategy, SimplificationStrategy):
+            strategy = strategy.value
+        if edge_count is not None:
+            geom = lib.sfcgal_geometry_simplify_surface_edge_count(
+                self._geom, edge_count, strategy
+            )
+        elif edge_ratio is not None:
+            geom = lib.sfcgal_geometry_simplify_surface_edge_ratio(
+                self._geom, edge_ratio, strategy
+            )
+        else:
+            return None
         return Geometry.from_sfcgal_geometry(geom)
 
     def write_vtk(self, filename: str) -> None:
