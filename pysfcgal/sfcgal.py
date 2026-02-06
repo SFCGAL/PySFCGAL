@@ -6,6 +6,8 @@ It contains the definition of every geometry classes, plus some I/O functions.
 from __future__ import annotations
 
 import functools
+import itertools
+import math
 import platform
 import typing
 from enum import IntEnum
@@ -2601,6 +2603,70 @@ class Polygon(Geometry):
             lib.sfcgal_polygon_add_interior_ring(polygon, interior)
         return polygon
 
+    def triangulate(
+        self,
+        anchor_edge: (
+            tuple[tuple[float, float, float], tuple[float, float, float]] | None
+        ) = None,
+    ) -> list[Polygon]:
+        """Triangulate a quadrilateral, so as to guarantee its validity.
+
+        A polygon with four vertices may be unvalid, for instance if the vertices are
+        not defined in the same plane. This function proposes to generate a list of
+        triangles starting from the initial polygon face. Hence the validity won't be a
+        problem.
+
+        There is actually two possibilities of triangulation, considering V1, V2, V3
+        and V4 as the four vertices:
+
+        - V1, V2, V3 and V1, V3, V4 (considering the V1-V3 diagonal)
+        - V1, V2, V4 and V2, V3, V4 (considering the V2-V4 diagonal)
+
+        One considers the first one by default, but switches towards the second
+        possibility if the decomposition generates an atypical triangle (the 2D
+        projection on the (x, y) has an unvalid aspect ratio). There is no guarantee of
+        optimality with regard to the triangulation use case.
+
+        The function includes an anchor edge VA-VB, which might define the first
+        returned Triangle. Then if VA-VB correspond to V1-V2 or V2-V3, V1-V2-V3
+        shape the first triangle, otherwise that's V1-V3-V4.
+
+        Args:
+            anchor_edge (tuple[tuple[float, float, float], tuple[float, float, float]]):
+        if specified, the first Triangle should be drawn around this edge.
+
+        Returns:
+            A list of SFCGAL triangle Polygon that cover every input polygon vertice.
+
+        """
+        if len(self.exterior) > 5:
+            raise NotImplementedError(
+                "One can't triangulate this polygon through this method, "
+                "as it contains more than 5 vertices (%d).",
+                len(self.exterior),
+            )
+        if len(self.exterior) == 4:  # No need for triangulation
+            return [self]
+        face_coords = self.exterior.to_coordinates()
+        triangles = [Polygon(face_coords[:3]), Polygon(face_coords[-3:])]
+        triangles_2D = [
+            Polygon([(x, y) for x, y, _ in triangle.exterior.to_coordinates()])
+            for triangle in triangles
+        ]
+        if any(not triangle.valid_aspect_ratio() for triangle in triangles_2D):
+            triangles = [
+                Polygon(face_coords[:2] + [face_coords[3]]),
+                Polygon(face_coords[1:-1]),
+            ]
+        if anchor_edge is None:
+            return triangles
+        for edge_idx, face_edge in enumerate(itertools.pairwise(face_coords)):
+            if face_edge == anchor_edge:
+                break
+        if edge_idx < 2:
+            return triangles
+        return triangles[::-1]
+
 
 class CoordinateSequence:
     def __init__(self, parent):
@@ -3308,6 +3374,71 @@ class Triangle(Geometry):
 
         return triangle
 
+    def valid_aspect_ratio(
+        self,
+        length_threshold: float = 5.0,
+        angle_threshold: float = 5.0,
+    ) -> bool:
+        """Determine if a triangle has a valid aspect ratio.
+
+        The aspect ratio is evaluated through two simple criteria:
+
+           - The ratio between the longest and the shortest edges should be smaller
+             than a length threshold.
+
+           - The minimal angle within the triangle should be larger than an angle
+             threshold.
+
+        Args:
+            length_threshold(float): maximum length ratio for a triangle to have a
+        valid aspect
+            ratio_threshold(float): maximum angle (in degrees) for a triangle to have a
+            valid aspect
+
+        Returns:
+            True if the triangle has a valid aspect ratio, False otherwise.
+
+        """
+        triangle_polygon = self.to_polygon()
+        tri_exterior = triangle_polygon.exterior
+        edge_lengths = [
+            p1.distance_3d(p2) for p1, p2 in itertools.pairwise(tri_exterior)
+        ]
+        if min(edge_lengths) == 0:
+            return False
+        if max(edge_lengths) / min(edge_lengths) > length_threshold:
+            return False
+        angles = [
+            triangle_angle(tuple(edge_lengths[idx:] + edge_lengths[:idx]))
+            for idx in range(len(edge_lengths))
+        ]
+        return min(angles) > angle_threshold
+
+
+def triangle_angle(lengths: tuple[float, float, float]) -> float:
+    """Compute a triangle angle, with respect to edge lengths.
+
+    This function uses the cosinus function, one computes the incident angle alpha with
+    respect to the first two edges, following the formula:
+
+        cos(alpha) = (a² + b² - c²) / 2ab
+
+    with a and b the adjacent edges and c the opposite edge.
+
+    Args:
+        lengths(tuple[float]): triangle edge lengths.
+
+    Returns:
+        Value of the incident angle, in degrees.
+
+    """
+    length_ratio = round(
+        (lengths[0] ** 2 + lengths[1] ** 2 - lengths[2] ** 2)
+        / (2 * lengths[0] * lengths[1]),
+        ndigits=6,
+    )
+    return math.degrees(math.acos(length_ratio))
+
 
 class PolyhedralSurface(Geometry):
     def __init__(self, coords: Tuple = ()):
@@ -3478,6 +3609,78 @@ class PolyhedralSurface(Geometry):
             List of patches' coordinates.
         """
         return [patch.to_coordinates() for patch in self]
+
+    @staticmethod
+    def from_adjacent_faces(faces: list[Polygon]) -> PolyhedralSurface:
+        """Build a polyhedral starting from its supposed faces.
+
+        The resulting polyhedral is intended to be valid, as denoted by the Simple
+        Feature standard: the common edge shared by each couple of adjacent faces is
+        never crossed in the same direction in both face definitions. If a face does
+        not respect this criterion, it must be reversed.
+
+        To control this, a set of edges is maintained to verify that edges can't be
+        duplicated (same start, same end, in the same order). The faces are considered
+        in a right-handed rule by default, and reversed in a left-handed rule if
+        required (when a duplicated edge may occur).
+
+        As the face orientation is forced to cope with the right-handed rule by default,
+        opposite faces may cause validity problems. To overcome these situations, where
+        faces are badly ordered (for instance, the top and the bottom faces are provided
+        first), the faces are reordered at the beginning of the process. Hence the valid
+        output polyhedron is built by considering patches that intersect with the
+        in-processing polyhedron.
+
+        Args:
+            faces (list[Polygon]): faces of the polyhedral, modelled as polygons.
+
+        Returns:
+            PolyhedralSurface: resulting geometry
+
+        """
+        phs = PolyhedralSurface()
+        edges = set()
+        # handle first face
+        face = faces.pop(0).force_rhr()
+        for start_, end_ in itertools.pairwise(face.exterior.to_coordinates()):
+            edges.add((start_, end_))
+        for triangle_poly in face.triangulate():
+            phs.add_patch(triangle_poly)
+        # then iterate until every triangle are integrated into the polyhedron
+        while len(faces) > 0:
+            # look for the next face, by reminding which edge is the adjacent one
+            for idx, face in enumerate(faces):
+                rhr_face = face.force_rhr()
+                adjacent_edge = None
+                reverse = False
+                for start_, end_ in itertools.pairwise(
+                    rhr_face.exterior.to_coordinates()
+                ):
+                    if (start_, end_) in edges:
+                        adjacent_edge = (start_, end_)
+                        reverse = True
+                        break
+                    elif (end_, start_) in edges:
+                        adjacent_edge = (end_, start_)
+                        break
+                if adjacent_edge is not None:
+                    break
+            if adjacent_edge is None:
+                break
+            # update the working structures with the selected face
+            face = faces.pop(idx)
+            if reverse:
+                face = face.force_lhr()
+            else:
+                face = face.force_rhr()
+            for start_, end_ in itertools.pairwise(face.exterior.to_coordinates()):
+                if (end_, start_) == adjacent_edge:
+                    edges.remove(adjacent_edge)
+                    for triangle_poly in face.triangulate((start_, end_)):
+                        phs.add_patch(triangle_poly)
+                else:
+                    edges.add((start_, end_))
+        return phs
 
 
 class Solid(Geometry):
