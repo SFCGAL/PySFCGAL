@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import LineString, MultiPolygon, Tin, Triangle
+from pysfcgal.sfcgal import LineString, Tin, Triangle
 
 
 @pytest.fixture
@@ -19,18 +19,6 @@ def tin_coordinates(c000, c100, c010, c001):
     yield [
         [c000, c100, c010], [c000, c001, c100], [c000, c010, c001], [c100, c001, c010]
     ]
-
-
-@pytest.fixture
-def expected_multipolygon(c000, c100, c010, c001):
-    yield MultiPolygon(
-        [
-            [[c000, c100, c010]],
-            [[c000, c001, c100]],
-            [[c000, c010, c001]],
-            [[c100, c001, c010]],
-        ]
-    )
 
 
 @pytest.fixture

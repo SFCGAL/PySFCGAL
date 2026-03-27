@@ -87,6 +87,12 @@ def test_polyhedralsurface_to_dict(polyhedralsurface):
     assert other_polyhedralsurface == polyhedralsurface
 
 
+def test_to_multipolygon(polyhedralsurface, expected_multipolygon):
+    multipoly = polyhedralsurface.to_multipolygon(wrapped=True)
+    assert multipoly.geom_type == "MultiPolygon"
+    assert multipoly == expected_multipolygon
+
+
 def test_to_solid():
     coords_str = (
         "((3.0 3.0 0.0,3.0 8.0 0.0,8.0 8.0 0.0,8.0 3.0 0.0"

@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pysfcgal.sfcgal import Point
+from pysfcgal.sfcgal import MultiPolygon, Point
 
 
 @pytest.fixture
@@ -58,3 +58,16 @@ def point001(c001):
 @pytest.fixture
 def expected_points(point000, point100, point010):
     yield [point000, point100, point010]
+
+
+# PolyhedraSurface / TIN fixtures
+@pytest.fixture
+def expected_multipolygon(c000, c100, c010, c001):
+    yield MultiPolygon(
+        [
+            [[c000, c100, c010]],
+            [[c000, c001, c100]],
+            [[c000, c010, c001]],
+            [[c100, c001, c010]],
+        ]
+    )

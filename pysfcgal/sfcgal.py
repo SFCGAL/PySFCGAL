@@ -3434,6 +3434,30 @@ class PolyhedralSurface(Geometry):
         return self[:] == other[:]
 
     @cond_icontract(lambda self: self.is_valid(), "require")
+    def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
+        """Convert the polyhedralsurface to a MultiPolygon.
+
+        Parameters
+        ----------
+        wrapped : bool, optional
+            If True, wrap the result in a Geometry object. Defaults to True.
+
+        Returns
+        -------
+        MultiPolygon
+            A MultiPolygon representation of the PolyhedralSurface.
+        """
+        multipolygon = lib.sfcgal_multi_polygon_create()
+        num_geoms = lib.sfcgal_polyhedral_surface_num_patches(self._geom)
+        for geom_idx in range(num_geoms):
+            polygon_geom = lib.sfcgal_polyhedral_surface_patch_n(
+                self._geom, geom_idx
+            )
+            polygon_clone = lib.sfcgal_geometry_clone(polygon_geom)
+            lib.sfcgal_geometry_collection_add_geometry(multipolygon, polygon_clone)
+        return Geometry.from_sfcgal_geometry(multipolygon) if wrapped else multipolygon
+
+    @cond_icontract(lambda self: self.is_valid(), "require")
     def to_solid(self) -> Solid:
         """Convert the polyhedralsurface into a solid.
 
