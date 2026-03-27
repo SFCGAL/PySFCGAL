@@ -9,9 +9,9 @@ def polyhedralsurface(c000, c100, c010, c001):
     yield PolyhedralSurface(
         [
             [[c000, c100, c010]],
-            [[c000, c100, c001]],
+            [[c000, c001, c100]],
             [[c000, c010, c001]],
-            [[c100, c010, c001]],
+            [[c100, c001, c010]],
         ]
     )
 
@@ -39,13 +39,14 @@ def polyhedralsurface_unordered(c000, c100, c010, c001):
 def expected_polygons(c000, c100, c010, c001):
     yield [
         Polygon([c000, c100, c010]),
-        Polygon([c000, c100, c001]),
+        Polygon([c000, c001, c100]),
         Polygon([c000, c010, c001]),
-        Polygon([c100, c010, c001]),
+        Polygon([c100, c001, c010]),
     ]
 
 
 def test_polyhedralsurface_len(polyhedralsurface):
+    assert polyhedralsurface.is_valid()
     assert len(polyhedralsurface) == 4
 
 
@@ -72,9 +73,9 @@ def test_polyhedralsurface_equality(
 def test_polyhedralsurface_to_coordinates(polyhedralsurface, c000, c100, c010, c001):
     assert polyhedralsurface.to_coordinates() == [
         [[c000, c100, c010, c000]],
-        [[c000, c100, c001, c000]],
+        [[c000, c001, c100, c000]],
         [[c000, c010, c001, c000]],
-        [[c100, c010, c001, c100]],
+        [[c100, c001, c010, c100]],
     ]
     other_phs = PolyhedralSurface.from_coordinates(polyhedralsurface.to_coordinates())
     assert other_phs == polyhedralsurface
