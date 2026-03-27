@@ -8,16 +8,16 @@ from pysfcgal.sfcgal import LineString, MultiPolygon, Tin, Triangle
 def expected_triangles(c000, c100, c010, c001):
     yield [
         Triangle([c000, c100, c010]),
-        Triangle([c000, c100, c001]),
+        Triangle([c000, c001, c100]),
         Triangle([c000, c010, c001]),
-        Triangle([c100, c010, c001]),
+        Triangle([c100, c001, c010]),
     ]
 
 
 @pytest.fixture
 def tin_coordinates(c000, c100, c010, c001):
     yield [
-        [c000, c100, c010], [c000, c100, c001], [c000, c010, c001], [c100, c010, c001]
+        [c000, c100, c010], [c000, c001, c100], [c000, c010, c001], [c100, c001, c010]
     ]
 
 
@@ -26,9 +26,9 @@ def expected_multipolygon(c000, c100, c010, c001):
     yield MultiPolygon(
         [
             [[c000, c100, c010]],
-            [[c000, c100, c001]],
+            [[c000, c001, c100]],
             [[c000, c010, c001]],
-            [[c100, c010, c001]],
+            [[c100, c001, c010]],
         ]
     )
 
@@ -50,6 +50,7 @@ def tin_unordered(c000, c100, c010, c001):
 
 def test_tin(tin, expected_triangles, tin_unclosed, tin_unordered):
     assert len(tin) == 4
+    assert tin.is_valid()
     # iteration
     for triangle, expected_triangle in zip(tin, expected_triangles):
         assert triangle == expected_triangle
@@ -68,9 +69,9 @@ def test_tin_wkt(tin, tin_coordinates):
     assert tin.to_wkt(0) == (
         "TIN Z ("
         "((0 0 0,1 0 0,0 1 0,0 0 0)),"
-        "((0 0 0,1 0 0,0 0 1,0 0 0)),"
+        "((0 0 0,0 0 1,1 0 0,0 0 0)),"
         "((0 0 0,0 1 0,0 0 1,0 0 0)),"
-        "((1 0 0,0 1 0,0 0 1,1 0 0)))"
+        "((1 0 0,0 0 1,0 1 0,1 0 0)))"
     )
 
 
