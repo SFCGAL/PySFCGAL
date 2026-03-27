@@ -3073,13 +3073,13 @@ class Tin(Geometry):
             return False
         return self[:] == other[:]
 
-    def to_multipolygon(self, wrapped: bool = False) -> Union[MultiPolygon, ffi.CData]:
+    def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
         """Convert the TIN to a MultiPolygon.
 
         Parameters
         ----------
         wrapped : bool, optional
-            If True, wrap the result in a Geometry object. Defaults to False.
+            If True, wrap the result in a Geometry object. Defaults to True.
 
         Returns
         -------
