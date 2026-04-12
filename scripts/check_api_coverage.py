@@ -74,7 +74,7 @@ def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
 
 
 def check_function_usage_in_python(
-    py_file_path: Path, function_names: List[str]
+    py_file_paths: List[Path], function_names: List[str]
 ) -> Tuple[List[str], List[str]]:
     """
     Check that all the C functions are used in the python file
@@ -92,41 +92,38 @@ def check_function_usage_in_python(
         used C functions
         unused C functions
     """
-    used_functions: List[str] = []
-    unused_functions: List[str] = []
+    used_functions = set()
 
-    try:
-        with open(py_file_path, "r") as py_file:
-            py_content = py_file.read()
+    for py_file_path in py_file_paths:
+        try:
+            with open(py_file_path, "r") as py_file:
+                py_content = py_file.read()
 
-        for func_name in function_names:
-            # Look for the c function in the python code
-            # Possible patterns: func_name(, .func_name(, lib.func_name(
-            patterns = [
-                rf"\b{re.escape(func_name)}\s*\(",  # direct calls
-                rf"\.{re.escape(func_name)}\s*\(",  # appel via module/objet
-                rf'"{re.escape(func_name)}"',  # literal string
-                rf"'{re.escape(func_name)}'",  # literal string
-            ]
+            for func_name in function_names:
+                # Look for the c function in the python code
+                # Possible patterns: func_name(, .func_name(, lib.func_name(
+                patterns = [
+                    rf"\b{re.escape(func_name)}\s*\(",  # direct calls
+                    rf"\.{re.escape(func_name)}\s*\(",  # appel via module/objet
+                    rf'"{re.escape(func_name)}"',  # literal string
+                    rf"'{re.escape(func_name)}'",  # literal string
+                ]
 
-            found = False
-            for pattern in patterns:
-                if re.search(pattern, py_content):
-                    used_functions.append(func_name)
-                    found = True
-                    break
+                for pattern in patterns:
+                    if re.search(pattern, py_content):
+                        used_functions.add(func_name)
+                        break
 
-            if not found:
-                unused_functions.append(func_name)
+        except FileNotFoundError:
+            print(f"Error: Unable to find python file {py_file_path}", file=sys.stderr)
+            return [], []
+        except Exception as exception:
+            print(f"Error while reading python file: {exception}", file=sys.stderr)
+            return [], []
 
-    except FileNotFoundError:
-        print(f"Error: Unable to find python file {py_file_path}", file=sys.stderr)
-        return [], []
-    except Exception as exception:
-        print(f"Error while reading python file: {exception}", file=sys.stderr)
-        return [], []
-
-    return used_functions, unused_functions
+    used = sorted(used_functions)
+    unused = sorted(set(function_names) - used_functions)
+    return used, unused
 
 
 def main():
@@ -137,10 +134,10 @@ def main():
     current_dir = Path(__file__).resolve().parent
     src_dir = current_dir.parent / "pysfcgal"
     c_file = src_dir / "sfcgal_def.c"
-    py_file = src_dir / "sfcgal.py"
+    py_files = [src_dir / "sfcgal.py"]
 
     print(f"Analysing C file: {c_file}")
-    print(f"Checking python file: {py_file}")
+    print(f"Checking python files: {py_files}")
     print("-" * 50)
 
     # Extract functions from the .c file
@@ -153,7 +150,7 @@ def main():
     print(f"{len(c_functions)} found functions in C file {c_file}")
 
     # Check usage in the python file
-    used, unused = check_function_usage_in_python(py_file, c_functions)
+    used, unused = check_function_usage_in_python(py_files, c_functions)
 
     print(f"\n✅ USED functions ({len(used)}):")
     for used_func in used:
