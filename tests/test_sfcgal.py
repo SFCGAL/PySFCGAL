@@ -79,7 +79,13 @@ def test_is_valid():
     assert ring == "ring 0 self intersects"
 
 
-def test_approximate_medial_axis():
+@pytest.mark.parametrize(
+    "extend_to_edges,expected_wkt_path", [
+        (False, "medial_axis_not_extend.wkt"),
+        (True, "medial_axis_extend.wkt"),
+    ],
+)
+def test_approximate_medial_axis(extend_to_edges, expected_wkt_path):
     poly = Polygon(
         [
             (190, 190),
@@ -94,15 +100,14 @@ def test_approximate_medial_axis():
             (190, 190),
         ]
     )
-    res_wkt = poly.approximate_medial_axis().to_wkt(2)
+    res_wkt = poly.approximate_medial_axis(extend_to_edges).to_wkt(2)
+    res_geom = MultiLineString.from_wkt(res_wkt)
 
-    geom1 = MultiLineString.from_wkt(res_wkt)
-    geom2 = MultiLineString.from_wkt(
-        """MULTILINESTRING ((184.19 15.81,158.38 20.00),
-        (50.00 20.00,158.38 20.00),(50.00 20.00,35.00 35.00),(35.00 35.00,35.00
-        153.15),(35.00 153.15,40.70 159.30),(164.04 164.04,40.70 159.30))"""
-    )
-    assert geom1.covers(geom2)
+    with open(EXPECTED_DATA_PATH / expected_wkt_path) as f_in:
+        expected_wkt = f_in.read().strip()
+    expected_geom = MultiLineString.from_wkt(expected_wkt)
+
+    assert res_geom.covers(expected_geom)
 
 
 def test_straight_skeleton():

@@ -980,16 +980,25 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def approximate_medial_axis(self) -> Optional[Geometry]:
+    def approximate_medial_axis(
+            self, extend_to_edges: bool = False) -> Optional[Geometry]:
         """
         Compute the approximate medial axis of the geometry.
+
+        Parameters
+        ----------
+        extend_to_edges : bool, optional
+            Whether to extend end points to the polygon boundary (default is False).
 
         Returns
         -------
         Geometry
             The resulting geometry representing the approximate medial axis.
         """
-        geom = lib.sfcgal_geometry_approximate_medial_axis(self._geom)
+        if extend_to_edges:
+            geom = lib.sfcgal_geometry_projected_medial_axis(self._geom)
+        else:
+            geom = lib.sfcgal_geometry_approximate_medial_axis(self._geom)
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(
