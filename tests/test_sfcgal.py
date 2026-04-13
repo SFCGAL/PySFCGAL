@@ -8,6 +8,8 @@ from pysfcgal.sfcgal import (Geometry, GeometryCollection, LineString,
                              MultiLineString, MultiPoint, Point, Polygon,
                              PolyhedralSurface, Solid, Triangle)
 
+EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
+
 
 def test_version():
     print(sfcgal.sfcgal_version())
@@ -477,8 +479,9 @@ def test_alpha_wrapping_3d():
     # alpha_shapes with no arguments
     result = multi_point.alpha_wrapping_3d(11).to_wkt(1)
 
-    current_dir = pathlib.Path(__file__).parent.resolve()
-    expected_alpha_wrappind_3d = current_dir / "alpha_wrapping_3d_expected_wkt.txt"
+    expected_alpha_wrappind_3d = (
+        EXPECTED_DATA_PATH / "alpha_wrapping_3d_expected_wkt.txt"
+    )
     with open(expected_alpha_wrappind_3d) as f_in:
         expected = f_in.read().strip()
 
@@ -755,7 +758,7 @@ def test_vtk(tmp_test_dir):
         "((5.0 0.0 0.0, 5.0 0.0 5.0, 0.0 0.0 5.0, 0.0 0.0 0.0, 5.0 0.0 0.0)))")
     out_filepath = str(tmp_test_dir / "out.vtk")
     geom.write_vtk(out_filepath)
-    expected_vtk = pathlib.Path(__file__).parent.resolve() / "expected.vtk"
+    expected_vtk = EXPECTED_DATA_PATH / "expected.vtk"
     assert cmp(out_filepath, expected_vtk)
 
 
@@ -771,7 +774,7 @@ def test_stl(tmp_test_dir):
         "((5.0 0.0 0.0, 5.0 0.0 5.0, 0.0 0.0 5.0, 0.0 0.0 0.0, 5.0 0.0 0.0)))")
     out_filepath = str(tmp_test_dir / "out.stl")
     geom.write_stl(out_filepath)
-    expected_stl = pathlib.Path(__file__).parent.resolve() / "expected.stl"
+    expected_stl = EXPECTED_DATA_PATH / "expected.stl"
     assert cmp(out_filepath, expected_stl)
 
 
