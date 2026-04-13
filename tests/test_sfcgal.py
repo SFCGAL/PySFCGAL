@@ -479,9 +479,7 @@ def test_alpha_wrapping_3d():
     # alpha_shapes with no arguments
     result = multi_point.alpha_wrapping_3d(11).to_wkt(1)
 
-    expected_alpha_wrappind_3d = (
-        EXPECTED_DATA_PATH / "alpha_wrapping_3d_expected_wkt.txt"
-    )
+    expected_alpha_wrappind_3d = EXPECTED_DATA_PATH / "alpha_wrapping_3d_expected.wkt"
     with open(expected_alpha_wrappind_3d) as f_in:
         expected = f_in.read().strip()
 
