@@ -5,7 +5,6 @@ It contains the definition of every geometry classes, plus some I/O functions.
 
 from __future__ import annotations
 
-import functools
 import platform
 import typing
 from enum import IntEnum
@@ -14,30 +13,11 @@ from typing import Optional, Tuple, Type, Union, cast
 if typing.TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
+from ._contracts import cond_icontract
 from ._sfcgal import ffi, lib
 
 # Required until Alpha Shapes bug is not fixed on MSVC
 compiler = platform.python_compiler()
-
-try:
-    import icontract
-
-    has_icontract = True
-except ImportError:
-    has_icontract = False
-
-
-def cond_icontract(lambda_func, contract_name):
-    def decorator(func):
-        @functools.wraps(func)
-        def wrapper(*args, **kwargs):
-            icontract_decorator = getattr(icontract, contract_name)
-            decorated_func = icontract_decorator(lambda_func)(func)
-            return decorated_func(*args, **kwargs)
-        if not has_icontract:
-            return func
-        return wrapper
-    return decorator
 
 
 class BufferType(IntEnum):
