@@ -2,11 +2,6 @@ import pytest
 
 
 @pytest.fixture
-def big_ring_ccw():
-    yield [(0., 0.), (10., 0.), (10., 10.), (0., 10.), (0., 0.)]
-
-
-@pytest.fixture
 def ring_around_0_ccw():
     yield [(-1., -1.), (1., -1.), (1., 1.), (-1., 1.), (-1., -1.)]
 

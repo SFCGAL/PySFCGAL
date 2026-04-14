@@ -14,11 +14,6 @@ def point_in_poly():
 
 
 @pytest.fixture
-def polygon1(big_ring_ccw):
-    yield Polygon(big_ring_ccw)
-
-
-@pytest.fixture
 def polygon2(ring_around_0_ccw):
     yield Polygon(ring_around_0_ccw)
 

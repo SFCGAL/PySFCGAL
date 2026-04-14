@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pysfcgal.sfcgal import MultiPolygon, Point
+from pysfcgal.sfcgal import MultiPolygon, Point, Polygon
 
 
 @pytest.fixture
@@ -71,3 +71,13 @@ def expected_multipolygon(c000, c100, c010, c001):
             [[c100, c001, c010]],
         ]
     )
+
+
+@pytest.fixture
+def big_ring_ccw():
+    yield [(0., 0.), (10., 0.), (10., 10.), (0., 10.), (0., 0.)]
+
+
+@pytest.fixture
+def polygon1(big_ring_ccw):
+    yield Polygon(big_ring_ccw)
