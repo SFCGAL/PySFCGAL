@@ -40,10 +40,6 @@ def cond_icontract(lambda_func, contract_name):
     return decorator
 
 
-# this must be called before anything else
-lib.sfcgal_init()
-
-
 class BufferType(IntEnum):
     label: str
 
