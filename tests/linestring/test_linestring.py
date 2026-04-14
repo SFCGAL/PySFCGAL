@@ -96,3 +96,27 @@ def test_linestring_memory_management():
 
     last_point = LineString(((0, 0), (1, 0), (5, 2)))[-1]
     assert last_point.to_wkt(1) == "POINT (5.0 2.0)"
+
+
+def test_linestring_close(c000, c001, vertical_line, closed_vertical_line):
+    # vertical_line is not closed
+    assert vertical_line.to_coordinates()[-1] == c001
+    assert len(vertical_line.to_coordinates()) == 3
+    assert vertical_line != closed_vertical_line
+
+    # closing vertical_line is not closed
+    # should be equal to closed_vertical_line now
+    vertical_line.close()
+    assert len(vertical_line.to_coordinates()) == 4
+    assert vertical_line.to_coordinates()[0] == c000
+    assert vertical_line.to_coordinates()[-1] == c000
+    assert vertical_line == closed_vertical_line
+
+    # closed_vertical_line is already closed
+    assert len(closed_vertical_line.to_coordinates()) == 4
+    assert closed_vertical_line.to_coordinates()[0] == c000
+    assert closed_vertical_line.to_coordinates()[-1] == c000
+    closed_vertical_line.close()
+    assert len(closed_vertical_line.to_coordinates()) == 4
+    assert closed_vertical_line.to_coordinates()[0] == c000
+    assert closed_vertical_line.to_coordinates()[-1] == c000

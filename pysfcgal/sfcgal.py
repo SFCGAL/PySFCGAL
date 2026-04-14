@@ -2393,6 +2393,14 @@ class LineString(Geometry):
         """
         return [point.to_coordinates() for point in self]
 
+    def close(self) -> None:
+        """Closes the line string if it is not already closed.
+
+        This is achieved by appending the first point to the end of the
+        line.
+        """
+        lib.sfcgal_linestring_closes(self._geom)
+
     @staticmethod
     def sfcgal_geom_from_coordinates(
             coordinates: list, close: bool = False) -> ffi.CData:
