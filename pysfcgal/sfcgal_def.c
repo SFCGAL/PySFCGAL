@@ -67,14 +67,14 @@ sfcgal_geometry_type_id(const sfcgal_geometry_t *geom);
  * Returns the type of a given geometry as a string
  * @param geom the input geometry
  * @param[out] type the output buffer
- * @param[out] typeLen the size of the buffer
+ * @param[out] type_len the size of the buffer
  * @post type is returned allocated and must be freed by the caller with
  * sfcgal_free_buffer()
  * @ingroup capi
  */
 void
 sfcgal_geometry_type(const sfcgal_geometry_t *geom, char **type,
-                     size_t *typeLen);
+                     size_t *type_len);
 
 /**
  * Returns the dimension of a given geometry ( 0 : punctual, 1 : curve, ...)
@@ -194,24 +194,24 @@ sfcgal_geometry_drop_m(sfcgal_geometry_t *geom);
  * Existing Z values remains unchanged.
  * This has no effect on empty geometries.
  * @param geom the input geometry
- * @param defaultZ z-value to use
+ * @param default_z z-value to use
  * @return 1 if a Z value was added. 0 otherwise.
  * @ingroup capi
  */
 int
-sfcgal_geometry_force_z(sfcgal_geometry_t *geom, double defaultZ);
+sfcgal_geometry_force_z(sfcgal_geometry_t *geom, double default_z);
 
 /**
  * Adds a m-dimension to the geometry, initialized to a preset value.
  * Existing M values remains unchanged.
  * This has no effect on empty geometries.
  * @param geom the input geometry
- * @param defaultM m-value to use
+ * @param default_m m-value to use
  * @return 1 if a M value was added. 0 otherwise.
  * @ingroup capi
  */
 int
-sfcgal_geometry_force_m(sfcgal_geometry_t *geom, double defaultM);
+sfcgal_geometry_force_m(sfcgal_geometry_t *geom, double default_m);
 
 /**
  * Swaps the x and y coordinates of the geometry
@@ -244,7 +244,7 @@ sfcgal_geometry_delete(sfcgal_geometry_t *geom);
 
 /**
  * Returns the number of geometries of the given geometry collection
- * @param geometryCollection the input geometry
+ * @param collection the input geometry
  * @pre geometry must be a SFCGAL::GeometryCollection.
  * Otherwise, 1 is returned.  For empty geometries 0 is
  * returned.
@@ -252,7 +252,7 @@ sfcgal_geometry_delete(sfcgal_geometry_t *geom);
  * @ingroup capi
  */
 size_t
-sfcgal_geometry_num_geometries(const sfcgal_geometry_t *geometryCollection);
+sfcgal_geometry_num_geometries(const sfcgal_geometry_t *collection);
 
 /**
  * Returns a WKT representation of the given geometry using CGAL exact integer
@@ -270,11 +270,11 @@ sfcgal_geometry_as_text(const sfcgal_geometry_t *geom, char **buffer,
 
 /**
  * Returns a WKT representation of the given geometry using floating point
- * coordinate values. Floating point precision can be set via the numDecimals
- * parameter. Setting numDecimals to -1 yields the same result as
+ * coordinate values. Floating point precision can be set via the num_decimals
+ * parameter. Setting num_decimals to -1 yields the same result as
  * sfcgal_geometry_as_text()
  * @param geom the input geometry
- * @param numDecimals decimal precision
+ * @param num_decimals decimal precision
  * @param[out] buffer the output buffer
  * @param[out] len the size of the @p buffer
  * @post @p buffer is returned allocated and must be freed by the caller with
@@ -282,7 +282,7 @@ sfcgal_geometry_as_text(const sfcgal_geometry_t *geom, char **buffer,
  * @ingroup capi
  */
 void
-sfcgal_geometry_as_text_decim(const sfcgal_geometry_t *geom, int numDecimals,
+sfcgal_geometry_as_text_decim(const sfcgal_geometry_t *geom, int num_decimals,
                               char **buffer, size_t *len);
 
 /**
@@ -358,6 +358,29 @@ sfcgal_geometry_as_obj_file(const sfcgal_geometry_t *geom,
 void
 sfcgal_geometry_as_obj(const sfcgal_geometry_t *geom, char **buffer,
                        size_t *len);
+
+/**
+ * Reads a geometry from an OBJ format string.
+ * @param[in] str The OBJ format string
+ * @param[in] len The size of @p str
+ * @post The returned geometry must be deallocated by the caller with
+ * sfcgal_geometry_delete()
+ * @return A SFCGAL::Geometry from the OBJ string, or NULL on error
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_io_read_obj(const char *str, size_t len);
+
+/**
+ * Reads a geometry from an OBJ file.
+ * @param[in] filename The path to the OBJ file
+ * @post The returned geometry must be deallocated by the caller with
+ * sfcgal_geometry_delete()
+ * @return A SFCGAL::Geometry from the OBJ file, or NULL on error
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_io_read_obj_file(const char *filename);
 
 /**
  * Creates a STL string of the given geometry
@@ -1152,6 +1175,33 @@ sfcgal_prepared_geometry_t *
 sfcgal_io_read_ewkt(const char *str, size_t len);
 
 /**
+ * Parse a GeoJSON representation into a Geometry.
+ * Supports Geometry, Feature, and FeatureCollection.
+ * For Feature/FeatureCollection, only the geometry part is extracted.
+ * @param str The GeoJSON string representing the geometry.
+ * @param len The size of @p str
+ * @post The returned geometry must be deallocated by the caller with
+ * sfcgal_geometry_delete()
+ * @return A SFCGAL::Geometry from the GeoJSON
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_io_read_geojson(const char *str, size_t len);
+
+/**
+ * Parse a GeoJSON representation into a PreparedGeometry.
+ * If CRS is specified in GeoJSON, extracts the EPSG code as SRID.
+ * @param str The GeoJSON string representing the geometry.
+ * @param len The size of @p str
+ * @post The returned prepared geometry must be deallocated by the caller with
+ * @pre sfcgal_prepared_geometry_delete
+ * @return A SFCGAL::PreparedGeometry from the GeoJSON
+ * @ingroup capi
+ */
+sfcgal_prepared_geometry_t *
+sfcgal_io_read_geojson_prepared(const char *str, size_t len);
+
+/**
  * io::readWKB
  */
 
@@ -1195,6 +1245,52 @@ sfcgal_io_write_binary_prepared(const sfcgal_prepared_geometry_t *geom,
  */
 sfcgal_prepared_geometry_t *
 sfcgal_io_read_binary_prepared(const char *str, size_t len);
+
+/**
+ * Convert a Geometry to its GeoJSON representation.
+ * @param[in] geom the input geometry
+ * @param[in] strict If true, output strictly RFC 7946 compliant GeoJSON.
+ *                   Non-standard types (TIN, Solid, etc.) are converted to
+ * standard types. If false, use SFCGAL type names as extensions (allows
+ * round-trip).
+ * @param[in] precision Number of decimal places for coordinates. -1 means full
+ * precision.
+ * @param[in] include_bbox Include bounding box in output.
+ * @param[out] buffer The output buffer
+ * @param[out] len The size of @p buffer
+ * @post @p buffer is returned allocated and must be freed by the caller with
+ *       sfcgal_free_buffer()
+ * @note M values are dropped
+ * @ingroup capi
+ */
+void
+sfcgal_geometry_as_geojson(const sfcgal_geometry_t *geom, bool strict,
+                           int precision, bool include_bbox, char **buffer,
+                           size_t *len);
+
+/**
+ * Convert a PreparedGeometry to its GeoJSON representation.
+ * If SRID is non-zero, includes a CRS member (non-standard but useful).
+ * @param[in] prepared the input prepared geometry
+ * @param[in] strict If true, output strictly RFC 7946 compliant GeoJSON.
+ *                   Non-standard types (TIN, Solid, etc.) are converted to
+ * standard types. If false, use SFCGAL type names as extensions (allows
+ * round-trip).
+ * @param[in] precision Number of decimal places for coordinates. -1 means full
+ * precision.
+ * @param[in] include_bbox Include bounding box in output.
+ * @param[out] buffer The output buffer
+ * @param[out] len The size of @p buffer
+ * @post @p buffer is returned allocated and must be freed by the caller with
+ *       sfcgal_free_buffer()
+ * @note M values are dropped
+ * @ingroup capi
+ */
+void
+sfcgal_prepared_geometry_as_geojson(const sfcgal_prepared_geometry_t *prepared,
+                                    bool strict, int precision,
+                                    bool include_bbox, char **buffer,
+                                    size_t *len);
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -1497,9 +1593,9 @@ sfcgal_geometry_t *
 sfcgal_geometry_round(const sfcgal_geometry_t *geom, int r);
 
 /**
- * Returns the minkowski sum geom1 + geom2
+ * Returns the 2D minkowski sum geom1 + geom2
  * @param geom1 the first input geometry
- * @param geom2 the second input geometry
+ * @param geom2 the second input geometry (must be a Polygon)
  * @pre isValid(geom1) == true
  * @pre isValid(geom2) == true
  * @post isValid(return) == true
@@ -1509,6 +1605,43 @@ sfcgal_geometry_round(const sfcgal_geometry_t *geom, int r);
 sfcgal_geometry_t *
 sfcgal_geometry_minkowski_sum(const sfcgal_geometry_t *geom1,
                               const sfcgal_geometry_t *geom2);
+
+/**
+ * Insert points from source geometry into base geometry within tolerance.
+ * This function densifies the base geometry by adding points from the source
+ * geometry where they are within the specified tolerance distance from the
+ * base geometry's segments.
+ * @param base The geometry to receive inserted points
+ * @param source The geometry providing points to insert
+ * @param tolerance Maximum distance for a point to be considered for insertion
+ * @return A new geometry with points inserted, or NULL on error
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_insert_points_within_tolerance(const sfcgal_geometry_t *base,
+                                               const sfcgal_geometry_t *source,
+                                               double tolerance);
+/**
+ * Returns the 3D minkowski sum geom1 + geom2
+ *
+ * The Minkowski sum of two point sets A and B is defined as:
+ *   A + B = { a + b : a in A, b in B }
+ *
+ * Supports all 3D geometry types including Point, LineString, Polygon,
+ * Triangle, TriangulatedSurface, PolyhedralSurface, Solid, and collections.
+ *
+ * @param geom1 the first input geometry
+ * @param geom2 the second input geometry
+ * @pre isValid(geom1) == true
+ * @pre isValid(geom2) == true
+ * @post isValid(return) == true
+ * @return The 3D minkowski sum of geom1 and geom2 (typically a
+ * PolyhedralSurface)
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_minkowski_sum_3d(const sfcgal_geometry_t *geom1,
+                                 const sfcgal_geometry_t *geom2);
 
 /**
  * Returns the offset polygon of the given Geometry.
@@ -1578,6 +1711,187 @@ sfcgal_geometry_extrude_polygon_straight_skeleton(const sfcgal_geometry_t *geom,
                                                   double roof_height);
 
 /**
+ * Returns the extrude straight skeleton for the given SFCGAL::Geometry
+ * with custom per-edge angles.
+ * @param geom the input geometry
+ * @param height extrusion height
+ * @param angles flattened array of angles (in degrees) for each edge of each
+ * ring
+ * @param angles_per_ring array containing the number of angles for each ring
+ * @param num_rings number of rings (exterior + holes)
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre height != 0
+ * @pre 0 < angles[i] < 180 for all i
+ * @return The extrude straight skeleton of geom
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_extrude_straight_skeleton_with_angles(
+    const sfcgal_geometry_t *geom, double height, const double *angles,
+    const size_t *angles_per_ring, size_t num_rings);
+
+/**
+ * Returns the union of the polygon z-extrusion (with respect to
+ * building_height) and the extrude straight skeleton (with respect to
+ * roof_height) of the given SFCGAL::Polygon, with custom per-edge angles.
+ * @param geom the input geometry
+ * @param building_height extrusion height of walls
+ * @param roof_height extrusion height of roof
+ * @param angles flattened array of angles (in degrees) for each edge of each
+ * ring
+ * @param angles_per_ring array containing the number of angles for each ring
+ * @param num_rings number of rings (exterior + holes)
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre roof_height != 0
+ * @pre 0 < angles[i] < 180 for all i
+ * @return The union of the polygon z-extrusion and the extrude straight
+ * skeleton
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_extrude_polygon_straight_skeleton_with_angles(
+    const sfcgal_geometry_t *geom, double building_height, double roof_height,
+    const double *angles, const size_t *angles_per_ring, size_t num_rings);
+
+/**
+ * Returns the extrude straight skeleton of the given SFCGAL::Polygon, with
+ * custom per-edge weights.
+ * @param geom the input geometry
+ * @param height extrusion height
+ * @param weights flattened array of weights (tan of angles) for each edge of
+ * each ring
+ * @param weights_per_ring array containing the number of weights for each ring
+ * @param num_rings number of rings (exterior + holes)
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre height != 0
+ * @return The extrude straight skeleton of geom
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_extrude_straight_skeleton_with_weights(
+    const sfcgal_geometry_t *geom, double height, const double *weights,
+    const size_t *weights_per_ring, size_t num_rings);
+
+/**
+ * Returns the union of the polygon z-extrusion (with respect to
+ * building_height) and the extrude straight skeleton (with respect to
+ * roof_height) of the given SFCGAL::Polygon, with custom per-edge weights.
+ * @param geom the input geometry
+ * @param building_height extrusion height of walls
+ * @param roof_height extrusion height of roof
+ * @param weights flattened array of weights (tan of angles) for each edge of
+ * each ring
+ * @param weights_per_ring array containing the number of weights for each ring
+ * @param num_rings number of rings (exterior + holes)
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre roof_height != 0
+ * @return The union of the polygon z-extrusion and the extrude straight
+ * skeleton
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_extrude_polygon_straight_skeleton_with_weights(
+    const sfcgal_geometry_t *geom, double building_height, double roof_height,
+    const double *weights, const size_t *weights_per_ring, size_t num_rings);
+
+/**
+ * Roof type for sfcgal_geometry_generate_roof
+ * @ingroup capi
+ */
+typedef enum {
+  SFCGAL_ROOF_FLAT     = 0,
+  SFCGAL_ROOF_HIPPED   = 1,
+  SFCGAL_ROOF_SKILLION = 2,
+  SFCGAL_ROOF_GABLE    = 3
+} sfcgal_roof_type_t;
+
+/**
+ * Generate a roof from a polygon using a specified type.
+ * Dispatches to flat, hipped, gable, or skillion roof generation.
+ * @param geom the input polygon
+ * @param roof_type roof type (SFCGAL_ROOF_FLAT, SFCGAL_ROOF_HIPPED,
+ *        SFCGAL_ROOF_SKILLION, or SFCGAL_ROOF_GABLE)
+ * @param slope_angle slope angle in degrees for gable/skillion (default: 30)
+ * @param height roof height (default: 3.0)
+ * @param primary_edge_index index of the sloped edge for skillion (default: 0)
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @return The generated roof geometry
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_generate_roof(const sfcgal_geometry_t *geom,
+                              sfcgal_roof_type_t roof_type, double slope_angle,
+                              double height, size_t primary_edge_index);
+
+/**
+ * Generate a flat roof from a polygon.
+ * @param geom the input polygon
+ * @param height roof height
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre height > 0
+ * @return The flat roof geometry
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_generate_flat_roof(const sfcgal_geometry_t *geom,
+                                   double                   height);
+
+/**
+ * Generate a hipped roof from a polygon using straight skeleton.
+ * @param geom the input polygon
+ * @param height roof height
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre height > 0
+ * @return The hipped roof geometry
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_generate_hipped_roof(const sfcgal_geometry_t *geom,
+                                     double                   height);
+
+/**
+ * Generate a gable roof from a polygon.
+ * Automatically detects gable ends (shortest edges become vertical).
+ * @param geom the input polygon
+ * @param height roof height
+ * @param slope_angle slope angle for non-gable edges in degrees
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre height > 0
+ * @pre 0 < slope_angle < 180
+ * @return The gable roof geometry
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_generate_gable_roof(const sfcgal_geometry_t *geom,
+                                    double height, double slope_angle);
+
+/**
+ * Generate a skillion (mono-pitch) roof from a polygon.
+ * @param geom the input polygon
+ * @param height roof height
+ * @param slope_angle slope angle in degrees
+ * @param primary_edge_index index of the sloped edge
+ * @pre geom must be a SFCGAL::Polygon
+ * @pre isValid(geom) == true
+ * @pre height > 0
+ * @pre 0 < slope_angle < 180
+ * @return The skillion roof geometry
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_generate_skillion_roof(const sfcgal_geometry_t *geom,
+                                       double height, double slope_angle,
+                                       size_t primary_edge_index);
+
+/**
  * Returns the approximate medial axis for the given SFCGAL::Polygon
  * Approximate medial axis is based on straight skeleton
  * @param geom the input geometry
@@ -1605,7 +1919,7 @@ sfcgal_geometry_projected_medial_axis(const sfcgal_geometry_t *geom);
 /**
  * Returns the straight skeleton partition for the given SFCGAL::Polygon
  * @param geom the input geometry
- * @param autoOrientation if 1 try to find the best orientation
+ * @param auto_orientation if 1 try to find the best orientation
  * @pre isValid(geom) == true
  * @pre geom must be a SFCGAL::Polygon, SFCGAL::Triangle or MultiPolygon
  * @post isValid(return) == true
@@ -1614,7 +1928,7 @@ sfcgal_geometry_projected_medial_axis(const sfcgal_geometry_t *geom);
  */
 sfcgal_geometry_t *
 sfcgal_geometry_straight_skeleton_partition(const sfcgal_geometry_t *geom,
-                                            bool autoOrientation);
+                                            bool auto_orientation);
 
 /**
  * Tests the 2D coverage of geom1 and geom2
@@ -1889,21 +2203,21 @@ sfcgal_geometry_visibility_point(const sfcgal_geometry_t *polygon,
                                  const sfcgal_geometry_t *point);
 
 /**
- * @brief build the visibility polygon of the segment [pointA ; pointB] on a
+ * @brief build the visibility polygon of the segment [point_a ; point_b] on a
  * SFCGAL::Polygon
  * @param polygon input geometry
- * @param pointA input geometry
- * @param pointB input geometry
+ * @param point_a input geometry
+ * @param point_b input geometry
  * @ingroup capi
  * @pre polygon is a valid geometry
- * @pre pointA and pointB must be vertices of poly, adjacents and respect the
+ * @pre point_a and point_b must be vertices of poly, adjacents and respect the
  * @return A visibility polygon
  * direction
  */
 sfcgal_geometry_t *
 sfcgal_geometry_visibility_segment(const sfcgal_geometry_t *polygon,
-                                   const sfcgal_geometry_t *pointA,
-                                   const sfcgal_geometry_t *pointB);
+                                   const sfcgal_geometry_t *point_a,
+                                   const sfcgal_geometry_t *point_b);
 
 /**
  * Buffer3D types
@@ -2033,12 +2347,12 @@ sfcgal_geometry_rotate_z(const sfcgal_geometry_t *geom, double angle);
 /**
  * Scale a geometry by a given factor
  * @param geom The geometry to scale
- * @param s Scale factor
+ * @param scale Scale factor
  * @return The scaled geometry
  * @ingroup capi
  */
 sfcgal_geometry_t *
-sfcgal_geometry_scale(const sfcgal_geometry_t *geom, double s);
+sfcgal_geometry_scale(const sfcgal_geometry_t *geom, double scale);
 
 /**
  * Scale a geometry by different factors for each dimension
@@ -2098,26 +2412,75 @@ sfcgal_geometry_translate_2d(const sfcgal_geometry_t *geom, double dx,
 
 /**
  * Transform a geometry by a 3D matrix (4x4)
- * @param geom the geometry to translate
- * @param matrix4x4 pointer onto 4x4 float matrix (column by column)
+ * @param geom the geometry to transform
+ * @param matrix4x4 pointer onto 4x4 double matrix (column by column)
  * @return The transformed geometry
  * @ingroup capi
  */
 sfcgal_geometry_t *
 sfcgal_geometry_transform(const sfcgal_geometry_t *geom,
-                          const float             *matrix4x4);
+                          const double            *matrix4x4);
 
 /**
- * Simplify a geometry
+ * Simplify a geometry by simplifying the polylines it contains
  * @param geom the geometry to simplify
  * @param threshold threshold parameter
- * @param preserveTopology preserve the topology
+ * @param preserve_topology preserve the topology
  * @return The simplified geometry
  * @ingroup capi
  */
 sfcgal_geometry_t *
 sfcgal_geometry_simplify(const sfcgal_geometry_t *geom, double threshold,
-                         bool preserveTopology);
+                         bool preserve_topology);
+
+/**
+ * Simplification strategy for edge collapsing algorithms.
+ * @ingroup capi
+ */
+typedef enum {
+  SFCGAL_SIMPLIFICATION_STRATEGY_EDGE_LENGTH      = 0,
+  SFCGAL_SIMPLIFICATION_STRATEGY_GARLAND_HECKBERT = 1,
+  SFCGAL_SIMPLIFICATION_STRATEGY_LINDSTROM_TURK   = 2
+} sfcgal_simplification_strategy_t;
+
+/**
+ * Simplify a surface mesh using CGAL edge collapse algorithm
+ *
+ * The stop predicate is expressed as an edge quantity.
+ *
+ * @param geometry The input geometry to simplify (must be a surface or solid)
+ * @param edge_count When to stop the simplification process
+ * @param strategy The cost and placement strategy to use
+ * @return A simplified copy of the input geometry
+ * @pre The input geometry must be valid and non-empty
+ * @pre For EDGE_COUNT_RATIO, the ratio must be in the range (0.0, 1.0)
+ * @pre The geometry must be 3-dimensional
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_simplify_surface_edge_count(
+    const sfcgal_geometry_t *geometry, size_t edge_count,
+    sfcgal_simplification_strategy_t strategy);
+
+/**
+ * Simplify a surface mesh using CGAL edge collapse algorithm
+ *
+ * The stop predicate is expressed as a proportion between 0 and 1.
+ *
+ * @param geometry The input geometry to simplify (must be a surface or solid)
+ * @param edge_ratio The simplification process stops when the edge count ratio
+ * is reached
+ * @param strategy The cost and placement strategy to use
+ * @return A simplified copy of the input geometry
+ * @pre The input geometry must be valid and non-empty
+ * @pre For EDGE_COUNT_RATIO, the ratio must be in the range (0.0, 1.0)
+ * @pre The geometry must be 3-dimensional
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_simplify_surface_edge_ratio(
+    const sfcgal_geometry_t *geometry, double edge_ratio,
+    sfcgal_simplification_strategy_t strategy);
 
 /*--------------------------------------------------------------------------------------*
  *
@@ -2137,12 +2500,12 @@ typedef void sfcgal_primitive_t;
  * @ingroup capi
  */
 typedef enum {
-  SFCGAL_TYPE_CYLINDER = 0,
-  SFCGAL_TYPE_SPHERE   = 1,
-  SFCGAL_TYPE_TORUS    = 2,
-  SFCGAL_TYPE_BOX      = 3,
-  SFCGAL_TYPE_CUBE     = 4,
-  SFCGAL_TYPE_CONE     = 5
+  SFCGAL_TYPE_BOX = 0,
+  SFCGAL_TYPE_CONE,
+  SFCGAL_TYPE_CUBE,
+  SFCGAL_TYPE_CYLINDER,
+  SFCGAL_TYPE_SPHERE,
+  SFCGAL_TYPE_TORUS
 } sfcgal_primitive_type_t;
 
 /**
@@ -2198,20 +2561,20 @@ sfcgal_primitive_is_almost_equals(const sfcgal_primitive_t *prim1,
  * Computes primitive area.
  *
  * @param prim Pointer to the input primitive.
- * @param withDiscretization If true, the area is computed
+ * @param with_discretization If true, the area is computed
  * using the real discretization with radial segments. If false, the area is
  * computed for a perfect primitive.
  * @return The primitive area
  * @ingroup capi
  */
 double
-sfcgal_primitive_area(const sfcgal_primitive_t *prim, bool withDiscretization);
+sfcgal_primitive_area(const sfcgal_primitive_t *prim, bool with_discretization);
 
 /**
  * Computes primitive volume.
  *
  * @param prim Pointer to the input primitive.
- * @param withDiscretization If true, the area is computed
+ * @param with_discretization If true, the area is computed
  * using the real discretization with radial segments. If false, the area is
  * computed for a perfect primitive.
  * @return The primitive volume
@@ -2219,7 +2582,7 @@ sfcgal_primitive_area(const sfcgal_primitive_t *prim, bool withDiscretization);
  */
 double
 sfcgal_primitive_volume(const sfcgal_primitive_t *prim,
-                        bool                      withDiscretization);
+                        bool                      with_discretization);
 
 /**
  * @brief Retrieves the list of primitive parameters as JSON array of { name,
@@ -2256,13 +2619,13 @@ sfcgal_primitive_parameter(const sfcgal_primitive_t *primitive,
  * type, value }.
  * @param primitive Pointer to the primitive.
  * @param name Name of the parameter to set.
- * @param jsonValue The new parameter value as JSON strong.
+ * @param json_value The new parameter value as JSON strong.
  * @pre The parameter identified by @p name must exist.
  * @ingroup capi
  */
 void
 sfcgal_primitive_set_parameter(sfcgal_primitive_t *primitive, const char *name,
-                               const char *jsonValue);
+                               const char *json_value);
 
 /**
  * @brief Retrieves the value of a primitive parameter as a double.
