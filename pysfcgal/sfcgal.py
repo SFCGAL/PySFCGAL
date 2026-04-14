@@ -962,6 +962,63 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(
+        lambda self, height, angles: (
+            self.is_valid()
+            and self.geom_type == "Polygon"
+            and height != 0
+            and (
+                all(
+                    [
+                        0 < edge_angle <= 90
+                        for ring_angle in angles
+                        for edge_angle in ring_angle
+                    ]
+                )
+                or all(
+                    [
+                        90 <= edge_angle < 180
+                        for ring_angle in angles
+                        for edge_angle in ring_angle
+                    ]
+                )
+            )
+        ),
+        "require",
+    )
+    def extrude_straight_skeleton_with_angles(
+        self,
+        height: float,
+        angles: list[list[float]],
+    ) -> Optional[Geometry]:
+        """
+        Extrude the geometry along its straight skeleton using specific angles
+        for each segment ring.
+
+        Parameters
+        ----------
+        height : float
+            The height to which the geometry will be extruded.
+        angles : list of list of float
+            Array of angles (in degrees) for each edge of each ring
+
+        Returns
+        -------
+        Geometry
+            The resulting extruded geometry along the straight skeleton.
+        """
+
+        angles_c = ffi.new(
+            "double[]",
+            [edge_angle for ring_angle in angles for edge_angle in ring_angle],
+        )
+        angles_per_ring = [len(ring) for ring in angles]
+        angles_per_ring_c = ffi.new("size_t[]", angles_per_ring)
+        geom = lib.sfcgal_geometry_extrude_straight_skeleton_with_angles(
+            self._geom, height, angles_c, angles_per_ring_c, len(angles_per_ring)
+        )
+        return Geometry.from_sfcgal_geometry(geom)
+
+    @cond_icontract(
         lambda self: (
             self.is_valid()
             and self.geom_type in ("MultiPolygon", "Polygon", "Triangle")

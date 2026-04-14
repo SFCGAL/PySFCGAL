@@ -1,6 +1,11 @@
+import pathlib
+
 import pytest
 
-from pysfcgal.sfcgal import GeometryCollection, LineString, Point, Polygon
+from pysfcgal.sfcgal import (GeometryCollection, LineString, Point, Polygon,
+                             PolyhedralSurface)
+
+EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 
 
 @pytest.fixture
@@ -23,6 +28,13 @@ def polygon_with_hole(big_ring_ccw, small_ring_23_cw, small_ring_56_cw):
     yield Polygon(
         exterior=big_ring_ccw,
         interiors=[small_ring_23_cw, small_ring_56_cw]
+    )
+
+
+@pytest.fixture
+def heptagon_building_footprint():
+    yield Polygon.from_coordinates(
+        [[(0, 0), (4, 0), (4, 3), (7, 3), (9, 5), (9, 10), (0, 10), (0, 0)]]
     )
 
 
@@ -192,6 +204,32 @@ def test_add_interior_ring(polygon1, linestring1_ccw, linestring2_cw):
     assert polygon1.interiors == [linestring2_cw]
     assert polygon1.rings == [linestring1_ccw, linestring2_cw]
     assert polygon1.is_valid()
+
+
+def test_extrude_straight_skeleton_with_angles(
+    heptagon_building_footprint: Polygon,
+) -> None:
+    roof = heptagon_building_footprint.extrude_straight_skeleton_with_angles(
+        height=10, angles=[[90, 90, 45, 30, 30, 15, 15]]
+    )
+    assert isinstance(roof, PolyhedralSurface)
+    assert (
+        roof.to_wkt(2)
+        == (EXPECTED_DATA_PATH / "straight_skeleton_extrusion_acute_angles.wkt")
+        .read_text()
+        .strip()
+    )
+
+    roof = heptagon_building_footprint.extrude_straight_skeleton_with_angles(
+        height=10, angles=[[100, 90, 145, 145, 145, 145, 145]]
+    )
+    assert isinstance(roof, PolyhedralSurface)
+    assert (
+        roof.to_wkt(2)
+        == (EXPECTED_DATA_PATH / "straight_skeleton_extrusion_obtuse_angles.wkt")
+        .read_text()
+        .strip()
+    )
 
 
 @pytest.mark.parametrize("compute_2d_area", [True, False])
