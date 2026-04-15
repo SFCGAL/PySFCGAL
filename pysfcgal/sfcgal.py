@@ -1642,6 +1642,64 @@ class Geometry:
                 lib.free(buf[0])
         return vtk_string
 
+    @staticmethod
+    def read_obj(filename: str) -> Optional[Geometry]:
+        """Parse an OBJ file into a Geometry object.
+
+        This function takes an OBJ file, read it and converts its content into
+        a `Geometry` object by utilizing the SFCGAL library's OBJ parsing capabilities.
+
+        Parsing OBJ files creates 3D geometries with the following types, depending on
+        the OBJ content:
+
+        - OBJ with faces: Tin if all faces are triangular, PolyhedralSurface otherwise;
+        - OBJ with lines: MultiLineString;
+        - OBJ with points: MultiPoint.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the OBJ file that contains the geometry.
+
+        Returns
+        -------
+        Optional[Geometry]
+            A `Geometry` object parsed from the OBJ string.
+
+        """
+        filename_bytes = bytes(filename, encoding="utf-8")
+        geom = lib.sfcgal_io_read_obj_file(filename_bytes)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    @staticmethod
+    def from_obj(obj_str: str) -> Optional[Geometry]:
+        """Parse an OBJ representation into a Geometry object.
+
+        This function takes an OBJ string and converts it into a `Geometry` object
+        by utilizing the SFCGAL library's OBJ parsing capabilities.
+
+        Parsing OBJ strings creates 3D geometries with the following types, depending
+        on the OBJ content:
+
+        - OBJ with faces: Tin if all faces are triangular, PolyhedralSurface otherwise;
+        - OBJ with lines: MultiLineString;
+        - OBJ with points: MultiPoint.
+
+        Parameters
+        ----------
+        obj_str : str
+            The OBJ string representing the geometry.
+
+        Returns
+        -------
+        Optional[Geometry]
+            A `Geometry` object parsed from the OBJ string.
+
+        """
+        obj_bytes = bytes(obj_str, encoding="utf-8")
+        geom = lib.sfcgal_io_read_obj(obj_bytes, len(obj_bytes))
+        return Geometry.from_sfcgal_geometry(geom)
+
     def write_obj(self, filename: str) -> None:
         """
         Export the geometry to a OBJ file.

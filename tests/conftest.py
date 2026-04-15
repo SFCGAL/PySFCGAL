@@ -15,6 +15,11 @@ def tmp_test_dir():
 
 
 @pytest.fixture
+def fixture_dir() -> Path:
+    return (Path(__file__).parent / "fixtures").absolute()
+
+
+@pytest.fixture
 def c000():
     yield (0., 0., 0.)
 
