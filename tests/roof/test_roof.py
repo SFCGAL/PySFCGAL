@@ -30,6 +30,9 @@ def test_flat_roof_generation(
     same_roof = generate_roof(polygon1, RoofType.FLAT, height=height)
     assert roof == same_roof
 
+    # flat roof is an alias for Polygon.extrude
+    assert roof == polygon1.extrude(extrude_x=0, extrude_y=0, extrude_z=height)
+
 
 def test_hipped_roof_generation(rectangle_building_footprint: Polygon) -> None:
     height = 5.3
@@ -42,6 +45,9 @@ def test_hipped_roof_generation(rectangle_building_footprint: Polygon) -> None:
         rectangle_building_footprint, RoofType.HIPPED, height=height
     )
     assert roof == same_roof
+
+    # hipped roof is alias for Polygon.extrude_straight_skeleton
+    assert roof == rectangle_building_footprint.extrude_straight_skeleton(height)
 
 
 def test_gable_roof_generation(rectangle_building_footprint: Polygon) -> None:
