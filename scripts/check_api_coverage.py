@@ -103,10 +103,9 @@ def check_function_usage_in_python(
                 # Look for the c function in the python code
                 # Possible patterns: func_name(, .func_name(, lib.func_name(
                 patterns = [
-                    rf"\b{re.escape(func_name)}\s*\(",  # direct calls
-                    rf"\.{re.escape(func_name)}\s*\(",  # appel via module/objet
-                    rf'"{re.escape(func_name)}"',  # literal string
-                    rf"'{re.escape(func_name)}'",  # literal string
+                    rf"\b{re.escape(func_name)}\b",  # direct call, reference, or via object  # noqa: E501
+                    rf'"{re.escape(func_name)}"',    # literal string, double-quoted
+                    rf"'{re.escape(func_name)}'",    # literal string, single-quoted
                 ]
 
                 for pattern in patterns:
