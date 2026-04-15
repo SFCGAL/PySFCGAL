@@ -1,0 +1,73 @@
+from enum import Enum, IntEnum
+from typing import Any
+
+class PrimitiveType(IntEnum):
+    BOX = ...
+    CONE = ...
+    CUBE = ...
+    CYLINDER = ...
+    SPHERE = ...
+    TORUS = ...
+
+
+class ParameterType(Enum):
+    DOUBLE = ...
+    INT = ...
+    POINT = ...
+    VECTOR = ...
+
+
+class Primitive:
+    def __getitem__(self, name: str) -> int | float | list[float]: ...
+    def __setitem__(self, name: str, value: int | float | list[float]) -> None: ...
+    def __repr__(self) -> str: ...
+    def to_polyhedral_surface(self) -> Any: ...
+    @property
+    def type_(self) -> PrimitiveType: ...
+    @property
+    def parameters(self) -> dict[str, ParameterType]: ...
+
+
+class Box(Primitive):
+    x_extent: float
+    y_extent: float
+    z_extent: float
+    def __init__(self, *, x_extent: float = ..., y_extent: float = ..., z_extent: float = ...) -> None: ...
+
+
+class Cube(Primitive):
+    size: float
+    def __init__(self, *, size: float = ...) -> None: ...
+
+
+class Cylinder(Primitive):
+    radius: float
+    height: float
+    num_radial: int
+    axis: list[float]
+    base_center: list[float]
+    def __init__(self, *, radius: float = ..., height: float = ..., num_radial: int = ..., axis: list[float] = ..., base_center: list[float] = ...) -> None: ...
+
+
+class Sphere(Primitive):
+    radius: float
+    num_subdivisions: int
+    center: list[float]
+    direction: list[float]
+    def __init__(self, *, radius: float = ..., num_subdivisions: int = ..., center: list[float] = ..., direction: list[float] = ...) -> None: ...
+
+
+class Torus(Primitive):
+    main_radius: float
+    tube_radius: float
+    main_num_radial: int
+    tube_num_radial: int
+    def __init__(self, *, main_radius: float = ..., tube_radius: float = ..., main_num_radial: int = ..., tube_num_radial: int = ...) -> None: ...
+
+
+class Cone(Primitive):
+    bottom_radius: float
+    top_radius: float
+    height: float
+    num_radial: int
+    def __init__(self, *, bottom_radius: float = ..., top_radius: float = ..., height: float = ..., num_radial: int = ...) -> None: ...
