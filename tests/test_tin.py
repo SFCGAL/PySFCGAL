@@ -124,3 +124,12 @@ def test_tin_memory_management(tin_coordinates):
 
     first_triangle = Tin(tin_coordinates)[0]
     assert first_triangle.to_wkt(0) == first_triangle_wkt
+
+
+def test_tin_n_edges(expected_triangles):
+    tin = Tin()
+    assert tin.n_edges == 0
+    expected_n_edges = (3, 5, 6)
+    for patch, exp_n_edges in zip(expected_triangles, expected_n_edges):
+        tin.add_patch(patch)
+        assert tin.n_edges == exp_n_edges

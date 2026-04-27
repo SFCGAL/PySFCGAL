@@ -156,3 +156,13 @@ def test_polyhedralsurface_memory_management(c000, c100, c010, c001):
         [[[c000, c100, c010]], [[c000, c100, c001]], [[c000, c010, c001]]]
     )[0]
     assert first_patch.to_wkt(0) == first_patch_wkt
+
+
+def test_polyhedralsurface_n_edges(polyhedralsurface):
+    assert polyhedralsurface.n_edges == 6
+    phs = PolyhedralSurface()
+    assert phs.n_edges == 0
+    expected_n_edges = (3, 5, 6)
+    for patch, exp_n_edges in zip(polyhedralsurface, expected_n_edges):
+        phs.add_patch(patch)
+        assert phs.n_edges == exp_n_edges

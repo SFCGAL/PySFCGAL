@@ -41,6 +41,7 @@ def test_read_obj(filename: str, fixture_dir: Path, tmp_test_dir: Path) -> None:
     copied_geom = sfcgal.Geometry.read_obj(tmp_filepath)
     assert len(geom) == len(copied_geom)
     assert geom.geom_type == copied_geom.geom_type
+    assert geom.n_edges == copied_geom.n_edges
 
 
 @pytest.mark.parametrize(

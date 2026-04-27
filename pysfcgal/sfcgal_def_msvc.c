@@ -833,6 +833,16 @@ sfcgal_polyhedral_surface_num_patches(const sfcgal_geometry_t *polyhedral);
 
 
 /**
+ * Get the number of edges into a PolyhedralSurface.
+ * @param polyhedral the input geometry
+ * @pre polyhedral must be a SFCGAL::PolyhedralSurface
+ * @return The number of edges of polyhedral
+ * @ingroup capi
+ */
+size_t
+sfcgal_polyhedral_surface_num_edges(const sfcgal_geometry_t *polyhedral);
+
+/**
  * Returns the ith patch of a given SFCGAL::PolyhedralSurface
  * @param polyhedral the input geometry
  * @param i index of the patch in the polyhedral
@@ -897,6 +907,15 @@ sfcgal_triangulated_surface_create(void);
 size_t
 sfcgal_triangulated_surface_num_patches(const sfcgal_geometry_t *tin);
 
+/**
+ * Get the number of edges into a TriangulatedSurface.
+ * @param tin the input geometry
+ * @pre tin must be a SFCGAL::TriangulatedSurface
+ * @return The number of edges of tin
+ * @ingroup capi
+ */
+size_t
+sfcgal_triangulated_surface_num_edges(const sfcgal_geometry_t *tin);
 
 /**
  * Returns the ith patch of a given

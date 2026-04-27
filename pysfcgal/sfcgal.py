@@ -3663,6 +3663,19 @@ class Tin(Geometry):
         patch_clone = lib.sfcgal_geometry_clone(patch._geom)
         lib.sfcgal_triangulated_surface_add_patch(self._geom, patch_clone)
 
+    @property
+    def n_edges(self) -> int:
+        """Get the number of edges in the TIN.
+
+        Two adjacent triangles are connected through an edge.
+
+        Returns
+        -------
+        int
+            Number of edges.
+        """
+        return lib.sfcgal_triangulated_surface_num_edges(self._geom)
+
     def to_coordinates(self) -> list:
         """Generates the coordinates of the TIN
 
@@ -3963,6 +3976,19 @@ class PolyhedralSurface(Geometry):
         if not isinstance(other, PolyhedralSurface):
             return False
         return self[:] == other[:]
+
+    @property
+    def n_edges(self) -> int:
+        """Get the number of edges in the polyhedron.
+
+        Two adjacent polygons are connected through an edge.
+
+        Returns
+        -------
+        int
+            Number of edges.
+        """
+        return lib.sfcgal_polyhedral_surface_num_edges(self._geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
     def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
