@@ -447,6 +447,28 @@ class Geometry:
         geom = lib.sfcgal_geometry_convexhull_3d(self._geom)
         return Geometry.from_sfcgal_geometry(geom)
 
+    def boundary(self) -> Optional[Geometry]:
+        """
+        Compute the boundary of the geometry.
+
+        Returns
+        -------
+        Geometry
+            The boundary of the geometry.
+            The return type depends on the input:
+
+            - ``Point`` / ``MultiPoint`` : empty geometry
+            - ``LineString`` : ``MultiPoint`` (start/end), or empty if closed
+            - ``Polygon`` : ``LineString``, or ``MultiLineString`` if interior rings
+            - ``Triangle`` : ``LineString`` (closed ring of 3 edges)
+            - ``MultiPolygon`` / ``PolyhedralSurface`` / ``TriangulatedSurface`` :
+              ``MultiLineString`` of free edges, or empty if the surface is closed
+            - ``GeometryCollection`` : not supported
+            - ``Solid`` / ``MultiSolid`` : not supported
+        """
+        boundary = lib.sfcgal_geometry_boundary(self._geom)
+        return Geometry.from_sfcgal_geometry(boundary)
+
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
     def difference(self, other: Geometry) -> Optional[Geometry]:
         """
