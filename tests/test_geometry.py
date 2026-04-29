@@ -1,6 +1,7 @@
 import pytest
 
 from pysfcgal import sfcgal
+from tests.utils import GEOMETRY_FACTORIES
 
 
 @pytest.mark.parametrize(
@@ -17,3 +18,21 @@ def test_geometry_empty(geom_type, geom_cls):
     """
     geom = geom_cls()
     assert geom.to_wkt() == f"{geom_type} EMPTY".upper()
+
+
+@pytest.mark.parametrize(
+    "geom_factory",
+    GEOMETRY_FACTORIES.values(),
+    ids=GEOMETRY_FACTORIES.keys()
+)
+def test_is_valid(geom_factory) -> None:
+    """A geometry may be valid by itself, without setting the validity flag.
+
+    By default, the validity flag is unset.
+    """
+    geom = geom_factory(1.)
+    assert geom.is_valid()
+    assert not geom.validity_flag
+    # Testing the validity flag modification
+    geom.set_validity_flag(True)
+    assert geom.validity_flag

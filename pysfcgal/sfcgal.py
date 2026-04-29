@@ -82,6 +82,41 @@ class Geometry:
     _owned = True
     _parent: Optional[Geometry] = None
 
+    @property
+    def validity_flag(self) -> bool:
+        """Returns whether the geometry has a validity flag.
+
+        The validity flag indicates that the geometry is assumed to be valid, skipping
+        any validity check. Setting this flag may improve the performance of PySFCGAL
+        operations, as validity checks can be time-consuming.
+
+        Returns
+        -------
+        bool
+            Geometry validity flag.
+
+        """
+        return bool(lib.sfcgal_geometry_has_validity_flag(self._geom))
+
+    def set_validity_flag(self, flag: bool) -> None:
+        """Set the geometry validity flag.
+
+        By forcing the validity flag to True, validity checks will be skipped entirely.
+        Otherwise if the flag is forced to False, the geometry validity is not
+        guaranteed, a validity check will have to be done as soon as another method
+        requires it (either explicitely through the is_valid() method or internally on
+        the SFCGAL-side).
+
+        The flag is set according to the validity status when is_valid() is called.
+
+        Parameters
+        ----------
+        flag: bool
+            Validity flag that has to be set for the current geometry.
+
+        """
+        lib.sfcgal_geometry_force_valid(self._geom, flag)
+
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
     def distance(self, other: Geometry) -> float:
         """
@@ -697,7 +732,7 @@ class Geometry:
         bool
             True if the geometry is valid, False otherwise.
         """
-        return lib.sfcgal_geometry_is_valid(self._geom) != 0
+        return self.validity_flag or lib.sfcgal_geometry_is_valid(self._geom) != 0
 
     def is_valid_detail(self) -> Tuple[Optional[str], None]:
         """

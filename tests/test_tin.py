@@ -38,7 +38,6 @@ def tin_unordered(c000, c100, c010, c001):
 
 def test_tin(tin, expected_triangles, tin_unclosed, tin_unordered):
     assert len(tin) == 4
-    assert tin.is_valid()
     # iteration
     for triangle, expected_triangle in zip(tin, expected_triangles):
         assert triangle == expected_triangle
@@ -48,9 +47,25 @@ def test_tin(tin, expected_triangles, tin_unclosed, tin_unordered):
     assert tin[-1] == expected_triangles[-1]
     assert tin[1:3] == expected_triangles[1:3]
     # equality
-    assert not tin_unclosed.is_valid()
     assert tin != tin_unclosed
     assert tin != tin_unordered
+
+
+def test_tin_validity(tin, tin_unclosed):
+    """One may bypass the validity check by setting a validity flag.
+    """
+    assert tin.is_valid()
+    assert not tin_unclosed.is_valid()
+    assert not tin_unclosed.validity_flag
+    invalidity_reason, _ = tin_unclosed.is_valid_detail()
+    assert invalidity_reason == (
+        "inconsistent orientation of PolyhedralSurface detected "
+        "at edge 2 (3-0) of polygon 2"
+    )
+    tin_unclosed.set_validity_flag(True)
+    assert tin_unclosed.validity_flag
+    assert tin_unclosed.is_valid()
+    assert tin_unclosed.is_valid_detail() == (None, None)
 
 
 def test_tin_wkt(tin, tin_coordinates):

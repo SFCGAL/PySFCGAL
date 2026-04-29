@@ -47,6 +47,13 @@ def vertical_polygon(vertical_ring):
 
 
 @pytest.fixture
+def invalid_polygon(big_ring_ccw: list[tuple[float, float]]) -> Polygon:
+    yield Polygon(
+        [big_ring_ccw[0], big_ring_ccw[2], big_ring_ccw[1], *big_ring_ccw[3:]]
+    )
+
+
+@pytest.fixture
 def linestring1_ccw(big_ring_ccw):
     yield LineString(big_ring_ccw)
 
@@ -75,8 +82,6 @@ def test_polygon_rings(
     assert polygon_with_hole.interiors == [linestring2_cw, linestring3_cw]
     assert polygon_with_hole.rings == [linestring1_ccw, linestring2_cw, linestring3_cw]
 
-    assert polygon_with_hole.is_valid()
-
 
 def test_polygon_iteration(
         polygon_with_hole, linestring1_ccw, linestring2_cw, linestring3_cw):
@@ -97,6 +102,23 @@ def test_polygon_indexing(
 def test_polygon_equality(polygon_with_hole, polygon1, polygon_with_hole_unclosed):
     assert polygon_with_hole == polygon_with_hole_unclosed
     assert polygon_with_hole != polygon1
+
+
+def test_polygon_validity(
+    polygon1: Polygon,
+    polygon_with_hole: Polygon,
+    invalid_polygon: Polygon,
+) -> None:
+    assert polygon1.is_valid()
+    assert polygon_with_hole.is_valid()
+    assert not invalid_polygon.is_valid()
+    assert not invalid_polygon.validity_flag
+    invalidity_reason, _ = invalid_polygon.is_valid_detail()
+    assert invalidity_reason == "ring 0 self intersects"
+    invalid_polygon.set_validity_flag(True)
+    assert invalid_polygon.validity_flag
+    assert invalid_polygon.is_valid()
+    assert invalid_polygon.is_valid_detail() == (None, None)
 
 
 def test_polygon_to_coordinates(polygon1, big_ring_ccw):
@@ -181,7 +203,6 @@ def test_obj(tmp_test_dir, polygon1):
 def test_set_exterior_ring(polygon1, linestring1_ccw, linestring2_ccw):
     assert polygon1.n_interiors == 0
     assert polygon1.rings == [linestring1_ccw]
-    assert polygon1.is_valid()
 
     polygon1.set_exterior_ring(linestring2_ccw)
     assert polygon1.n_interiors == 0
@@ -192,7 +213,6 @@ def test_set_exterior_ring(polygon1, linestring1_ccw, linestring2_ccw):
 def test_add_interior_ring(polygon1, linestring1_ccw, linestring2_cw):
     assert polygon1.n_interiors == 0
     assert polygon1.rings == [linestring1_ccw]
-    assert polygon1.is_valid()
 
     polygon1.add_interior_ring(linestring2_cw)
     assert polygon1.n_interiors == 1

@@ -46,7 +46,6 @@ def expected_polygons(c000, c100, c010, c001):
 
 
 def test_polyhedralsurface_len(polyhedralsurface):
-    assert polyhedralsurface.is_valid()
     assert len(polyhedralsurface) == 4
 
 
@@ -65,9 +64,23 @@ def test_polyhedralsurface_indexing(polyhedralsurface, expected_polygons):
 def test_polyhedralsurface_equality(
     polyhedralsurface, other_polyhedralsurface, polyhedralsurface_unordered
 ):
-    assert not other_polyhedralsurface.is_valid()
     assert polyhedralsurface != other_polyhedralsurface
     assert polyhedralsurface != polyhedralsurface_unordered
+
+
+def test_polyhedralsurface_validity(polyhedralsurface, other_polyhedralsurface) -> None:
+    assert polyhedralsurface.is_valid()
+    assert not other_polyhedralsurface.is_valid()
+    assert not other_polyhedralsurface.validity_flag
+    invalidity_reason, _ = other_polyhedralsurface.is_valid_detail()
+    assert invalidity_reason == (
+        "inconsistent orientation of PolyhedralSurface detected "
+        "at edge 2 (3-0) of polygon 2"
+    )
+    other_polyhedralsurface.set_validity_flag(True)
+    assert other_polyhedralsurface.validity_flag
+    assert other_polyhedralsurface.is_valid()
+    assert other_polyhedralsurface.is_valid_detail() == (None, None)
 
 
 def test_polyhedralsurface_to_coordinates(polyhedralsurface, c000, c100, c010, c001):

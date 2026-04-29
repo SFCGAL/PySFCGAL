@@ -14,6 +14,11 @@ def vertical_line(c000, c100, c001):
 
 
 @pytest.fixture
+def one_point_line(c000):
+    yield LineString([c000])
+
+
+@pytest.fixture
 def closed_vertical_line(vertical_line):
     vertical_line_coords = vertical_line.to_coordinates()
     yield LineString(vertical_line_coords + [vertical_line_coords[0]])
@@ -120,3 +125,17 @@ def test_linestring_close(c000, c001, vertical_line, closed_vertical_line):
     assert len(closed_vertical_line.to_coordinates()) == 4
     assert closed_vertical_line.to_coordinates()[0] == c000
     assert closed_vertical_line.to_coordinates()[-1] == c000
+
+
+def test_linestring_validity(long_line, one_point_line) -> None:
+    empty_line = LineString([])
+    assert empty_line.is_valid()
+    assert long_line.is_valid()
+    assert not one_point_line.is_valid()
+    assert not one_point_line.validity_flag
+    invalidity_reason, _ = one_point_line.is_valid_detail()
+    assert invalidity_reason == "no length"
+    one_point_line.set_validity_flag(True)
+    assert one_point_line.validity_flag
+    assert one_point_line.is_valid()
+    assert one_point_line.is_valid_detail() == (None, None)
