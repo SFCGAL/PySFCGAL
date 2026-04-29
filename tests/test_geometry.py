@@ -31,8 +31,9 @@ def test_is_valid(geom_factory) -> None:
     By default, the validity flag is unset.
     """
     geom = geom_factory(1.)
-    assert geom.is_valid()
     assert not geom.validity_flag
-    # Testing the validity flag modification
-    geom.set_validity_flag(True)
+    assert geom.is_valid()  # updates the validity flag on the same hand
     assert geom.validity_flag
+    # Testing the validity flag modification
+    geom.set_validity_flag(False)
+    assert not geom.validity_flag

@@ -724,15 +724,20 @@ class Geometry:
         return (False, complex_reason_str)
 
     def is_valid(self) -> bool:
-        """
-        Check if the geometry is valid.
+        """Check if the geometry is valid.
+
+        The validity status updates the geometry validity flag.
 
         Returns
         -------
         bool
             True if the geometry is valid, False otherwise.
         """
-        return self.validity_flag or lib.sfcgal_geometry_is_valid(self._geom) != 0
+        if self.validity_flag:
+            return True
+        sfcgal_validity = lib.sfcgal_geometry_is_valid(self._geom) != 0
+        self.set_validity_flag(sfcgal_validity)
+        return sfcgal_validity
 
     def is_valid_detail(self) -> Tuple[Optional[str], None]:
         """
@@ -746,6 +751,9 @@ class Geometry:
             A string describing the reason if the geometry is invalid.
             If valid, returns None.
         """
+        if self.validity_flag:
+            # early-stop to avoid useless computation time in SFCGAL
+            return (None, None)
         invalidity_reason = ffi.new("char **")
         invalidity_location = ffi.new("sfcgal_geometry_t **")
         lib.sfcgal_geometry_is_valid_detail(
