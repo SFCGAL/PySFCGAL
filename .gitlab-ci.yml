@@ -17,7 +17,7 @@ lint:flake8:
       - master
     changes:
       - "pysfcgal/*.py"
-      - "tests/**/*.py"
+      - "tests/**/*.{py,wkt}"
       - ".gitlab-ci.yml"
       - "scripts/*.py"
   before_script:
