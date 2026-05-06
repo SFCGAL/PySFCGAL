@@ -15,6 +15,7 @@ if typing.TYPE_CHECKING:
     from typing_extensions import TypeAlias
 
 from ._contracts import cond_icontract
+from ._deprecated import deprecated
 from ._sfcgal import ffi, lib
 
 # Required until Alpha Shapes bug is not fixed on MSVC
@@ -1517,6 +1518,7 @@ class Geometry:
         )
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate() is deprecated. Use rotate_2d() instead.")
     def rotate(self, angle: float = 0.) -> Optional[Geometry]:
         """
         Rotates a geometry around the origin (0,0,0) by a given angle
@@ -1534,6 +1536,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate(self._geom, angle)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate_around_2d_point() is deprecated. Use rotate_2d() instead.")
     def rotate_around_2d_point(
         self, angle: float, cx: float, cy: float
     ) -> Optional[Geometry]:
@@ -1557,6 +1560,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate_2d(self._geom, angle, cx, cy)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate_around_3d_axis() is deprecated. Use rotate_3d() instead.")
     def rotate_around_3d_axis(
         self, angle: float, ax: float, ay: float, az: float
     ) -> Optional[Geometry]:
@@ -1582,6 +1586,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate_3d(self._geom, angle, ax, ay, az)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate_around_3d_center() is deprecated. Use rotate_3d() instead.")
     def rotate_3d_around_center(
         self,
         angle: float,
@@ -1622,6 +1627,7 @@ class Geometry:
         )
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate_x() is deprecated. Use rotate_3d_x() instead.")
     def rotate_x(self, angle: float = 0.) -> Optional[Geometry]:
         """
         Rotates a geometry around the X axis by a given angle
@@ -1639,6 +1645,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate_x(self._geom, angle)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate_y() is deprecated. Use rotate_3d_y() instead.")
     def rotate_y(self, angle: float = 0.) -> Optional[Geometry]:
         """
         Rotates a geometry around the Y axis by a given angle
@@ -1656,6 +1663,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate_y(self._geom, angle)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("rotate_z() is deprecated. Use rotate_3d_z() instead.")
     def rotate_z(self, angle: float = 0.) -> Optional[Geometry]:
         """
         Rotates a geometry around the Z axis by a given angle

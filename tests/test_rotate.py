@@ -26,6 +26,7 @@ def is_close(first: float, second: float, tol: float = 1e-9) -> bool:
     return abs(first - second) < tol
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -47,6 +48,7 @@ def test_rotate(coordinates, angle, expected_coordinates):
     assert rotated_point_new_api == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, center_coordinates, expected_coordinates",
     [
@@ -67,6 +69,7 @@ def test_rotate_around_2d_point(
     assert rotated_point_new_api == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, vector_axis, expected_coordinates",
     [
@@ -91,6 +94,7 @@ def test_rotate_around_3d_axis(
     assert rotated_point_new_api == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, vector_axis, center_coordinates, expected_coordinates",
     [
@@ -118,6 +122,7 @@ def test_rotate_3d_around_center(
     assert rotated_point_new_api == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -141,6 +146,7 @@ def test_rotate_x(
     assert rotated_point_new_api_2 == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -164,6 +170,7 @@ def test_rotate_y(
     assert rotated_point_new_api_2 == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -187,6 +194,7 @@ def test_rotate_z(
     assert rotated_point_new_api_2 == rotated_point
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -211,6 +219,7 @@ def test_rotate_linestring(
     assert rotated_geom_new_api == rotated_geom
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "ring, angle, expected_coordinates",
     [
