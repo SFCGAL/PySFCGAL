@@ -76,7 +76,6 @@ def test_rotate_around_3d_axis(
 ):
     point = Point(*coordinates)
     rotated_point = point.rotate_around_3d_axis(angle, *vector_axis)
-    print(rotated_point.to_coordinates())
     assert all(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
@@ -100,7 +99,6 @@ def test_rotate_3d_around_center(
     rotated_point = point.rotate_3d_around_center(
         angle, *vector_axis, *center_coordinates
     )
-    print(rotated_point.to_coordinates())
     assert all(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
