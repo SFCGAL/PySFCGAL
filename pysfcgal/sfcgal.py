@@ -1591,7 +1591,7 @@ class Geometry:
 
     @cond_icontract(lambda self, tolerance: (self.is_valid() and tolerance > 0),
                     "require")
-    def simplify(self, tolerance: float, preserveTopology: bool) -> Optional[Geometry]:
+    def simplify(self, tolerance: float, preserve_topology: bool) -> Optional[Geometry]:
         """
         Compute the simplication of the geometry.
 
@@ -1599,7 +1599,7 @@ class Geometry:
         ----------
         tolerance : float
             The simplification threshold.
-        preserveTopology : bool
+        preserve_topology : bool
             Preserve topology or not.
 
         Returns
@@ -1607,7 +1607,7 @@ class Geometry:
         Geometry
             The simplified geometry.
         """
-        geom = lib.sfcgal_geometry_simplify(self._geom, tolerance, preserveTopology)
+        geom = lib.sfcgal_geometry_simplify(self._geom, tolerance, preserve_topology)
         return Geometry.from_sfcgal_geometry(geom)
 
     def write_vtk(self, filename: str) -> None:
