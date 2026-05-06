@@ -7,8 +7,9 @@ from __future__ import annotations
 
 import platform
 import typing
+from dataclasses import dataclass
 from enum import IntEnum
-from typing import Optional, Tuple, Type, Union, cast
+from typing import ClassVar, Optional, Tuple, Type, Union, cast
 
 if typing.TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -42,6 +43,23 @@ class DimensionError(Exception):
     a 2D-point."""
 
     pass
+
+
+@dataclass(frozen=True)
+class Axis:
+    """Rotation axis"""
+    x: float
+    y: float
+    z: float
+
+    X: ClassVar[Axis]
+    Y: ClassVar[Axis]
+    Z: ClassVar[Axis]
+
+
+Axis.X = Axis(1., 0., 0.)
+Axis.Y = Axis(0., 1., 0.)
+Axis.Z = Axis(0., 0., 1.)
 
 
 def sfcgal_version():
@@ -1654,6 +1672,134 @@ class Geometry:
         """
         geom = lib.sfcgal_geometry_rotate_z(self._geom, angle)
         return Geometry.from_sfcgal_geometry(geom)
+
+    def rotate_2d(
+            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+        """
+        Rotates a geometry in 2D by a given angle
+
+        If the center is not provided, the geometry is rotated
+        around the origin (0, 0).
+
+        Parameters
+        ----------
+        angle : float
+            Rotation angle in radians
+        center: Point, defaults to the origin (0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Geometry
+            The rotated geometry
+        """
+        if center is None:
+            center = Point(0, 0)
+
+        geom = lib.sfcgal_geometry_rotate_2d(self._geom, angle, center.x, center.y)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    def rotate_3d(
+            self, angle: float, axis: Axis, center: Optional[Point] = None
+    ) -> Optional[Geometry]:
+        """
+        Rotates a geometry in 3D around an axis by a given angle
+
+        If the center is not provided, the geometry is rotated
+        around the origin (0, 0, 0).
+
+        Parameters
+        ----------
+        angle : float
+            Rotation angle in radians
+        axis: Axis
+            Rotation axis
+        center: Point, defaults to the origin (0, 0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Geometry
+            The rotated geometry
+        """
+        if center is None:
+            center = Point(0, 0, 0)
+
+        geom = lib.sfcgal_geometry_rotate_3d_around_center(
+            self._geom, angle, axis.x, axis.y, axis.z, center.x, center.y, center.z)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    def rotate_3d_x(
+            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+        """
+        Rotates a geometry in 3D around the X axis by a given angle
+
+        If the center is not provided, the geometry is rotated
+        around the origin (0, 0, 0).
+
+        Shorthand for rotate_3d(angle, Axis.X, center).
+
+        Parameters
+        ----------
+        angle : float
+            Rotation angle in radians
+        center: Point, defaults to the origin (0, 0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Geometry
+            The rotated geometry
+        """
+        return self.rotate_3d(angle, Axis.X, center)
+
+    def rotate_3d_y(
+            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+        """
+        Rotates a geometry in 3D around the Y axis by a given angle
+
+        If the center is not provided, the geometry is rotated
+        around the origin (0, 0, 0).
+
+        Shorthand for rotate_3d(angle, Axis.Y, center).
+
+        Parameters
+        ----------
+        angle : float
+            Rotation angle in radians
+        center: Point, defaults to the origin (0, 0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Geometry
+            The rotated geometry
+        """
+        return self.rotate_3d(angle, Axis.Y, center)
+
+    def rotate_3d_z(
+            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+        """
+        Rotates a geometry in 3D around the Z axis by a given angle
+
+        If the center is not provided, the geometry is rotated
+        around the origin (0, 0, 0).
+
+        Shorthand for rotate_3d(angle, Axis.Z, center).
+
+        Parameters
+        ----------
+        angle : float
+            Rotation angle in radians
+        center: Point, defaults to the origin (0, 0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Geometry
+            The rotated geometry
+        """
+        return self.rotate_3d(angle, Axis.Z, center)
 
     @cond_icontract(lambda self, tolerance: (self.is_valid() and tolerance > 0),
                     "require")

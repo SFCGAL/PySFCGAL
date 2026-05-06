@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from pysfcgal.sfcgal import LineString, Point, Polygon
+from pysfcgal.sfcgal import Axis, LineString, Point, Polygon
 
 
 def is_close(first: float, second: float, tol: float = 1e-9) -> bool:
@@ -43,6 +43,9 @@ def test_rotate(coordinates, angle, expected_coordinates):
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
+    rotated_point_new_api = point.rotate_2d(angle)
+    assert rotated_point_new_api == rotated_point
+
 
 @pytest.mark.parametrize(
     "coordinates, angle, center_coordinates, expected_coordinates",
@@ -59,6 +62,9 @@ def test_rotate_around_2d_point(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
+
+    rotated_point_new_api = point.rotate_2d(angle, Point(*center_coordinates))
+    assert rotated_point_new_api == rotated_point
 
 
 @pytest.mark.parametrize(
@@ -80,6 +86,9 @@ def test_rotate_around_3d_axis(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
+
+    rotated_point_new_api = point.rotate_3d(angle, Axis(*vector_axis))
+    assert rotated_point_new_api == rotated_point
 
 
 @pytest.mark.parametrize(
@@ -104,6 +113,10 @@ def test_rotate_3d_around_center(
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
+    rotated_point_new_api = point.rotate_3d(
+        angle, Axis(*vector_axis), Point(*center_coordinates))
+    assert rotated_point_new_api == rotated_point
+
 
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
@@ -120,6 +133,12 @@ def test_rotate_x(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
+
+    rotated_point_new_api = point.rotate_3d(angle, Axis.X)
+    assert rotated_point_new_api == rotated_point
+
+    rotated_point_new_api_2 = point.rotate_3d_x(angle)
+    assert rotated_point_new_api_2 == rotated_point
 
 
 @pytest.mark.parametrize(
@@ -138,6 +157,12 @@ def test_rotate_y(
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
+    rotated_point_new_api = point.rotate_3d(angle, Axis.Y)
+    assert rotated_point_new_api == rotated_point
+
+    rotated_point_new_api_2 = point.rotate_3d_y(angle)
+    assert rotated_point_new_api_2 == rotated_point
+
 
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
@@ -154,6 +179,12 @@ def test_rotate_z(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
+
+    rotated_point_new_api = point.rotate_3d(angle, Axis.Z)
+    assert rotated_point_new_api == rotated_point
+
+    rotated_point_new_api_2 = point.rotate_3d_z(angle)
+    assert rotated_point_new_api_2 == rotated_point
 
 
 @pytest.mark.parametrize(
@@ -175,6 +206,9 @@ def test_rotate_linestring(
         )
         for rpt, ept in zip(rotated_geom.to_coordinates(), expected_coordinates)
     )
+
+    rotated_geom_new_api = geom.rotate_2d(angle)
+    assert rotated_geom_new_api == rotated_geom
 
 
 @pytest.mark.parametrize(
@@ -207,3 +241,6 @@ def test_rotate_polygon(
         )
         for rring, ering in zip(rotated_geom.to_coordinates(), expected_coordinates)
     )
+
+    rotated_geom_new_api = geom.rotate_2d(angle)
+    assert rotated_geom_new_api == rotated_geom
