@@ -1940,7 +1940,7 @@ class Geometry:
         return cls.from_coordinates(geojson_data["coordinates"])
 
     @staticmethod
-    def from_wkt(wkt: str) -> Optional[Geometry]:
+    def from_wkt(wkt: Optional[str]) -> Optional[Geometry]:
         """Parse a Well-Known Text (WKT) representation into a Geometry object.
 
         This function takes a WKT string and converts it into a `Geometry` object
@@ -1957,6 +1957,9 @@ class Geometry:
             A `Geometry` object parsed from the WKT string.
 
         """
+        if not wkt:
+            return None
+
         sfcgal_geom = Geometry.sfcgal_geom_from_wkt(wkt)
         return Geometry.from_sfcgal_geometry(sfcgal_geom)
 

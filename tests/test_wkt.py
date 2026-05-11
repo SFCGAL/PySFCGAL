@@ -30,3 +30,9 @@ def test_geom_to_wkt(geom_factory, coordinate, tolerance, expected_equality):
     geom_wkt = geom.to_wkt(tolerance)
     other_geom = sfcgal.Geometry.from_wkt(geom_wkt)
     assert (other_geom == geom) == expected_equality
+
+
+@pytest.mark.parametrize("empty_wkt", ["", None])
+def test_geom_from_empty_wkt(empty_wkt):
+    geom = sfcgal.Geometry.from_wkt(empty_wkt)
+    assert geom is None
