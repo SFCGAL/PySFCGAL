@@ -7,6 +7,7 @@ from typing import List, Tuple
 
 IGNORED_FUNCTIONS = {
     "free",
+    "sfcgal_geometry_as_text",  # sfcgal_geometry_as_text_decim is used instead
     "sfcgal_geometry_rotate",  # sfcgal_geometry_rotate_2d is used instead
     "sfcgal_geometry_rotate_3d",  # sfcgal_geometry_rotate_3d_around_center is used instead  # noqa: E501
     "sfcgal_io_read_binary_prepared",

@@ -2249,10 +2249,7 @@ class Geometry:
         try:
             buf = ffi.new("char**")
             length = ffi.new("size_t*")
-            if decim >= 0:
-                lib.sfcgal_geometry_as_text_decim(self._geom, decim, buf, length)
-            else:
-                lib.sfcgal_geometry_as_text(self._geom, buf, length)
+            lib.sfcgal_geometry_as_text_decim(self._geom, decim, buf, length)
             wkt = ffi.string(buf[0], length[0]).decode("utf-8")
         finally:
             # we're responsible for free'ing the memory
