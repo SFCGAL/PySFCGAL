@@ -77,7 +77,7 @@ def test_polyhedralsurface_validity(polyhedralsurface, other_polyhedralsurface) 
         "inconsistent orientation of PolyhedralSurface detected "
         "at edge 2 (3-0) of polygon 2"
     )
-    other_polyhedralsurface.set_validity_flag(True)
+    other_polyhedralsurface.validity_flag = True
     assert other_polyhedralsurface.validity_flag
     assert other_polyhedralsurface.is_valid()
     assert other_polyhedralsurface.is_valid_detail() == (None, None)

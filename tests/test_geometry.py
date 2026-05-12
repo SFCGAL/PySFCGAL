@@ -35,5 +35,5 @@ def test_is_valid(geom_factory) -> None:
     assert geom.is_valid()  # updates the validity flag on the same hand
     assert geom.validity_flag
     # Testing the validity flag modification
-    geom.set_validity_flag(False)
+    geom.validity_flag = False
     assert not geom.validity_flag

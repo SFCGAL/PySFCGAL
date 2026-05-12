@@ -115,7 +115,7 @@ def test_polygon_validity(
     assert not invalid_polygon.validity_flag
     invalidity_reason, _ = invalid_polygon.is_valid_detail()
     assert invalidity_reason == "ring 0 self intersects"
-    invalid_polygon.set_validity_flag(True)
+    invalid_polygon.validity_flag = True
     assert invalid_polygon.validity_flag
     assert invalid_polygon.is_valid()
     assert invalid_polygon.is_valid_detail() == (None, None)

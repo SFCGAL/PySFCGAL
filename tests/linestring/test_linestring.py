@@ -135,7 +135,7 @@ def test_linestring_validity(long_line, one_point_line) -> None:
     assert not one_point_line.validity_flag
     invalidity_reason, _ = one_point_line.is_valid_detail()
     assert invalidity_reason == "no length"
-    one_point_line.set_validity_flag(True)
+    one_point_line.validity_flag = True
     assert one_point_line.validity_flag
     assert one_point_line.is_valid()
     assert one_point_line.is_valid_detail() == (None, None)

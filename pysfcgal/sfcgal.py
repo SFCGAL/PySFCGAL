@@ -98,7 +98,8 @@ class Geometry:
         """
         return bool(lib.sfcgal_geometry_has_validity_flag(self._geom))
 
-    def set_validity_flag(self, flag: bool) -> None:
+    @validity_flag.setter
+    def validity_flag(self, flag: bool) -> None:
         """Set the geometry validity flag.
 
         By forcing the validity flag to True, validity checks will be skipped entirely.
@@ -736,7 +737,7 @@ class Geometry:
         if self.validity_flag:
             return True
         sfcgal_validity = lib.sfcgal_geometry_is_valid(self._geom) != 0
-        self.set_validity_flag(sfcgal_validity)
+        self.validity_flag = sfcgal_validity
         return sfcgal_validity
 
     def is_valid_detail(self) -> Tuple[Optional[str], None]:

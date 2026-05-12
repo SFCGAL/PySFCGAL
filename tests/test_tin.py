@@ -62,7 +62,7 @@ def test_tin_validity(tin, tin_unclosed):
         "inconsistent orientation of PolyhedralSurface detected "
         "at edge 2 (3-0) of polygon 2"
     )
-    tin_unclosed.set_validity_flag(True)
+    tin_unclosed.validity_flag = True
     assert tin_unclosed.validity_flag
     assert tin_unclosed.is_valid()
     assert tin_unclosed.is_valid_detail() == (None, None)
