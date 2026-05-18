@@ -40,6 +40,11 @@ def c001():
 
 
 @pytest.fixture
+def c002():
+    yield (0., 0., 2.)
+
+
+@pytest.fixture
 def point000(c000):
     yield Point(*c000)
 
@@ -57,6 +62,11 @@ def point010(c010):
 @pytest.fixture
 def point001(c001):
     yield Point(*c001)
+
+
+@pytest.fixture
+def point002(c002):
+    yield Point(*c002)
 
 
 # MultiPoint/Triangle fixtures

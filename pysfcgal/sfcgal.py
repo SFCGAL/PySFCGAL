@@ -2684,6 +2684,17 @@ class LineString(Geometry):
         """
         return [point.to_coordinates() for point in self]
 
+    def add_point(self, point: Point) -> None:
+        """Appends a point to the end of the LineString
+
+        Parameters
+        ----------
+        point : Point
+            Point to append to the LineString
+        """
+        point_clone = lib.sfcgal_geometry_clone(point._geom)
+        lib.sfcgal_linestring_add_point(self._geom, point_clone)
+
     def close(self) -> None:
         """Closes the line string if it is not already closed.
 

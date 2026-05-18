@@ -139,3 +139,12 @@ def test_linestring_validity(long_line, one_point_line) -> None:
     assert one_point_line.validity_flag
     assert one_point_line.is_valid()
     assert one_point_line.is_valid_detail() == (None, None)
+
+
+def test_linestring_add_point(long_line, point002):
+    assert len(long_line.to_coordinates()) == 4
+    assert long_line[-1] != point002
+
+    long_line.add_point(point002)
+    assert len(long_line.to_coordinates()) == 5
+    assert long_line[-1] == point002
