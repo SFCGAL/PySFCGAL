@@ -35,19 +35,27 @@ def test_solid_to_coordinates(solid, points_ext_1, points_int_1, points_int_2):
     assert other_solid == solid
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_tessellate_3d_solid(solid_without_holes):
     assert solid_without_holes.is_valid()
-    tessellation = solid_without_holes.tessellate_3d()
+    tessellation = solid_without_holes.tessellate()
     assert tessellation.geom_type == "GeometryCollection"
 
+    tessellation_3d = solid_without_holes.tessellate_3d()
+    assert tessellation == tessellation_3d
 
+
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_tessellate_3d_polyhedralsurface(solid):
     """Solid is not valid, we test the tessellate on its shells."""
     assert not solid.is_valid()
     for shell in solid:
         assert shell.is_valid()
-        tessellation = shell.tessellate_3d()
+        tessellation = shell.tessellate()
         assert tessellation.geom_type == "TriangulatedSurface"
+
+        tessellation_3d = shell.tessellate_3d()
+        assert tessellation == tessellation_3d
 
 
 def test_solid_set_exterior_shell(solid, points_ext_1, points_ext_2):

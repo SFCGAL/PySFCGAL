@@ -678,6 +678,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
+    @deprecated("tessellate_3d() is deprecated. Use tessellate() instead.")
     def tessellate_3d(self) -> Optional[Geometry]:
         """
         Perform tessellation on the geometry.
@@ -687,8 +688,7 @@ class Geometry:
         Geometry
             The tessellated geometry.
         """
-        tessellation = lib.sfcgal_geometry_tesselate(self._geom)
-        return Geometry.from_sfcgal_geometry(tessellation)
+        return self.tessellate()
 
     @cond_icontract(lambda self: self.is_valid(), "require")
     def tessellate(self) -> Optional[Geometry]:
