@@ -41,3 +41,9 @@
 {{ include_python_file("../cookbook/straight_skeleton.py") }}
 
 ![Straight Skeleton](assets/img/cookbook/straight_skeleton.png){: width=500 }
+
+### Triangulate or Tessellate
+
+{{ include_python_file("../cookbook/triangulation.py") }}
+
+![Triangulation - tessellation difference](assets/img/cookbook/triangulate_tessellate.png){: width=500 }
