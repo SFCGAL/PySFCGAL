@@ -3,9 +3,7 @@ from pysfcgal.sfcgal import (GeometryCollection, LineString, MultiLineString,
 
 
 def test_simple_polygon():
-    print("\n\ntessellate(Polygon([(0,0), (1,0), (1,1), (0,1)]))")
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
-    print(poly.to_wkt(1))
     geom = GeometryCollection()
     geom.addGeometry(poly)
     tesselation = geom.tessellate()
@@ -16,9 +14,6 @@ def test_simple_polygon():
 
 
 def test_polygon_with_an_hole():
-    print(
-        """\n\ntessellate(Polygon([(0,0), (1,0), (1,1), (0,1)],
-        [[(.2,.2),(.2,.8),(.8,.8),(.8,.2)]]))""")
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)], [
                 [(.2, .2), (.2, .8), (.8, .8), (.8, .2)]])
     geom = GeometryCollection()
@@ -37,9 +32,6 @@ def test_polygon_with_an_hole():
 
 
 def test_polygon_with_breaklines():
-    print(
-        """\n\ntessellate(Polygon([(0,0), (1,0), (1,1), (0,1)]),
-        [LineString([(.2, .6), (.8,.6)]), LineString([(.2, .4), (.8,.4)])])""")
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
     lines = [LineString([(.2, .6), (.8, .6)]),
              LineString([(.2, .4), (.8, .4)])]
@@ -63,10 +55,6 @@ def test_polygon_with_breaklines():
 
 
 def test_polygon_with_breaklines_point():
-    print(
-        """\n\ntessellate(Polygon([(0,0), (1,0), (1,1), (0,1)]),
-        MultiLineString([LineString([(.2, .6), (.8,.6)]), LineString([(.2, .4),
-        (.8,.4)])]), [Point(.9, .9)])""")
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
     multiline = MultiLineString([[(.2, .6), (.8, .6)], [(.2, .4), (.8, .4)]])
     point = Point(.9, .9)
@@ -92,9 +80,6 @@ def test_polygon_with_breaklines_point():
 
 
 def test_polygon_with_points():
-    print(
-        """\n\ntessellate(Polygon([(0,0), (1,0), (1,1), (0,1)]), lines=None,
-        points=[Point(.9, .9)])""")
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
     point = Point(.9, .9)
     geom = GeometryCollection()
@@ -110,10 +95,6 @@ def test_polygon_with_points():
 
 
 def test_polygon_with_quasi_collinear_points():
-    print("""\n\ntessellate(Polygon(((-4.165589, -29.100525),
-    (8.623957000000001, -28.461553), (21.413503, -27.822581), (10.706928,
-    -13.90117), (0.000353, 0.020242), (-2.082618, -14.540141), (-4.165589,
-    -29.100525))))""")
     poly = Polygon([(-4.165589, -29.100525),
                     (8.623957000000001, -28.461553),
                     (21.413503, -27.822581),
@@ -138,10 +119,6 @@ def test_polygon_with_quasi_collinear_points():
 
 
 def test_polygon_with_hole_and_break_lines():
-    print("""\n\ntessellate(Polygon([(0,0), (1,0), (1,1), (0,1)], [[(.2,.2),
-    (.2,.8), (.8,.8), (.8, .2)]]), lines=[LineString([(.1, .1), (.9,.1)]),
-    LineString([(.9, .1), (.9,.9)]), LineString([(.9, .9), (.1,.9)]),
-    LineString([(.1, .9), (.1,.1)])])""")
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)], [
                 [(.2, .2), (.2, .8), (.8, .8), (.8, .2)]])
     lines = [LineString([(.1, .1), (.9, .1)]),
