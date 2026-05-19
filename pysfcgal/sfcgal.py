@@ -667,7 +667,7 @@ class Geometry:
     @cond_icontract(lambda self: self.is_valid(), "require")
     def triangulate_2dz(self) -> Optional[Geometry]:
         """
-        Compute the 2D triangulation of the geometry with Z values.
+        Compute a constrained Delaunay triangulation, preserving Z values.
 
         Returns
         -------
