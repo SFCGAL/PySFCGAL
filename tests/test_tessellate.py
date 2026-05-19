@@ -1,34 +1,30 @@
-from pysfcgal.sfcgal import (GeometryCollection, LineString, MultiLineString,
-                             Point, Polygon)
+from pysfcgal.sfcgal import (Geometry, GeometryCollection, LineString,
+                             MultiLineString, Point, Polygon)
 
 
 def test_simple_polygon():
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
-    geom = GeometryCollection()
-    geom.addGeometry(poly)
-    tessellation = geom.tessellate()
-    geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
-    TRIANGLE ((1.0 0.0,1.0 1.0,0.0 1.0,1.0 0.0)),
-    TRIANGLE ((0.0 0.0,1.0 0.0,0.0 1.0,0.0 0.0)))""")
-    assert tessellation.covers(geom2)
+    tessellation = poly.tessellate()
+    expected_wkt = "TIN (((0 1,1 0,1 1,0 1)),((0 1,0 0,1 0,0 1)))"
+    expected_geom = Geometry.from_wkt(expected_wkt)
+    assert tessellation.covers(expected_geom)
 
 
 def test_polygon_with_an_hole():
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)], [
                 [(.2, .2), (.2, .8), (.8, .8), (.8, .2)]])
-    geom = GeometryCollection()
-    geom.addGeometry(poly)
-    tessellation = geom.tessellate()
-    geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
-    TRIANGLE ((0.2 0.2,1.0 0.0,0.8 0.2,0.2 0.2)),
-    TRIANGLE ((0.0 0.0,1.0 0.0,0.2 0.2,0.0 0.0)),
-    TRIANGLE ((0.0 0.0,0.2 0.2,0.0 1.0,0.0 0.0)),
-    TRIANGLE ((0.2 0.8,1.0 1.0,0.0 1.0,0.2 0.8)),
-    TRIANGLE ((0.2 0.2,0.2 0.8,0.0 1.0,0.2 0.2)),
-    TRIANGLE ((0.8 0.8,1.0 1.0,0.2 0.8,0.8 0.8)),
-    TRIANGLE ((0.8 0.2,1.0 1.0,0.8 0.8,0.8 0.2)),
-    TRIANGLE ((1.0 0.0,1.0 1.0,0.8 0.2,1.0 0.0)))""")
-    assert tessellation.covers(geom2)
+    tessellation = poly.tessellate()
+    expected_wkt = (
+        "TIN (((0.8 0.2,0.2 0.2,1.0 0.0,0.8 0.2)),"
+        "((0.2 0.2,0.0 0.0,1.0 0.0,0.2 0.2)),"
+        "((1.0 1.0,0.8 0.8,0.8 0.2,1.0 1.0)),"
+        "((0.0 1.0,0.0 0.0,0.2 0.2,0.0 1.0)),"
+        "((0.0 1.0,0.2 0.8,1.0 1.0,0.0 1.0)),"
+        "((0.0 1.0,0.2 0.2,0.2 0.8,0.0 1.0)),"
+        "((0.2 0.8,0.8 0.8,1.0 1.0,0.2 0.8)),"
+        "((1.0 1.0,0.8 0.2,1.0 0.0,1.0 1.0)))")
+    expected_geom = Geometry.from_wkt(expected_wkt)
+    assert tessellation.covers(expected_geom)
 
 
 def test_polygon_with_breaklines():
@@ -102,20 +98,19 @@ def test_polygon_with_quasi_collinear_points():
                     (0.000353, 0.020242),
                     (-2.082618, -14.540141),
                     (-4.165589, -29.100525)])
-    geom = GeometryCollection()
-    geom.addGeometry(poly)
-    tessellation = geom.tessellate()
-    geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
-    TRIANGLE ((-4.1656 -29.1005,8.6240 -28.4616,-2.0826 -14.5401,
-    -4.1656 -29.1005)),
-    TRIANGLE ((8.6240 -28.4616,10.7069 -13.9012,-2.0826 -14.5401,
-    8.6240 -28.4616)),
-    TRIANGLE ((-2.0826 -14.5401,10.7069 -13.9012,0.0004 0.0202,
-    -2.0826 -14.5401)),
-    TRIANGLE ((8.6240 -28.4616,21.4135 -27.8226,10.7069
-    -13.9012,8.6240 -28.4616)))""")
-    geom1 = GeometryCollection.from_wkt(tessellation.to_wkt(4))
-    assert geom1.covers(geom2)
+    tessellation = poly.tessellate()
+    expected_wkt = (
+        "TIN (((-2.082618 -14.540141,8.623957 -28.461553,10.706928 -13.901170,"
+        "-2.082618 -14.540141)),"
+        "((10.706928 -13.901170,8.623957 -28.461553,21.413503 -27.822581,"
+        "10.706928 -13.901170)),"
+        "((-2.082618 -14.540141,10.706928 -13.901170,0.000353 0.020242,"
+        "-2.082618 -14.540141)),"
+        "((-4.165589 -29.100525,8.623957 -28.461553,-2.082618 -14.540141,"
+        "-4.165589 -29.100525)))"
+    )
+    expected_geom = Geometry.from_wkt(expected_wkt)
+    assert tessellation.covers(expected_geom)
 
 
 def test_polygon_with_hole_and_break_lines():

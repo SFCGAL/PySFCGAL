@@ -695,15 +695,25 @@ class Geometry:
         """
         Perform tessellation on the geometry.
 
+        .. warning::
+            **API break** since version 2.3:
+            this method previously performed a constrained Delaunay
+            triangulation (``triangulate_2dz``) followed by an
+            intersection with the original geometry. It now calls the SFCGAL
+            tessellation directly, without the intersection step.
+
+        To reproduce the former behaviour:
+
+            triangles = geom.triangulate_2dz()
+            result = geom.intersection(triangles)
+
         Returns
         -------
         Geometry
             The tessellated geometry.
         """
-        tri = lib.sfcgal_geometry_triangulate_2dz(self._geom)
-        geom = lib.sfcgal_geometry_intersection(self._geom, tri)
-
-        return Geometry.from_sfcgal_geometry(geom)
+        tessellation = lib.sfcgal_geometry_tesselate(self._geom)
+        return Geometry.from_sfcgal_geometry(tessellation)
 
     def force_lhr(self) -> Optional[Geometry]:
         """
