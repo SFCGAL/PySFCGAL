@@ -7,7 +7,7 @@ from pysfcgal.sfcgal import LineString, Triangle
 
 def test_wrap_geom_segfault():
     segfault_code = """
-from pysfcgal.sfcgal import Triangle
+from pysfcgal.geometry import Triangle
 triangle = Triangle([(0, 0, 0), (1, 0, 0), (0, 1, 0)])
 for t in [triangle, triangle]:
     triangle = Triangle.from_sfcgal_geometry(triangle._geom)

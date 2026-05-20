@@ -1,0 +1,1130 @@
+"""Simple Feature surface geometries.
+
+One denotes Polygon, Triangle, PolyhedralSurface, Tin and Solid.
+
+Strictly speaking, the Solid is not a Simple Feature geometry, however it is mentionned
+in the norm as a particular case of PolyhedralSurface (when 3D surfaces are closed).
+
+Solid and PolyhedralSurface remain colocated because of their strong bidirectional
+topological relationship and to avoid unnecessary module imports.
+
+"""
+
+
+from __future__ import annotations
+
+import typing
+from typing import Optional, Tuple, Union, cast
+
+if typing.TYPE_CHECKING:
+    from .collection import MultiPolygon
+
+from .._contracts import cond_icontract
+from .._sfcgal import ffi, lib
+from .curve import LineString, is_segment_in_coordsequence
+from .geometry import Geometry
+from .point import Point
+
+__all__ = [
+    "Polygon",
+    "PolyhedralSurface",
+    "Solid",
+    "Tin",
+    "Triangle",
+]
+
+
+class Polygon(Geometry):
+    """Polygon
+
+    Attributes
+    ----------
+    _geom : _cffi_backend._CDatabase
+        SFCGAL polygon associated to the Polygon instance. The operations on the
+        geometry are done at the SFCGAL lower level.
+    """
+
+    def __init__(self, exterior: Tuple = (), interiors: Optional[Tuple] = None):
+        """Initialize a Polygon with given exterior and optional interior rings.
+
+        Parameters
+        ----------
+        exterior : tuples of tuples
+            A list of coordinates defining the exterior ring of the polygon.
+        interiors : tuple of tuple of tuples, optional
+            A list of interior rings, where each interior is defined by a list of
+            coordinates. Default is None, which initializes to an empty list.
+        """
+        if interiors is None:
+            interiors = ()
+        self._geom = self.sfcgal_geom_from_coordinates(
+            [
+                exterior,
+                *interiors,
+            ]
+        )
+
+    def __iter__(self):
+        """Iterate over the rings of the Polygon.
+
+        Yields
+        ------
+        Geometry
+            The exterior and interior rings of the Polygon.
+        """
+        for n in range(1 + self.n_interiors):
+            yield self.__get_ring_n(n)
+
+    def __getitem__(self, key):
+        """Get a ring (or several) within a polygon, identified through an index or a
+        slice. The first ring is always the exterior ring, the next ones are the
+        interior rings (optional).
+
+        Raises an IndexError if the key is unvalid for the geometry.
+
+        Raises a TypeError if the key is neither an integer or a valid slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index (or slice) of the ring(s) to recover.
+
+        Returns
+        -------
+        Geometry or list of Geometry
+            The specified ring or a list of rings if a slice is provided.
+        """
+        length = 1 + self.n_interiors
+        if isinstance(key, int):
+            if key + length < 0 or key >= length:
+                raise IndexError("geometry sequence index out of range")
+            elif key < 0:
+                index = length + key
+            else:
+                index = key
+            return self.__get_ring_n(index)
+        elif isinstance(key, slice):
+            geoms = [self.__get_ring_n(index) for index in range(*key.indices(length))]
+            return geoms
+        else:
+            raise TypeError(
+                "geometry sequence indices must be\
+                            integers or slices, not {}".format(
+                    key.__class__.__name__
+                )
+            )
+
+    def __eq__(self, other: object) -> bool:
+        """Two Polygons are equal if their rings (exterior and interior) are equal.
+
+        Parameters
+        ----------
+        other : Polygon
+            The Polygon to compare against.
+
+        Returns
+        -------
+        bool
+            True if the Polygons are equal, False otherwise.
+        """
+        if not isinstance(other, Polygon):
+            return False
+        if self.exterior != other.exterior:
+            return False
+        if self.n_interiors != other.n_interiors:
+            return False
+        for p, other_p in zip(self.interiors, other.interiors):
+            if p != other_p:
+                return False
+        return True
+
+    @property
+    def exterior(self):
+        """Get the exterior ring of the Polygon.
+
+        Returns
+        -------
+        Geometry
+            The exterior ring of the Polygon.
+        """
+        return Geometry.from_sfcgal_geometry(
+            lib.sfcgal_polygon_exterior_ring(self._geom), owned=False, parent=self,
+        )
+
+    @cond_icontract(
+        lambda self, ring: ring.geom_type == "LineString", "require")
+    def set_exterior_ring(self, ring: LineString) -> None:
+        """Sets the exterior ring of the polygon.
+
+        Parameters
+        ----------
+        ring : LineString
+            The new exterior ring
+
+        """
+        ring_clone = lib.sfcgal_geometry_clone(ring._geom)
+        lib.sfcgal_polygon_set_exterior_ring(self._geom, ring_clone)
+
+    @property
+    def n_interiors(self):
+        """Get the number of interior rings in the Polygon.
+
+        Returns
+        -------
+        int
+            The number of interior rings.
+        """
+        return lib.sfcgal_polygon_num_interior_rings(self._geom)
+
+    @property
+    def interiors(self):
+        """Get a list of the interior rings of the Polygon.
+
+        Returns
+        -------
+        list of Geometry
+            A list of interior rings.
+        """
+        interior_rings = []
+        for idx in range(self.n_interiors):
+            interior_rings.append(
+                Geometry.from_sfcgal_geometry(
+                    lib.sfcgal_polygon_interior_ring_n(self._geom, idx), owned=False,
+                    parent=self
+                )
+            )
+        return interior_rings
+
+    @cond_icontract(
+        lambda self, ring: ring.geom_type == "LineString", "require")
+    def add_interior_ring(self, ring: LineString) -> None:
+        """Adds an interior ring to the polygon.
+
+        Parameters
+        ----------
+        ring : LineString
+            The interior ring to add
+
+        """
+        ring_clone = lib.sfcgal_geometry_clone(ring._geom)
+        lib.sfcgal_polygon_add_interior_ring(self._geom, ring_clone)
+
+    @property
+    def rings(self):
+        """Get all the rings of the Polygon, including the exterior and interior rings.
+
+        Returns
+        -------
+        list of Geometry
+            A list containing the exterior ring followed by the interior rings.
+        """
+        return [self.exterior] + self.interiors
+
+    def __get_ring_n(self, n):
+        """Returns the n-th ring within a polygon. This method is internal and makes the
+        assumption that the index is valid for the geometry. The 0 index refers to the
+        exterior ring.
+
+        Parameters
+        ----------
+        n : int
+            Index of the ring to recover.
+
+        Returns
+        -------
+        Geometry
+            The ring at the specified index.
+        """
+        return self.rings[n]
+
+    def has_exterior_edge(self, point_a: Point, point_b: Point) -> bool:
+        """Check if the polygon has an edge defined by the two given points.
+
+        This method verifies whether the line segment between point_a and point_b lies
+        within the exterior ring of the polygon.
+
+        Parameters
+        ----------
+        point_a : Point
+            The first point defining the edge.
+        point_b : Point
+            The second point defining the edge.
+
+        Returns
+        -------
+        bool
+            True if the edge is part of the exterior ring, False otherwise.
+        """
+        poly_coordinates = self.to_coordinates()
+        exterior_coordinates = poly_coordinates[0]
+        return is_segment_in_coordsequence(exterior_coordinates, point_a, point_b)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the Polygon.
+
+        Returns
+        -------
+        list
+            List of the polygon ring coordinates
+        """
+        return [ring.to_coordinates() for ring in self.rings]
+
+    @classmethod
+    def from_coordinates(cls, coordinates: list) -> Optional[Polygon]:
+        """Instantiates a Polygon starting from a list of coordinates.
+
+        Parameters
+        ----------
+        coordinates : list
+            Polygon coordinates. The first item corresponds to the coordinates of the
+            exterior ring, whilst the following items are the coordinates of the
+            interior rings, if they exist.
+
+        Returns
+        -------
+        Polygon
+            The Polygon that corresponds to the provided coordinates
+
+        """
+        return cls(
+            tuple(coordinates[0]),
+            tuple(coordinates[1:]) if len(coordinates) > 0 else None,
+        )
+
+    @staticmethod
+    def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
+        """Instantiates a SFCGAL Polygon starting from a list of coordinates.
+
+        Parameters
+        ----------
+        coordinates : list
+            Polygon coordinates.
+
+        Returns
+        -------
+        _cffi_backend._CDatabase
+            A pointer towards a SFCGAL Polygon
+
+        """
+        if len(coordinates) == 0 or len(coordinates[0]) == 0:
+            return lib.sfcgal_polygon_create()
+        exterior = LineString.sfcgal_geom_from_coordinates(coordinates[0], True)
+        polygon = lib.sfcgal_polygon_create_from_exterior_ring(exterior)
+        for n in range(1, len(coordinates)):
+            interior = LineString.sfcgal_geom_from_coordinates(coordinates[n], True)
+            lib.sfcgal_polygon_add_interior_ring(polygon, interior)
+        return polygon
+
+
+class Tin(Geometry):
+    def __init__(self, coords: Tuple = ()):
+        """Initialize the Tin with a tuple of coordinates.
+
+        Parameters
+        ----------
+        coords : Tuple
+            A list of coordinate tuples that define the vertices of the TIN.
+            If None, initializes an empty TIN.
+        """
+        self._geom = Tin.sfcgal_geom_from_coordinates(list(coords))
+
+    def __len__(self):
+        """Return the number of patches in the TIN.
+
+        Returns
+        -------
+        int
+            The number of patches that comprise the TIN.
+        """
+        return lib.sfcgal_triangulated_surface_num_patches(self._geom)
+
+    def __iter__(self):
+        """Iterate over the patches in the TIN.
+
+        Yields
+        ------
+        Geometry
+            Each patch in the TIN as a Geometry object.
+        """
+        for n in range(0, len(self)):
+            yield Geometry.from_sfcgal_geometry(
+                lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
+                owned=False, parent=self,
+            )
+
+    def __get_geometry_n(self, n):
+        """Returns the n-th patch within the TIN.
+
+        This method assumes that the index is valid for the TIN.
+
+        Parameters
+        ----------
+        n : int
+            Index of the triangle to recover.
+
+        Returns
+        -------
+        Geometry
+            The patch at the specified index as a Geometry object.
+        """
+        return Geometry.from_sfcgal_geometry(
+            lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
+            owned=False, parent=self
+        )
+
+    def __getitem__(self, key):
+        """Get a patch (or several) within the TIN, identified through an index or a
+        slice.
+
+        Raises an IndexError if the key is invalid for the TIN.
+
+        Raises a TypeError if the key is neither an integer nor a valid slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index (or slice) of the patch(es) to recover.
+
+        Returns
+        -------
+        Geometry or list of Geometry
+            The patch(es) at the specified index or slice.
+        """
+        length = self.__len__()
+        if isinstance(key, int):
+            if key + length < 0 or key >= length:
+                raise IndexError("geometry sequence index out of range")
+            elif key < 0:
+                index = length + key
+            else:
+                index = key
+            return self.__get_geometry_n(index)
+        elif isinstance(key, slice):
+            geoms = [
+                self.__get_geometry_n(index) for index in range(*key.indices(length))
+            ]
+            return geoms
+        else:
+            raise TypeError(
+                "geometry sequence indices must be\
+                            integers or slices, not {}".format(
+                    key.__class__.__name__
+                )
+            )
+
+    def __eq__(self, other: object) -> bool:
+        """Check if two TINs are equal based on their patches.
+
+        Parameters
+        ----------
+        other : Tin
+            The other TIN to compare.
+
+        Returns
+        -------
+        bool
+            True if both TINs contain the same patches, False otherwise.
+        """
+        if not isinstance(other, Tin):
+            return False
+        return self[:] == other[:]
+
+    def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
+        """Convert the TIN to a MultiPolygon.
+
+        Parameters
+        ----------
+        wrapped : bool, optional
+            If True, wrap the result in a Geometry object. Defaults to True.
+
+        Returns
+        -------
+        MultiPolygon
+            A MultiPolygon representation of the TIN.
+        """
+        multipolygon = lib.sfcgal_multi_polygon_create()
+        num_geoms = lib.sfcgal_triangulated_surface_num_patches(self._geom)
+        for geom_idx in range(num_geoms):
+            triangle_geom = lib.sfcgal_triangulated_surface_patch_n(
+                self._geom, geom_idx
+            )
+            triangle_clone = lib.sfcgal_geometry_clone(triangle_geom)
+            triangle_clone_wrap = cast(
+                Triangle, Geometry.from_sfcgal_geometry(triangle_clone))
+            polygon = triangle_clone_wrap.to_polygon(wrapped=False)
+            lib.sfcgal_geometry_collection_add_geometry(multipolygon, polygon)
+        return Geometry.from_sfcgal_geometry(multipolygon) if wrapped else multipolygon
+
+    @staticmethod
+    def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
+        """Instantiates a SFCGAL Tin starting from a list of coordinates.
+
+        Parameters
+        ----------
+        coordinates : list
+            Tin coordinates.
+
+        Returns
+        -------
+        _cffi_backend._CDatabase
+            A pointer towards a SFCGAL Tin
+
+        """
+        tin = lib.sfcgal_triangulated_surface_create()
+        for coords in coordinates:
+            triangle = Triangle.sfcgal_geom_from_coordinates(coords)
+            lib.sfcgal_triangulated_surface_add_patch(tin, triangle)
+        return tin
+
+    @cond_icontract(lambda self, patch: patch.geom_type == "Triangle", "require")
+    def add_patch(self, patch: Triangle) -> None:
+        """Add a triangle to the Tin.
+
+        Parameters
+        ----------
+        patch: Triangle
+            The patch to add.
+        """
+        patch_clone = lib.sfcgal_geometry_clone(patch._geom)
+        lib.sfcgal_triangulated_surface_add_patch(self._geom, patch_clone)
+
+    @property
+    def n_edges(self) -> int:
+        """Get the number of edges in the TIN.
+
+        Two adjacent triangles are connected through an edge.
+
+        Returns
+        -------
+        int
+            Number of edges.
+        """
+        return lib.sfcgal_triangulated_surface_num_edges(self._geom)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the TIN
+
+        Uses the __iter__ property of the TIN to iterate over patches.
+
+        Returns
+        -------
+        list
+            List of patches' coordinates.
+        """
+        return [patch.to_coordinates() for patch in self]
+
+
+class Triangle(Geometry):
+    def __init__(self, coords=None):
+        """Initialize the Triangle with the given coordinates.
+
+        Parameters
+        ----------
+        coords : list of tuples, optional
+            A list of coordinate tuples that define the vertices of the triangle.
+            If None, initializes an empty triangle.
+        """
+        self._geom = Triangle.sfcgal_geom_from_coordinates(coords)
+
+    @property
+    def coords(self):
+        """Get the coordinates of the triangle.
+
+        Returns
+        -------
+        list of tuples
+            The coordinates of the triangle's vertices.
+        """
+        return self.to_coordinates()
+
+    def __iter__(self):
+        """Iterate over the vertices of the triangle.
+
+        Yields
+        ------
+        Geometry
+            Each vertex of the triangle as a Geometry object.
+        """
+        for n in range(3):
+            yield Geometry.from_sfcgal_geometry(
+                lib.sfcgal_triangle_vertex(self._geom, n),
+                owned=False, parent=self,
+            )
+
+    def __get_geometry_n(self, n):
+        """Returns the n-th vertex of the triangle.
+
+        This method assumes that the index is valid for the triangle.
+
+        Parameters
+        ----------
+        n : int
+            Index of the vertex to recover.
+
+        Returns
+        -------
+        Geometry
+            The vertex at the specified index as a Geometry object.
+        """
+        return Geometry.from_sfcgal_geometry(
+            lib.sfcgal_triangle_vertex(self._geom, n),
+            owned=False, parent=self,
+        )
+
+    def __getitem__(self, key):
+        """Get a vertex (or several) within the triangle, identified through an index
+        or a slice.
+
+        Raises an IndexError if the key is invalid for the triangle.
+
+        Raises a TypeError if the key is neither an integer nor a valid slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index (or slice) of the vertex(es) to recover.
+
+        Returns
+        -------
+        Geometry or list of Geometry
+            The vertex(es) at the specified index or slice.
+        """
+        length = 3
+        if isinstance(key, int):
+            if key + length < 0 or key >= length:
+                raise IndexError("geometry sequence index out of range")
+            elif key < 0:
+                index = length + key
+            else:
+                index = key
+            return self.__get_geometry_n(index)
+        elif isinstance(key, slice):
+            geoms = [
+                self.__get_geometry_n(index) for index in range(*key.indices(length))
+            ]
+            return geoms
+        else:
+            raise TypeError(
+                "geometry sequence indices must be\
+                            integers or slices, not {}".format(
+                    key.__class__.__name__
+                )
+            )
+
+    def __eq__(self, other: object) -> bool:
+        """Check if two triangles are equal based on their vertices.
+
+        Parameters
+        ----------
+        other : Triangle
+            The other triangle to compare.
+
+        Returns
+        -------
+        bool
+            True if both triangles contain the same vertices, False otherwise.
+        """
+        if not isinstance(other, Triangle):
+            return False
+        return all(vertex == other_vertex for vertex, other_vertex in zip(self, other))
+
+    def to_polygon(self, wrapped: bool = True) -> Union[Polygon, ffi.CData]:
+        """Convert the triangle to a Polygon.
+
+        Parameters
+        ----------
+        wrapped : bool, optional
+            If True, wrap the result in a Geometry object. Defaults to True.
+
+        Returns
+        -------
+        Polygon
+            A Polygon representation of the triangle.
+        """
+        exterior = lib.sfcgal_linestring_create()
+        for point_idx in range(4):
+            point = lib.sfcgal_triangle_vertex(self._geom, point_idx)
+            lib.sfcgal_linestring_add_point(exterior, lib.sfcgal_geometry_clone(point))
+        polygon = lib.sfcgal_polygon_create_from_exterior_ring(exterior)
+        return Geometry.from_sfcgal_geometry(polygon) if wrapped else polygon
+
+    def to_coordinates(self):
+        """Generates the coordinates of the Triangle.
+
+        Uses the __iter__ property of the Triangle to iterate over vertices.
+
+        Returns
+        -------
+        list
+            List of the vertex coordinates
+        """
+        return [vertex.to_coordinates() for vertex in self]
+
+    @staticmethod
+    def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
+        """Instantiates a SFCGAL Triangle starting from a list of coordinates.
+
+        If the coordinates does not contain three items, an empty Triangle is returned
+
+        Parameters
+        ----------
+        coordinates : list
+            Triangle coordinates.
+
+        Returns
+        -------
+        _cffi_backend._CDatabase
+            A pointer towards a SFCGAL Triangle
+        """
+        triangle = None
+        if coordinates and len(coordinates) == 3:
+            triangle = lib.sfcgal_triangle_create_from_points(
+                Point.sfcgal_geom_from_coordinates(coordinates[0]),
+                Point.sfcgal_geom_from_coordinates(coordinates[1]),
+                Point.sfcgal_geom_from_coordinates(coordinates[2]),
+            )
+        else:
+            triangle = lib.sfcgal_triangle_create()
+
+        return triangle
+
+
+class PolyhedralSurface(Geometry):
+    def __init__(self, coords: Tuple = ()):
+        """Initialize the PolyhedralSurface with a tuple of coordinates.
+
+        Parameters
+        ----------
+        coords : Tuple
+            A tuple of coordinates that define the patches of the polyhedral
+            surface. If empty, initializes an empty polyhedral surface.
+        """
+        self._geom = PolyhedralSurface.sfcgal_geom_from_coordinates(list(coords))
+
+    def __len__(self):
+        """Get the number of patches in the polyhedral surface.
+
+        Returns
+        -------
+        int
+            The number of patches contained within the polyhedral surface.
+        """
+        return lib.sfcgal_polyhedral_surface_num_patches(self._geom)
+
+    def __iter__(self):
+        """Iterate over the patches of the polyhedral surface.
+
+        Yields
+        ------
+        Geometry
+            Each patch of the polyhedral surface as a Geometry object.
+        """
+        for n in range(0, len(self)):
+            yield Geometry.from_sfcgal_geometry(
+                lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
+                owned=False, parent=self,
+            )
+
+    def __get_geometry_n(self, n):
+        """Returns the n-th polygon within the polyhedral surface.
+
+        This method assumes that the index is valid for the geometry.
+
+        Parameters
+        ----------
+        n : int
+            Index of the polygon to recover.
+
+        Returns
+        -------
+        Geometry
+            The polygon at the specified index as a Geometry object.
+        """
+        return Geometry.from_sfcgal_geometry(
+            lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
+            owned=False, parent=self,
+        )
+
+    def __getitem__(self, key):
+        """Get a patch (or several) within the polyhedral surface, identified through
+        an index or a slice.
+
+        Raises an IndexError if the key is invalid for the geometry.
+
+        Raises a TypeError if the key is neither an integer nor a valid slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index (or slice) of the polygon(s) to recover.
+
+        Returns
+        -------
+        Geometry or list of Geometry
+            The patch(es) at the specified index or slice.
+        """
+        length = self.__len__()
+        if isinstance(key, int):
+            if key + length < 0 or key >= length:
+                raise IndexError("geometry sequence index out of range")
+            elif key < 0:
+                index = length + key
+            else:
+                index = key
+            return self.__get_geometry_n(index)
+        elif isinstance(key, slice):
+            geoms = [
+                self.__get_geometry_n(index) for index in range(*key.indices(length))
+            ]
+            return geoms
+        else:
+            raise TypeError(
+                "geometry sequence indices must be\
+                            integers or slices, not {}".format(
+                    key.__class__.__name__
+                )
+            )
+
+    def __eq__(self, other: object) -> bool:
+        """Check if two polyhedral surfaces are equal based on their patches.
+
+        Parameters
+        ----------
+        other : PolyhedralSurface
+            The other polyhedral surface to compare.
+
+        Returns
+        -------
+        bool
+            True if both polyhedral surfaces contain the same polygons, False otherwise.
+        """
+        if not isinstance(other, PolyhedralSurface):
+            return False
+        return self[:] == other[:]
+
+    @property
+    def n_edges(self) -> int:
+        """Get the number of edges in the polyhedron.
+
+        Two adjacent polygons are connected through an edge.
+
+        Returns
+        -------
+        int
+            Number of edges.
+        """
+        return lib.sfcgal_polyhedral_surface_num_edges(self._geom)
+
+    @cond_icontract(lambda self: self.is_valid(), "require")
+    def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
+        """Convert the polyhedralsurface to a MultiPolygon.
+
+        Parameters
+        ----------
+        wrapped : bool, optional
+            If True, wrap the result in a Geometry object. Defaults to True.
+
+        Returns
+        -------
+        MultiPolygon
+            A MultiPolygon representation of the PolyhedralSurface.
+        """
+        multipolygon = lib.sfcgal_multi_polygon_create()
+        num_geoms = lib.sfcgal_polyhedral_surface_num_patches(self._geom)
+        for geom_idx in range(num_geoms):
+            polygon_geom = lib.sfcgal_polyhedral_surface_patch_n(
+                self._geom, geom_idx
+            )
+            polygon_clone = lib.sfcgal_geometry_clone(polygon_geom)
+            lib.sfcgal_geometry_collection_add_geometry(multipolygon, polygon_clone)
+        return Geometry.from_sfcgal_geometry(multipolygon) if wrapped else multipolygon
+
+    @cond_icontract(lambda self: self.is_valid(), "require")
+    def to_solid(self) -> Solid:
+        """Convert the polyhedralsurface into a solid.
+
+        Returns
+        -------
+        Solid
+            A solid version of the polyhedralsurface.
+        """
+        geom = lib.sfcgal_geometry_make_solid(self._geom)
+        return cast(Solid, PolyhedralSurface.from_sfcgal_geometry(geom))
+
+    @staticmethod
+    def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
+        """Instantiates a SFCGAL PolyhedralSurface starting from a list of coordinates.
+
+        Parameters
+        ----------
+        coordinates : list
+            PolyhedralSurface coordinates.
+
+        Returns
+        -------
+        _cffi_backend._CDatabase
+            A pointer towards a SFCGAL PolyhedralSurface
+
+        """
+        polyhedralsurface = lib.sfcgal_polyhedral_surface_create()
+        for coords in coordinates:
+            polygon = Polygon.sfcgal_geom_from_coordinates(coords)
+            lib.sfcgal_polyhedral_surface_add_patch(polyhedralsurface, polygon)
+        return polyhedralsurface
+
+    @cond_icontract(lambda self, patch: patch.geom_type == "Polygon", "require")
+    def add_patch(self, patch: Polygon) -> None:
+        """Add a patch to the polyhedralsurface.
+
+        Parameters
+        ----------
+        patch: Polygon
+            The patch to add.
+        """
+        patch_clone = lib.sfcgal_geometry_clone(patch._geom)
+        lib.sfcgal_polyhedral_surface_add_patch(self._geom, patch_clone)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the PolyhedralSurface.
+
+        Uses the __iter__ property of the PolyhedralSurface to iterate over patches.
+
+        Returns
+        -------
+        list
+            List of patches' coordinates.
+        """
+        return [patch.to_coordinates() for patch in self]
+
+
+class Solid(Geometry):
+    def __init__(self, coords: Tuple = ()):
+        """Initialize the Solid with the given coordinates.
+
+        Parameters
+        ----------
+        coords : list of list of tuples, optional
+            A tuple where the first element is the exterior shell coordinates, and the
+            subsequent elements are the interior shell coordinates.
+            If coords is empty, an empty Solid is created.
+
+        """
+        self._geom = Solid.sfcgal_geom_from_coordinates(coords)
+
+    def __iter__(self):
+        """Iterate over the shells of the solid.
+
+        Yields
+        ------
+        Geometry
+            Each shell of the solid as a Geometry object.
+        """
+        for n in range(self.n_shells):
+            yield self.__get_shell_n(n)
+
+    def __getitem__(self, key):
+        """Get a shell (or several) within a solid, identified through an index or a
+        slice. The first shell is always the exterior shell, the next ones are the
+        interior shells (optional).
+
+        Raises an IndexError if the key is invalid for the geometry.
+
+        Raises a TypeError if the key is neither an integer nor a valid slice.
+
+        Parameters
+        ----------
+        key : int or slice
+            Index (or slice) of the shell(s) to recover.
+
+        Returns
+        -------
+        PolyhedralSurface or list of PolyhedralSurface
+            The shell(s) at the specified index or slice.
+        """
+        length = self.n_shells
+        if isinstance(key, int):
+            if key + length < 0 or key >= length:
+                raise IndexError("geometry sequence index out of range")
+            elif key < 0:
+                index = length + key
+            else:
+                index = key
+            return self.__get_shell_n(index)
+        elif isinstance(key, slice):
+            geoms = [self.__get_shell_n(index) for index in range(*key.indices(length))]
+            return geoms
+        else:
+            raise TypeError(
+                "geometry sequence indices must be\
+                            integers or slices, not {}".format(
+                    key.__class__.__name__
+                )
+            )
+
+    def __eq__(self, other: object) -> bool:
+        """Two Solids are equal if their shells (exterior and interior) are equal.
+
+        Parameters
+        ----------
+        other : Solid
+            The other solid to compare.
+
+        Returns
+        -------
+        bool
+            True if both solids contain the same shells, False otherwise.
+        """
+        if not isinstance(other, Solid):
+            return False
+        if self.n_shells != other.n_shells:
+            return False
+        return all(phs == other_phs for phs, other_phs in zip(self, other))
+
+    def __len__(self):
+        """Return the number of shells in the solid.
+
+        Returns
+        -------
+        int
+            The number of shells contained within the solid.
+        """
+        return lib.sfcgal_solid_num_shells(self._geom)
+
+    @property
+    def n_shells(self):
+        """Get the number of shells in the solid.
+
+        Returns
+        -------
+        int
+            The number of shells contained within the solid.
+        """
+        return len(self)
+
+    @property
+    def shells(self):
+        """Get the shells of the solid.
+
+        Returns
+        -------
+        list of Geometry
+            A list of shells as Geometry objects.
+        """
+        _shells = []
+        for idx in range(self.n_shells):
+            _shells.append(
+                Geometry.from_sfcgal_geometry(
+                    lib.sfcgal_solid_shell_n(self._geom, idx), owned=False, parent=self,
+                )
+            )
+        return _shells
+
+    def __get_shell_n(self, n):
+        """Returns the n-th shell within the solid. This method is internal and makes
+        the assumption that the index is valid for the geometry. The 0 index refers to
+        the exterior shell.
+
+        Parameters
+        ----------
+        n : int
+            Index of the shell to recover.
+
+        Returns
+        -------
+        PolyhedralSurface
+            The shell at the specified index.
+        """
+        return self.shells[n]
+
+    def to_polyhedralsurface(
+            self, wrapped: bool = True) -> Union[PolyhedralSurface, ffi.CData]:
+        """Convert the solid to a PolyhedralSurface.
+
+        Parameters
+        ----------
+        wrapped : bool, optional
+            If True, wrap the returned geometry in a Geometry object. Defaults to True.
+
+        Returns
+        -------
+        PolyhedralSurface
+            The corresponding PolyhedralSurface representation of the solid.
+        """
+        phs_geom = lib.sfcgal_polyhedral_surface_create()
+
+        for shell in self.shells:
+            num_geoms = lib.sfcgal_polyhedral_surface_num_patches(shell._geom)
+            for geom_idx in range(num_geoms):
+                polygon = lib.sfcgal_polyhedral_surface_patch_n(shell._geom, geom_idx)
+                lib.sfcgal_polyhedral_surface_add_patch(
+                    phs_geom, lib.sfcgal_geometry_clone(polygon)
+                )
+        return Geometry.from_sfcgal_geometry(phs_geom) if wrapped else phs_geom
+
+    @staticmethod
+    def sfcgal_geom_from_coordinates(
+            coordinates: Tuple, close: bool = False) -> ffi.CData:
+        """Instantiates a SFCGAL Solid starting from a tuple of coordinates.
+
+        Parameters
+        ----------
+        coordinates : Tuple
+            A tuple of coordinate tuples representing the solid's shells.
+
+        Returns
+        -------
+        _cffi_backend._CDatabase
+            A pointer towards a SFCGAL Solid.
+        """
+        solid = lib.sfcgal_solid_create()
+        if coordinates:
+            polyhedralsurface = PolyhedralSurface.sfcgal_geom_from_coordinates(
+                coordinates[0]
+            )
+            solid = lib.sfcgal_solid_create_from_exterior_shell(polyhedralsurface)
+            for coords in coordinates[1:]:
+                polyhedralsurface = PolyhedralSurface.sfcgal_geom_from_coordinates(
+                    coords
+                )
+                lib.sfcgal_solid_add_interior_shell(solid, polyhedralsurface)
+        return solid
+
+    @cond_icontract(
+        lambda self, shell: shell.geom_type == "PolyhedralSurface", "require")
+    def set_exterior_shell(self, shell: PolyhedralSurface) -> None:
+        """Sets the exterior of the solid.
+
+        Parameters
+        ----------
+        shell : PolyhedralSurface
+            The new exterior shell
+
+        """
+        shell_clone = lib.sfcgal_geometry_clone(shell._geom)
+        lib.sfcgal_solid_set_exterior_shell(self._geom, shell_clone)
+
+    @cond_icontract(
+        lambda self, shell: shell.geom_type == "PolyhedralSurface", "require")
+    def add_interior_shell(self, shell: PolyhedralSurface) -> None:
+        """Adds an interior shell to the solid.
+
+        Parameters
+        ----------
+        shell : PolyhedralSurface
+            The interior shell to add
+
+        """
+        shell_clone = lib.sfcgal_geometry_clone(shell._geom)
+        lib.sfcgal_solid_add_interior_shell(self._geom, shell_clone)
+
+    def to_coordinates(self) -> list:
+        """Generates the coordinates of the Solid.
+
+        Uses the __iter__ property of the Solid to iterate over shells.
+
+        Returns
+        -------
+        list
+            List of shells' coordinates.
+        """
+        return [shells.to_coordinates() for shells in self]
