@@ -2,7 +2,7 @@ import math
 
 import pytest
 
-from pysfcgal.sfcgal import Axis, LineString, Point, Polygon
+from pysfcgal import Axis, LineString, Point, Polygon
 
 
 def is_close(first: float, second: float, tol: float = 1e-9) -> bool:

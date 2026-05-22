@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import Polygon
+from pysfcgal import Polygon
 
 
 @pytest.mark.parametrize(

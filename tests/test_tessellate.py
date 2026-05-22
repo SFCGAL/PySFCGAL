@@ -1,5 +1,5 @@
-from pysfcgal.sfcgal import (Geometry, GeometryCollection, LineString,
-                             MultiLineString, Point, Polygon)
+from pysfcgal import (Geometry, GeometryCollection, LineString,
+                      MultiLineString, Point, Polygon)
 
 
 def test_simple_polygon():

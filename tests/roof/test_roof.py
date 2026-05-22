@@ -2,10 +2,10 @@ import pathlib
 
 import pytest
 
+from pysfcgal import Polygon, PolyhedralSurface, Solid
 from pysfcgal.roof import (RoofType, generate_flat_roof, generate_gable_roof,
                            generate_hipped_roof, generate_roof,
                            generate_skillion_roof)
-from pysfcgal.sfcgal import Polygon, PolyhedralSurface, Solid
 
 EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 

@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import LineString, Tin, Triangle
+from pysfcgal import LineString, Tin, Triangle
 
 
 @pytest.fixture

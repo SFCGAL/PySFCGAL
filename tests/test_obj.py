@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from pysfcgal import sfcgal
+from pysfcgal import Geometry
 from tests.utils import (multilinestring_factory, multipoint_factory,
                          polyhedral_surface_factory, tin_factory)
 
@@ -34,11 +34,11 @@ def test_read_obj(filename: str, fixture_dir: Path, tmp_test_dir: Path) -> None:
     initial data.
 
     """
-    geom = sfcgal.Geometry.read_obj(str(fixture_dir / filename))
+    geom = Geometry.read_obj(str(fixture_dir / filename))
     assert geom.geom_type == "TriangulatedSurface"
     tmp_filepath = str(tmp_test_dir / filename)
     geom.write_obj(tmp_filepath)
-    copied_geom = sfcgal.Geometry.read_obj(tmp_filepath)
+    copied_geom = Geometry.read_obj(tmp_filepath)
     assert len(geom) == len(copied_geom)
     assert geom.geom_type == copied_geom.geom_type
     assert geom.n_edges == copied_geom.n_edges
@@ -62,5 +62,5 @@ def test_geom_to_obj(geom_factory):
     """
     geom = geom_factory(1.0)
     geom_obj = geom.to_obj()
-    other_geom = sfcgal.Geometry.from_obj(geom_obj)
+    other_geom = Geometry.from_obj(geom_obj)
     assert other_geom == geom

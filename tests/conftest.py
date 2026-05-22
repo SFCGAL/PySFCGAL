@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from pysfcgal.sfcgal import MultiPolygon, Point, Polygon
+from pysfcgal import MultiPolygon, Point, Polygon
 
 
 @pytest.fixture

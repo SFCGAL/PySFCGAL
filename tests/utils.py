@@ -7,7 +7,9 @@ value.
 
 import itertools
 
-from pysfcgal import sfcgal
+from pysfcgal import (GeometryCollection, LineString, MultiLineString,
+                      MultiPoint, MultiPolygon, MultiSolid, Point, Polygon,
+                      PolyhedralSurface, Solid, Tin, Triangle)
 
 
 def from_point_list_to_cube_coordinates(
@@ -84,7 +86,7 @@ def create_cube_coordinates(
     )
 
 
-def point_factory(coord: float) -> sfcgal.Point:
+def point_factory(coord: float) -> Point:
     """Return a simple 3D Point with X, Y and Z coordinates.
 
     X, Y and Z are equal.
@@ -99,10 +101,10 @@ def point_factory(coord: float) -> sfcgal.Point:
     sfcgal.Point
         A simple PointZ.
     """
-    return sfcgal.Point(coord, coord, coord)
+    return Point(coord, coord, coord)
 
 
-def multipoint_factory(coord: float) -> sfcgal.MultiPoint:
+def multipoint_factory(coord: float) -> MultiPoint:
     """Return a simple 3D MultiPoint with X, Y and Z coordinates.
 
     X, Y and Z are equal, and the MultiPoint contains only a single point.
@@ -114,16 +116,16 @@ def multipoint_factory(coord: float) -> sfcgal.MultiPoint:
 
     Returns
     -------
-    sfcgal.MultiPoint
+    MultiPoint
         A simple MultiPointZ.
     """
-    mp = sfcgal.MultiPoint()
+    mp = MultiPoint()
     point = point_factory(coord)
     mp.add_point(point)
     return mp
 
 
-def linestring_factory(coord: float) -> sfcgal.LineString:
+def linestring_factory(coord: float) -> LineString:
     """Return a simple vertical 3D LineString starting from a unique coordinate value.
 
     The X, Y and Z coordinates are equal, the LineStringZ is drawn considering Z and Z+1
@@ -136,11 +138,11 @@ def linestring_factory(coord: float) -> sfcgal.LineString:
 
     Returns
     -------
-    sfcgal.LineString
+    LineString
         A simple vertical LineStringZ.
 
     """
-    return sfcgal.LineString(
+    return LineString(
         [
             [coord, coord, coord],
             [coord, coord, coord + 1]
@@ -148,7 +150,7 @@ def linestring_factory(coord: float) -> sfcgal.LineString:
     )
 
 
-def multilinestring_factory(coord: float) -> sfcgal.MultiLineString:
+def multilinestring_factory(coord: float) -> MultiLineString:
     """Return a simple 3D MultiLineString starting from a unique coordinate value.
 
     The MultiLineString contains only a single LineStringZ, in which the X, Y and Z
@@ -162,17 +164,17 @@ def multilinestring_factory(coord: float) -> sfcgal.MultiLineString:
 
     Returns
     -------
-    sfcgal.MultiLineString
+    MultiLineString
         A simple MultiLineStringZ composed of a single vertical LineStringZ.
 
     """
-    mline = sfcgal.MultiLineString()
+    mline = MultiLineString()
     linestring = linestring_factory(coord)
     mline.add_linestring(linestring)
     return mline
 
 
-def polygon_factory(coord: float) -> sfcgal.Polygon:
+def polygon_factory(coord: float) -> Polygon:
     """Return a simple 3D Polygon starting from a unique coordinate value.
 
     The PolygonZ is defined with four vertices; the vertice coordinates are such that X
@@ -185,11 +187,11 @@ def polygon_factory(coord: float) -> sfcgal.Polygon:
 
     Returns
     -------
-    sfcgal.Polygon
+    Polygon
         A simple PolygonZ.
 
     """
-    return sfcgal.Polygon(
+    return Polygon(
         [
             [coord, coord, coord],
             [coord, coord + 1, coord],
@@ -199,7 +201,7 @@ def polygon_factory(coord: float) -> sfcgal.Polygon:
     )
 
 
-def multipolygon_factory(coord: float) -> sfcgal.MultiPolygon:
+def multipolygon_factory(coord: float) -> MultiPolygon:
     """Return a simple 3D MultiPolygon starting from a unique coordinate value.
 
     The MultiPolygon contains only a single PolygonZ, designed from the polygon factory.
@@ -211,17 +213,17 @@ def multipolygon_factory(coord: float) -> sfcgal.MultiPolygon:
 
     Returns
     -------
-    sfcgal.MultiPolygon
+    MultiPolygon
         A simple MultiPolygonZ.
 
     """
-    multipolygon = sfcgal.MultiPolygon()
+    multipolygon = MultiPolygon()
     poly = polygon_factory(coord)
     multipolygon.add_polygon(poly)
     return multipolygon
 
 
-def geometry_collection_factory(coord: float) -> sfcgal.GeometryCollection:
+def geometry_collection_factory(coord: float) -> GeometryCollection:
     """Return a simple 3D GeometryCollection starting from a unique coordinate value.
 
     The geometries that compose the collection are drawn with their respective factory.
@@ -233,18 +235,18 @@ def geometry_collection_factory(coord: float) -> sfcgal.GeometryCollection:
 
     Returns
     -------
-    sfcgal.GeometryCollection
+    GeometryCollection
         A GeometryCollection containing a PointZ, a LineStringZ and a PolygonZ.
 
     """
-    gc = sfcgal.GeometryCollection()
+    gc = GeometryCollection()
     gc.add_geometry(point_factory(coord))
     gc.add_geometry(linestring_factory(coord))
     gc.add_geometry(polygon_factory(coord))
     return gc
 
 
-def triangle_factory(coord: float) -> sfcgal.Triangle:
+def triangle_factory(coord: float) -> Triangle:
     """Return a simple 3D Triangle starting from a unique coordinate value.
 
     The triangle vertice coordinates are such that X and Y vary around the input
@@ -257,11 +259,11 @@ def triangle_factory(coord: float) -> sfcgal.Triangle:
 
     Returns
     -------
-    sfcgal.Triangle
+    Triangle
         A simple TriangleZ.
 
     """
-    return sfcgal.Triangle(
+    return Triangle(
         [
             [coord, coord, coord],
             [coord, coord + 1, coord],
@@ -270,7 +272,7 @@ def triangle_factory(coord: float) -> sfcgal.Triangle:
     )
 
 
-def tin_factory(coord: float) -> sfcgal.Tin:
+def tin_factory(coord: float) -> Tin:
     """Return a simple 3D TIN starting from a unique coordinate value.
 
     The TIN contains only a single TriangleZ, designed from the triangle factory.
@@ -282,17 +284,17 @@ def tin_factory(coord: float) -> sfcgal.Tin:
 
     Returns
     -------
-    sfcgal.Tin
+    Tin
         A simple TIN Z with a single triangle.
 
     """
-    tin = sfcgal.Tin()
+    tin = Tin()
     triangle = triangle_factory(coord)
     tin.add_patch(triangle)
     return tin
 
 
-def polyhedral_surface_factory(coord: float) -> sfcgal.PolyhedralSurface:
+def polyhedral_surface_factory(coord: float) -> PolyhedralSurface:
     """Return a simple 3D PolyhedralSurface starting from a unique coordinate value.
 
     The PolyhedralSurface is defined as a cube, its vertice coordinates vary around the
@@ -305,15 +307,15 @@ def polyhedral_surface_factory(coord: float) -> sfcgal.PolyhedralSurface:
 
     Returns
     -------
-    sfcgal.PolyhedralSurface
+    PolyhedralSurface
         A simple cubic PolyhedralSurface.
 
     """
     coords = create_cube_coordinates(coord, coord + 1)
-    return sfcgal.PolyhedralSurface(coords)
+    return PolyhedralSurface(coords)
 
 
-def solid_factory(coord: float) -> sfcgal.Solid:
+def solid_factory(coord: float) -> Solid:
     """Return a simple Solid starting from a unique coordinate value.
 
     The Solid only has an exterior shell, which is a cube designed from the polyhedral
@@ -326,17 +328,17 @@ def solid_factory(coord: float) -> sfcgal.Solid:
 
     Returns
     -------
-    sfcgal.Solid
+    Solid
         A simple Solid with only an exterior shell.
 
     """
-    solid = sfcgal.Solid()
+    solid = Solid()
     phs = polyhedral_surface_factory(coord)
     solid.set_exterior_shell(phs)
     return solid
 
 
-def multisolid_factory(coord: float) -> sfcgal.MultiSolid:
+def multisolid_factory(coord: float) -> MultiSolid:
     """Return a simple MultiSolid starting from a unique coordinate value.
 
     The MultiSolid contains only a single Solid, designed from the solid factory.
@@ -348,11 +350,11 @@ def multisolid_factory(coord: float) -> sfcgal.MultiSolid:
 
     Returns
     -------
-    sfcgal.MultiSolid
+    MultiSolid
         A simple MultiSolid that contains a single Solid.
 
     """
-    multisolid = sfcgal.MultiSolid()
+    multisolid = MultiSolid()
     solid = solid_factory(coord)
     multisolid.add_solid(solid)
     return multisolid

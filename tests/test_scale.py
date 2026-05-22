@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import LineString, Point, Polygon, Triangle
+from pysfcgal import LineString, Point, Polygon, Triangle
 
 
 @pytest.mark.parametrize(

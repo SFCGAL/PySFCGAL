@@ -2,7 +2,7 @@ from subprocess import PIPE, CalledProcessError, run
 
 import pytest
 
-from pysfcgal.sfcgal import LineString, Triangle
+from pysfcgal import LineString, Triangle
 
 
 def test_wrap_geom_segfault():

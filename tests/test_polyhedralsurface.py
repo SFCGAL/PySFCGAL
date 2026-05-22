@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import LineString, Polygon, PolyhedralSurface
+from pysfcgal import LineString, Polygon, PolyhedralSurface
 
 
 @pytest.fixture

@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import MultiSolid, PolyhedralSurface, Solid
+from pysfcgal import MultiSolid, PolyhedralSurface, Solid
 from tests.utils import create_cube_coordinates
 
 

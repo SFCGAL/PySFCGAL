@@ -9,29 +9,30 @@ from pathlib import Path
 import icontract
 import pytest
 
-from pysfcgal import sfcgal
+from pysfcgal import Geometry, Tin
+from pysfcgal.geometry.simplification import SimplificationStrategy
 
 
 @pytest.fixture
-def bunny_geom(fixture_dir: Path) -> sfcgal.Tin:
+def bunny_geom(fixture_dir: Path) -> Tin:
     """A valid SFCGAL triangulated surface representing a tiny bunny.
 
     The validity flag is set to True in order to avoid costly validation checks.
 
     """
-    geom = sfcgal.Geometry.read_obj(str(fixture_dir / "bunny.obj"))
+    geom = Geometry.read_obj(str(fixture_dir / "bunny.obj"))
     geom.validity_flag = True
     yield geom
 
 
 @pytest.fixture
-def teddy_geom(fixture_dir: Path) -> sfcgal.Tin:
+def teddy_geom(fixture_dir: Path) -> Tin:
     """A SFCGAL triangulated surface representing a teddy bear.
 
     The resulting triangulated surface is not valid according to SFCGAL.
 
     """
-    geom = sfcgal.Geometry.read_obj(str(fixture_dir / "teddy.obj"))
+    geom = Geometry.read_obj(str(fixture_dir / "teddy.obj"))
     yield geom
 
 
@@ -72,8 +73,8 @@ def test_simplify_surface_too_much_edges(bunny_geom):
 
 
 @pytest.mark.parametrize(
-    "strategy", sfcgal.SimplificationStrategy, ids=[
-        strategy.label for strategy in sfcgal.SimplificationStrategy
+    "strategy", SimplificationStrategy, ids=[
+        strategy.label for strategy in SimplificationStrategy
     ]
 )
 @pytest.mark.parametrize(
@@ -86,8 +87,8 @@ def test_simplify_surface_edge_count(strategy, edge_count, bunny_geom):
 
 
 @pytest.mark.parametrize(
-    "strategy", sfcgal.SimplificationStrategy, ids=[
-        strategy.label for strategy in sfcgal.SimplificationStrategy
+    "strategy", SimplificationStrategy, ids=[
+        strategy.label for strategy in SimplificationStrategy
     ]
 )
 @pytest.mark.parametrize(

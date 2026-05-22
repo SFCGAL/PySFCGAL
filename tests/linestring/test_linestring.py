@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import LineString
+from pysfcgal import LineString
 
 
 @pytest.fixture

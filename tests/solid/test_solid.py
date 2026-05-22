@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import LineString, PolyhedralSurface, Solid
+from pysfcgal import LineString, PolyhedralSurface, Solid
 
 
 def test_solid(

@@ -2,8 +2,8 @@ import pathlib
 
 import pytest
 
-from pysfcgal.sfcgal import (GeometryCollection, LineString, Point, Polygon,
-                             PolyhedralSurface)
+from pysfcgal import (GeometryCollection, LineString, Point, Polygon,
+                      PolyhedralSurface)
 
 EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 

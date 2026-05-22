@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import Polygon, Triangle
+from pysfcgal import Polygon, Triangle
 
 
 @pytest.fixture

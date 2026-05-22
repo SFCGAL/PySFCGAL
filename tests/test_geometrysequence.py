@@ -1,4 +1,4 @@
-from pysfcgal.sfcgal import GeometrySequence, MultiPoint
+from pysfcgal import GeometrySequence, MultiPoint
 
 
 def test_geometry_sequence_memory_management(c000, c100, c010):

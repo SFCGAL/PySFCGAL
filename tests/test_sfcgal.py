@@ -3,16 +3,15 @@ from filecmp import cmp
 
 import pytest
 
-import pysfcgal.sfcgal as sfcgal
-from pysfcgal.sfcgal import (Geometry, GeometryCollection, LineString,
-                             MultiLineString, MultiPoint, Point, Polygon,
-                             PolyhedralSurface, Solid, Triangle)
+from pysfcgal import (Geometry, GeometryCollection, LineString,
+                      MultiLineString, MultiPoint, Point, Polygon,
+                      PolyhedralSurface, Solid, Triangle, sfcgal_version)
 
 EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 
 
 def test_version():
-    print(sfcgal.sfcgal_version())
+    print(sfcgal_version())
 
 
 def test_wkt_read():
@@ -37,7 +36,7 @@ def test_wkb_write():
     expected_wkb = "01010000000000000000000000000000000000f03f"
     assert wkb == expected_wkb
 
-    mp = sfcgal.Polygon([(0, 0), (0, 5), (5, 5), (5, 0), (0, 0)])
+    mp = Polygon([(0, 0), (0, 5), (5, 5), (5, 0), (0, 0)])
     wkb = mp.to_wkb(True)
     expected_wkb = '010300000001000000050000000000000000000000000000000000000000000000000000000000000000001440000000000000144000000000000014400000000000001440000000000000000000000000000000000000000000000000'  # noqa: E501
     assert wkb == expected_wkb

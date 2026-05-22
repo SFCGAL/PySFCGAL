@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import BufferType, LineString, Point
+from pysfcgal import BufferType, LineString, Point
 
 
 def test_buffer_3d_enum():

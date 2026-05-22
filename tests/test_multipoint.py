@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import LineString, MultiPoint
+from pysfcgal import LineString, MultiPoint
 
 
 @pytest.fixture

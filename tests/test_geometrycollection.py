@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import GeometryCollection, LineString, Polygon
+from pysfcgal import GeometryCollection, LineString, Polygon
 
 
 @pytest.fixture

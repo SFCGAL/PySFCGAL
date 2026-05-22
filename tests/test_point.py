@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import Point
+from pysfcgal import Point
 
 
 @pytest.fixture

@@ -1,14 +1,14 @@
 import pytest
 
-from pysfcgal import sfcgal
+from pysfcgal.geometry.registry import geom_type_to_cls, geom_types
 from tests.utils import GEOMETRY_FACTORIES
 
 
 @pytest.mark.parametrize(
     "geom_type, geom_cls",
     [
-        (geom_type, sfcgal.geom_type_to_cls[sfcgal_geom])
-        for geom_type, sfcgal_geom in sfcgal.geom_types.items()
+        (geom_type, geom_type_to_cls[sfcgal_geom])
+        for geom_type, sfcgal_geom in geom_types.items()
     ]
 )
 def test_geometry_empty(geom_type, geom_cls):

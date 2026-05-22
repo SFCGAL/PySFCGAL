@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal.sfcgal import Geometry
+from pysfcgal import Geometry
 from tests.utils import GEOMETRY_FACTORIES
 
 WKT_EXPECTED_BOUNDARIES = {

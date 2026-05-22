@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal import primitive, sfcgal
+from pysfcgal import PolyhedralSurface, primitive
 
 PRIMITIVES_FACTORY = [
     (
@@ -116,7 +116,7 @@ def test_create_primitives(primitive_type, primitive_class, init_values, __):
 def test_to_polyhedral_surface(primitive_class):
     prim = primitive_class()
     phs = prim.to_polyhedral_surface()
-    assert isinstance(phs, sfcgal.PolyhedralSurface)
+    assert isinstance(phs, PolyhedralSurface)
 
 
 @pytest.mark.parametrize(

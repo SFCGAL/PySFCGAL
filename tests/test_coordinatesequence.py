@@ -1,4 +1,4 @@
-from pysfcgal.sfcgal import CoordinateSequence, LineString
+from pysfcgal import CoordinateSequence, LineString
 
 
 def test_coordinate_sequence_memory_management():

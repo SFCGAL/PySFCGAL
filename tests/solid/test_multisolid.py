@@ -1,7 +1,7 @@
 import icontract
 import pytest
 
-from pysfcgal.sfcgal import MultiSolid, Solid
+from pysfcgal import MultiSolid, Solid
 
 
 def test_multisolid_iteration(multisolid, expected_solids):
