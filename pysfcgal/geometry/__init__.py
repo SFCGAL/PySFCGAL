@@ -7,8 +7,8 @@ from pysfcgal.geometry.collection import (GeometryCollection, GeometrySequence,
 from pysfcgal.geometry.curve import CoordinateSequence, LineString
 from pysfcgal.geometry.geometry import Axis, Geometry
 from pysfcgal.geometry.point import Point
-from pysfcgal.geometry.surface import (Polygon, PolyhedralSurface, Solid, Tin,
-                                       Triangle)
+from pysfcgal.geometry.surface import Polygon, PolyhedralSurface, Tin, Triangle
+from pysfcgal.geometry.volume import Solid
 
 __all__ = [
     "Axis",

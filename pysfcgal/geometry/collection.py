@@ -15,7 +15,8 @@ from .._sfcgal import ffi, lib
 from .curve import LineString
 from .geometry import Geometry
 from .point import Point
-from .surface import Polygon, Solid
+from .surface import Polygon
+from .volume import Solid
 
 __all__ = [
     "GeometrySequence",
