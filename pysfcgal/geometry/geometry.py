@@ -1368,6 +1368,7 @@ class Geometry:
         )
         return Geometry.from_sfcgal_geometry(geom)
 
+    @deprecated("translate_2d() is deprecated. Use translate() instead.")
     def translate_2d(self, dx: float = 0, dy: float = 0) -> Optional[Geometry]:
         """
         This method is an alias for the `translate` function.

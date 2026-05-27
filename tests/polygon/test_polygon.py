@@ -155,15 +155,21 @@ def test_intersection_polygon_polygon(polygon1, polygon2):
     # TODO: check coordinates
 
 
-def test_translate_2d(polygon1, big_ring_ccw):
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
+def test_translate(polygon1, big_ring_ccw):
     dx = 10.
     dy = 20.
-    translated_polygon = polygon1.translate_2d(dx, dy)
+    translated_polygon = polygon1.translate(dx, dy)
     expected_ring_coordinates = [(x + dx, y + dy)
                                  for x, y in big_ring_ccw]
     assert translated_polygon.to_coordinates() == [expected_ring_coordinates]
-    reverted_polygon = translated_polygon.translate_2d(-dx, -dy)
+    translated_polygon_deprecated = polygon1.translate_2d(dx, dy)
+    assert translated_polygon == translated_polygon_deprecated
+
+    reverted_polygon = translated_polygon.translate(-dx, -dy)
     assert polygon1.to_coordinates() == reverted_polygon.to_coordinates()
+    reverted_polygon_deprecated = translated_polygon.translate_2d(-dx, -dy)
+    assert reverted_polygon == reverted_polygon_deprecated
 
 
 def test_translate_3d(polygon1, big_ring_ccw):
@@ -175,7 +181,7 @@ def test_translate_3d(polygon1, big_ring_ccw):
                                  for x, y in big_ring_ccw]
     assert translated_polygon.to_coordinates() == [expected_ring_coordinates]
     # Apply a 2D-translation to a 3D geometry makes a 2D geometry
-    reverted_polygon = translated_polygon.translate_2d(-dx, -dy)
+    reverted_polygon = translated_polygon.translate(-dx, -dy)
     assert polygon1.to_coordinates() == reverted_polygon.to_coordinates()
     # Apply a 3D-translation to a 2D geometry makes a 3D geometry
     retranslated_polygon = reverted_polygon.translate_3d(dx, dy, dz)
