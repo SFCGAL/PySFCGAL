@@ -6,6 +6,6 @@ polygon = sfcgal.Polygon([(1, 3), (3, 3), (3, 1), (1, 1), (1, 3)])
 
 collection = sfcgal.GeometryCollection()
 
-collection.addGeometry(point)
-collection.addGeometry(linestring)
-collection.addGeometry(polygon)
+collection.add_geometry(point)
+collection.add_geometry(linestring)
+collection.add_geometry(polygon)
