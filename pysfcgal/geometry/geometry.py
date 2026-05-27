@@ -679,7 +679,7 @@ class Geometry:
         Geometry
             The tessellated geometry.
         """
-        tessellation = lib.sfcgal_geometry_tesselate(self._geom)
+        tessellation = lib.sfcgal_geometry_tessellate(self._geom)
         return Geometry.from_sfcgal_geometry(tessellation)
 
     def force_lhr(self) -> Optional[Geometry]:
