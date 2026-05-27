@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import find_packages, setup
 
 setup(
     name="PySFCGAL",
@@ -17,7 +17,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: Implementation :: PyPy",
     ],
-    packages=["pysfcgal"],
+    packages=find_packages(),
     package_data={"pysfcgal": ["*.c"]},
     setup_requires=["cffi>=1.0.0"],
     cffi_modules=["pysfcgal/sfcgal_build.py:ffibuilder"],
