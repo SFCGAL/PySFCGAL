@@ -1,9 +1,9 @@
 ARG DEVEL_DATE
 ARG DEVEL_VERSION=true
-ARG PYTHON_WHEEL_VERSION
-ARG SFCGAL_REGISTRY
+ARG PYTHON_WHEEL_VERSION=3.14
+ARG SFCGAL_REGISTRY=registry.gitlab.com/sfcgal/sfcgal
 
-FROM ${SFCGAL_REGISTRY}:debian-latest as sfcgal_build
+FROM ${SFCGAL_REGISTRY}:debian-latest AS sfcgal_build
 
 FROM python:${PYTHON_WHEEL_VERSION}-slim-bookworm AS container
 
