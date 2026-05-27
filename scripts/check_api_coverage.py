@@ -136,8 +136,7 @@ def main():
     current_dir = Path(__file__).resolve().parent
     src_dir = current_dir.parent / "pysfcgal"
     c_file = src_dir / "sfcgal_def.c"
-    py_base_files = ["__init__.py", "primitive.py", "roof.py", "sfcgal.py"]
-    py_files = [src_dir / file_ for file_ in py_base_files]
+    py_files = list(src_dir.rglob("*.py"))  # Recursively look for Python files
 
     print(f"Analysing C file: {c_file}")
     print(f"Checking python files: {py_files}")
