@@ -11,6 +11,7 @@ from __future__ import annotations
 from typing import Tuple, cast
 
 from .._contracts import cond_icontract
+from .._deprecated import deprecated
 from .._sfcgal import ffi, lib
 from .curve import LineString
 from .geometry import Geometry
@@ -250,6 +251,7 @@ class GeometryCollection(GeometryCollectionBase):
         """
         self._add_geometry(geometry)
 
+    @deprecated("addGeometry() is deprecated. Use add_geometry() instead.")
     def addGeometry(self, geometry: Geometry) -> None:
         """Add a geometry to the collection.
         This function is deprecated. Use add_geometry instead.

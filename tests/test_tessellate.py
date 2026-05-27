@@ -32,9 +32,9 @@ def test_polygon_with_breaklines():
     lines = [LineString([(.2, .6), (.8, .6)]),
              LineString([(.2, .4), (.8, .4)])]
     geom = GeometryCollection()
-    geom.addGeometry(poly)
+    geom.add_geometry(poly)
     for line in lines:
-        geom.addGeometry(line)
+        geom.add_geometry(line)
     tessellation = geom.tessellate()
     geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
     TRIANGLE ((0.2 0.4,1.0 0.0,0.8 0.4,0.2 0.4)),
@@ -55,9 +55,9 @@ def test_polygon_with_breaklines_point():
     multiline = MultiLineString([[(.2, .6), (.8, .6)], [(.2, .4), (.8, .4)]])
     point = Point(.9, .9)
     geom = GeometryCollection()
-    geom.addGeometry(poly)
-    geom.addGeometry(multiline)
-    geom.addGeometry(point)
+    geom.add_geometry(poly)
+    geom.add_geometry(multiline)
+    geom.add_geometry(point)
     tessellation = geom.tessellate()
     geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
     TRIANGLE ((0.0 0.0,1.0 0.0,0.2 0.4,0.0 0.0)),
@@ -79,8 +79,8 @@ def test_polygon_with_points():
     poly = Polygon([(0, 0), (1, 0), (1, 1), (0, 1)])
     point = Point(.9, .9)
     geom = GeometryCollection()
-    geom.addGeometry(poly)
-    geom.addGeometry(point)
+    geom.add_geometry(poly)
+    geom.add_geometry(point)
     tessellation = geom.tessellate()
     geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
     TRIANGLE ((0.9 0.9,1.0 1.0,0.0 1.0,0.9 0.9)),
@@ -121,9 +121,9 @@ def test_polygon_with_hole_and_break_lines():
              LineString([(.9, .9), (.1, .9)]),
              LineString([(.1, .9), (.1, .1)])]
     geom = GeometryCollection()
-    geom.addGeometry(poly)
+    geom.add_geometry(poly)
     for line in lines:
-        geom.addGeometry(line)
+        geom.add_geometry(line)
     tessellation = geom.tessellate()
     geom2 = GeometryCollection.from_wkt("""GEOMETRYCOLLECTION (
     TRIANGLE ((0.0 0.0,1.0 0.0,0.1 0.1,0.0 0.0)),

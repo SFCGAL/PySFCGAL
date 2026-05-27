@@ -12,7 +12,7 @@ def expected_geometries(point000, c000, c100, c001):
 def collection(expected_geometries):
     geom_collec = GeometryCollection()
     for geom in expected_geometries:
-        geom_collec.addGeometry(geom)
+        geom_collec.add_geometry(geom)
     yield geom_collec
 
 
@@ -20,7 +20,7 @@ def collection(expected_geometries):
 def other_collection(expected_geometries):
     geom_collec = GeometryCollection()
     for _ in range(3):
-        geom_collec.addGeometry(expected_geometries[0])
+        geom_collec.add_geometry(expected_geometries[0])
     yield geom_collec
 
 
@@ -28,7 +28,7 @@ def other_collection(expected_geometries):
 def collection_unordered(expected_geometries):
     geom_collec = GeometryCollection()
     for geom in expected_geometries[::-1]:
-        geom_collec.addGeometry(geom)
+        geom_collec.add_geometry(geom)
     yield geom_collec
 
 
