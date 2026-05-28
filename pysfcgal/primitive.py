@@ -27,12 +27,12 @@ class PrimitiveType(IntEnum):
     """
     label: str
 
-    BOX = 0, "Box"
-    CONE = 1, "Cone"
-    CUBE = 2, "Cube"
-    CYLINDER = 3, "Cylinder"
-    SPHERE = 4, "Sphere"
-    TORUS = 5, "Torus"
+    BOX = lib.SFCGAL_TYPE_BOX, "Box"
+    CONE = lib.SFCGAL_TYPE_CONE, "Cone"
+    CUBE = lib.SFCGAL_TYPE_CUBE, "Cube"
+    CYLINDER = lib.SFCGAL_TYPE_CYLINDER, "Cylinder"
+    SPHERE = lib.SFCGAL_TYPE_SPHERE, "Sphere"
+    TORUS = lib.SFCGAL_TYPE_TORUS, "Torus"
 
     def __new__(cls: PrimitiveType, value: int, label: str) -> PrimitiveType:
         obj = int.__new__(cls, value)
