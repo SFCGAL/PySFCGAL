@@ -10,9 +10,9 @@ from ._contracts import cond_icontract
 from ._sfcgal import lib
 
 if typing.TYPE_CHECKING:
-    from .sfcgal import Polygon
+    from .geometry import Polygon
 
-from .sfcgal import Geometry
+from .geometry import Geometry
 
 
 class RoofType(IntEnum):
