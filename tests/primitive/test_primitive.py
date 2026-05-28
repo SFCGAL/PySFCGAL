@@ -2,6 +2,11 @@ import pytest
 
 from pysfcgal import PolyhedralSurface, primitive
 
+# Factory to test a primitive:
+#   - type
+#   - object
+#   - parameters with custom values
+#   - expected area and volume with and without discretization
 PRIMITIVES_FACTORY = [
     (
         primitive.PrimitiveType.BOX,
