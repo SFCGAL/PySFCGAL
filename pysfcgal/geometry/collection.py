@@ -236,6 +236,25 @@ class GeometryCollectionBase(Geometry):
         clone = lib.sfcgal_geometry_clone(geometry._geom)
         lib.sfcgal_geometry_collection_add_geometry(self._geom, clone)
 
+    @cond_icontract(lambda self, n: n >= 0 and n < len(self), "require")
+    def _set_geometry_n(self, geometry: Geometry, n: int) -> None:
+        """Set the nth geometry of the collection.
+
+        This should not directly be called by a Geometry:
+        - A Geometry which inherits from `GeometryCollectionBase` has
+            a specialized method. For example, `MultiPoint` has `set_point_n`.
+        - A `GeometryCollection` has `set_geometry_n`.
+
+        Parameters
+        ----------
+        geometry: Geometry
+            The geometry to set.
+        n : int
+            Index of the geometry to set.
+        """
+        clone = lib.sfcgal_geometry_clone(geometry._geom)
+        lib.sfcgal_geometry_collection_set_geometry_n(self._geom, clone, n)
+
 
 class GeometryCollection(GeometryCollectionBase):
     def __init__(self):
@@ -262,6 +281,18 @@ class GeometryCollection(GeometryCollectionBase):
             The geometry to add.
         """
         self.add_geometry(geometry)
+
+    def set_geometry_n(self, geometry: Geometry, n: int) -> None:
+        """Set the nth geometry of the collection.
+
+        Parameters
+        ----------
+        geometry: Geometry
+            The geometry to set.
+        n : int
+            Index of the geometry to set.
+        """
+        self._set_geometry_n(geometry, n)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, GeometryCollection):
@@ -395,6 +426,19 @@ class MultiPoint(GeometryCollectionBase):
         """
         self._add_geometry(point)
 
+    @cond_icontract(lambda self, point: point.geom_type == "Point", "require")
+    def set_point_n(self, point: Point, n: int) -> None:
+        """Set the nth point of the multipoint.
+
+        Parameters
+        ----------
+        point: Point
+            The point to set.
+        n : int
+            Index of the geometry to set.
+        """
+        self._set_geometry_n(point, n)
+
 
 class MultiLineString(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):
@@ -451,6 +495,20 @@ class MultiLineString(GeometryCollectionBase):
         """
         self._add_geometry(linestring)
 
+    @cond_icontract(
+        lambda self, linestring: linestring.geom_type == "LineString", "require")
+    def set_linestring_n(self, linestring: LineString, n: int) -> None:
+        """Set the nth geometry of the multilinestring.
+
+        Parameters
+        ----------
+        linestring: LineString
+            The linestring to set.
+        n : int
+            Index of the geometry to set.
+        """
+        self._set_geometry_n(linestring, n)
+
 
 class MultiPolygon(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):
@@ -504,6 +562,19 @@ class MultiPolygon(GeometryCollectionBase):
         """
         self._add_geometry(polygon)
 
+    @cond_icontract(lambda self, polygon: polygon.geom_type == "Polygon", "require")
+    def set_polygon_n(self, polygon: Polygon, n: int) -> None:
+        """Set the nth polygon of the multipolygon.
+
+        Parameters
+        ----------
+        polygon: Polygon
+            The polygon to set.
+        n : int
+            Index of the geometry to set.
+        """
+        self._set_geometry_n(polygon, n)
+
 
 class MultiSolid(GeometryCollectionBase):
     def __init__(self, coords: Tuple = ()):
@@ -551,3 +622,16 @@ class MultiSolid(GeometryCollectionBase):
             The sold to add.
         """
         self._add_geometry(solid)
+
+    @cond_icontract(lambda self, solid: solid.geom_type == "Solid", "require")
+    def set_solid_n(self, solid: Solid, n: int) -> None:
+        """Set the nth solid of the multisolid.
+
+        Parameters
+        ----------
+        solid: Solid
+            The solid to set.
+        n : int
+            Index of the geometry to set.
+        """
+        self._set_geometry_n(solid, n)

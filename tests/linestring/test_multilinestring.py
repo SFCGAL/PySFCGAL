@@ -93,6 +93,16 @@ def test_multilinestring_add_point_fails(multilinestring, c100):
         multilinestring.add_linestring(Point(*c100))
 
 
+def test_multilinestring_set_linestring_n(multilinestring, c100, c010):
+    new_line = LineString([c100, c010])
+    assert len(multilinestring) == 3
+    assert new_line not in multilinestring
+
+    multilinestring.set_linestring_n(new_line, 1)
+    assert len(multilinestring) == 3
+    assert new_line in multilinestring
+
+
 def test_centroid(multilinestring: MultiLineString) -> None:
     assert multilinestring.centroid() == multilinestring.centroid(True)
 

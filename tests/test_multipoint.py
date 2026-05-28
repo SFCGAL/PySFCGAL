@@ -67,6 +67,15 @@ def test_multipoint_add_line_fails(multipoint, c000, c100, c010):
         multipoint.add_point(LineString([c000, c100, c010]))
 
 
+def test_multipoint_get_point_n(multipoint, point001):
+    assert len(multipoint) == 3
+    assert point001 not in multipoint
+
+    multipoint.set_point_n(point001, 2)
+    assert len(multipoint) == 3
+    assert point001 in multipoint
+
+
 @pytest.mark.parametrize("compute_2d_area", [True, False])
 def test_centroid(multipoint: MultiPoint, compute_2d_area: bool) -> None:
     x_coords = [coords[0] for coords in multipoint.to_coordinates()]

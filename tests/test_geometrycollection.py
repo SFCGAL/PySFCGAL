@@ -58,6 +58,14 @@ def test_geometry_collection_equality(
     assert collection != collection_unordered
 
 
+def test_geometry_collection_set_geometry_n(collection, point010):
+    assert len(collection) == 3
+    assert point010 not in collection
+
+    collection.set_geometry_n(point010, 1)
+    assert point010 in collection
+
+
 def test_geometry_collection_to_coordinates(collection, c000, c100, c001):
     assert collection.to_coordinates() == [
         c000,

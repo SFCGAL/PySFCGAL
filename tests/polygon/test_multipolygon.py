@@ -92,6 +92,16 @@ def test_multipolygon_add_linestring_fails(multipolygon, c000, c100, c010):
         multipolygon.add_polygon(LineString([c000, c100, c010]))
 
 
+def test_multipolygon_set_polygon_n(multipolygon, big_ring_ccw):
+    new_polygon = Polygon(big_ring_ccw)
+    assert len(multipolygon) == 3
+    assert new_polygon not in multipolygon
+
+    multipolygon.set_polygon_n(new_polygon, 0)
+    assert len(multipolygon) == 3
+    assert new_polygon in multipolygon
+
+
 @pytest.mark.parametrize("compute_2d_area", [True, False])
 def test_centroid_vertical(
     vertical_multipolygon: MultiPolygon, compute_2d_area: bool

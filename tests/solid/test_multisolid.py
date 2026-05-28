@@ -50,6 +50,16 @@ def test_multisolid_add_point_fails(multisolid, point010):
         multisolid.add_solid(point010)
 
 
+def test_multisolid_set_solid_n(points_int_1, multisolid, point010):
+    solid = Solid([points_int_1])
+    assert len(multisolid) == 3
+    assert solid not in multisolid
+
+    multisolid.set_solid_n(solid, 1)
+    assert len(multisolid) == 3
+    assert solid in multisolid
+
+
 @pytest.mark.parametrize("compute_2d_area", [True, False])
 def test_vertical_centroid(
     solid_without_holes: Solid, compute_2d_area: bool
