@@ -220,6 +220,28 @@ class Primitive:
             raise KeyError(f"'{type(self).__name__}' has no attribute '{name}'")
         param_type.setter(self.__primitive, name.encode(), value)
 
+    def __eq__(self, other: object) -> bool:
+        """Check equality between two Primitive instances.
+
+        Two primitives are equal if they have the same type and their
+        parameters are equal.
+
+        Parameters
+        ----------
+        other : object
+            The object to compare with.
+
+        Returns
+        -------
+        bool
+            True if both points have the same coordinates, False otherwise.
+        """
+        if not isinstance(other, Primitive):
+            return False
+
+        return bool(lib.sfcgal_primitive_is_almost_equals(
+            self.__primitive, other.__primitive, 0.0))
+
     def __repr__(self) -> str:
         """
         Return a string representation of the primitive.

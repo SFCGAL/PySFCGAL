@@ -137,3 +137,19 @@ def test_area_volume(primitive_class, primitive_type, init_values, area_volume):
         area, volume = area_volume[idx]
         assert pytest.approx(prim.area(idx == 0), 1e-6) == area
         assert pytest.approx(prim.volume(idx == 0), 1e-6) == volume
+
+
+@pytest.mark.parametrize(
+    "primitive_class,init_values", [(p[1], p[2]) for p in PRIMITIVES_FACTORY])
+def test_equality(primitive_class, init_values):
+    prim = primitive_class(**init_values)
+    other_prim = primitive_class(**init_values)
+    assert prim == other_prim
+
+    first_param = next(iter(init_values))
+    if isinstance(prim[first_param], list):
+        prim[first_param] = [2*val for val in prim[first_param]]
+    else:
+        prim[first_param] = 2 * prim[first_param]
+
+    assert prim != other_prim
