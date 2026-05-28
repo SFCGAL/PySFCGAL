@@ -18,10 +18,10 @@ from .geometry import Geometry
 class RoofType(IntEnum):
     label: str
 
-    FLAT = 0, "Flat"
-    HIPPED = 1, "Hipped"
-    SKILLION = 2, "Skillion"
-    GABLE = 3, "Gable"
+    FLAT = lib.SFCGAL_ROOF_FLAT, "Flat"
+    HIPPED = lib.SFCGAL_ROOF_HIPPED, "Hipped"
+    SKILLION = lib.SFCGAL_ROOF_SKILLION, "Skillion"
+    GABLE = lib.SFCGAL_ROOF_GABLE, "Gable"
 
     def __new__(cls: Type["RoofType"], value: int, label: str) -> "RoofType":
         obj = int.__new__(cls, value)
