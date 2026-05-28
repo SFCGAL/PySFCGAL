@@ -11,7 +11,7 @@ from enum import Enum, IntEnum
 from typing import Any, Callable, Optional, TypeVar
 
 from ._sfcgal import ffi, lib
-from .geometry import PolyhedralSurface
+from .geometry import Point, PolyhedralSurface
 from .vector import Vector3D
 
 parameterVal = TypeVar("parameterVal", int, float)
@@ -118,7 +118,7 @@ class Primitive:
 
     __slots__ = ("__parameters", "__primitive", "__type")
 
-    def __init__(self, primitive_type: PrimitiveType):
+    def __init__(self, primitive_type: PrimitiveType, center: Optional[Point] = None):
         """Initialize a Primitive by its type.
 
         Parameters
@@ -129,6 +129,12 @@ class Primitive:
         self.__type = primitive_type
         self.__primitive = lib.sfcgal_primitive_create(primitive_type.value)
         self.__parameters = self._populate_parameters(primitive_type)
+
+        if center is not None:
+            translated_primitive = lib.sfcgal_primitive_translate(
+                self.__primitive, center.x, center.y, center.z)
+            lib.sfcgal_primitive_delete(self.__primitive)
+            self.__primitive = translated_primitive
 
     def __del__(self):
         lib.sfcgal_primitive_delete(self.__primitive)
@@ -153,6 +159,18 @@ class Primitive:
         value = list(ffi_array[0:16])
         lib.sfcgal_free_buffer(ffi_array)
         return value
+
+    @property
+    def center(self) -> Point:
+        """
+        Return primitive center
+
+        Returns
+        -------
+        Primitive
+            Primitive center as a point
+        """
+        return Point(*self.transformation[12:15])
 
     @property
     def parameters(self) -> list[dict[str, str]]:
@@ -239,7 +257,8 @@ class Primitive:
         Return a string representation of the primitive.
         """
         params = ", ".join(f"{n}={self[n]}" for n in self.__parameters)
-        return f"{self.__type.label}({params})"
+        center = f"({self.center.x}, {self.center.y}, {self.center.z})"
+        return f"{self.__type.label}(center={center}, {params})"
 
     @staticmethod
     def _populate_parameters(primitive_type: PrimitiveType) -> dict[str, ParameterType]:
@@ -313,7 +332,8 @@ class Primitive:
             __slots__ = ()
 
             def __init__(self, **kwargs):
-                super().__init__(primitive_type)
+                center = kwargs.pop("center", None)
+                super().__init__(primitive_type, center)
 
                 for name, value in kwargs.items():
                     self[name] = value

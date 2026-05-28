@@ -4,7 +4,7 @@ from enum import Enum, IntEnum
 from typing import Any, Callable, Optional, TypeVar
 
 from ._sfcgal import ffi
-from .geometry import PolyhedralSurface
+from .geometry import Point, PolyhedralSurface
 from .vector import Vector3D
 
 parameterVal = TypeVar("parameterVal", int, float)
@@ -44,13 +44,19 @@ class ParameterType(Enum):
 
 class Primitive:
 
-    def __init__(self, primitive_type: PrimitiveType) -> None: ...
+    def __init__(
+            self,
+            primitive_type: PrimitiveType,
+            center: Optional[Point] = None
+    ) -> None: ...
     def __del__(self) -> None: ...
 
     @property
     def type_(self) -> PrimitiveType: ...
     @property
     def transformation(self) -> list[float]: ...
+    @property
+    def center(self) -> Point: ...
     @property
     def parameters(self) -> dict[str, ParameterType]: ...
 
@@ -87,7 +93,8 @@ class Box(Primitive):
             *,
             x_extent: float = ...,
             y_extent: float = ...,
-            z_extent: float = ...
+            z_extent: float = ...,
+            center: Optional[Point] = None
     ) -> None: ...
 
 
@@ -103,14 +110,20 @@ class Cone(Primitive):
             bottom_radius: float = ...,
             top_radius: float = ...,
             height: float = ...,
-            num_radial: int = ...
+            num_radial: int = ...,
+            center: Optional[Point] = None
     ) -> None: ...
 
 
 class Cube(Primitive):
     size: float
 
-    def __init__(self, *, size: float = ...) -> None: ...
+    def __init__(
+            self,
+            *,
+            size: float = ...,
+            center: Optional[Point] = None
+    ) -> None: ...
 
 
 class Cylinder(Primitive):
@@ -124,6 +137,7 @@ class Cylinder(Primitive):
             radius: float = ...,
             height: float = ...,
             num_radial: int = ...,
+            center: Optional[Point] = None
     ) -> None: ...
 
 
@@ -136,6 +150,7 @@ class Sphere(Primitive):
             *,
             radius: float = ...,
             num_subdivisions: int = ...,
+            center: Optional[Point] = None
     ) -> None: ...
 
 
@@ -151,5 +166,6 @@ class Torus(Primitive):
             main_radius: float = ...,
             tube_radius: float = ...,
             main_num_radial: int = ...,
-            tube_num_radial: int = ...
+            tube_num_radial: int = ...,
+            center: Optional[Point] = None
     ) -> None: ...

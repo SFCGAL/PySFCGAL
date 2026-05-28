@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal import PolyhedralSurface, primitive
+from pysfcgal import Point, PolyhedralSurface, primitive
 from pysfcgal.vector import Vector3D
 
 
@@ -176,3 +176,24 @@ def test_translate(primitive_class, init_values, identity):
     ]
     assert translated_prim.transformation != identity
     assert translated_prim.transformation == expected_translation
+
+
+@pytest.mark.parametrize(
+    "primitive_class,init_values", [(p[1], p[2]) for p in PRIMITIVES_FACTORY])
+def test_center(primitive_class, init_values, identity):
+    prim = primitive_class(**init_values)
+    assert prim.transformation == identity
+
+    init_values_custom_center = dict(init_values)
+    init_values_custom_center["center"] = Point(4, 5, 6)
+
+    prim_custom_center = primitive_class(**init_values_custom_center)
+    assert prim_custom_center != prim
+    expected_translation = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        4, 5, 6, 1
+    ]
+    assert prim_custom_center.transformation != identity
+    assert prim_custom_center.transformation == expected_translation
