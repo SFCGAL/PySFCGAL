@@ -145,6 +145,15 @@ class Primitive:
         return self.__type
 
     @property
+    def transformation(self) -> list[float]:
+        """
+        """
+        ffi_array = lib.sfcgal_primitive_transformation(self.__primitive)
+        value = list(ffi_array[0:16])
+        lib.sfcgal_free_buffer(ffi_array)
+        return value
+
+    @property
     def parameters(self) -> list[dict[str, str]]:
         """
         Return the parameters available for this primitive.
