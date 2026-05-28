@@ -21,6 +21,8 @@ IGNORED_FUNCTIONS = {
     "sfcgal_prepared_geometry_set_geometry",
     "sfcgal_prepared_geometry_set_srid",
     "sfcgal_prepared_geometry_srid",
+    "sfcgal_primitive_parameter",  # already covered by specialized primitive getters
+    "sfcgal_primitive_set_parameter",  # already covered by specialized primitive setters  # noqa: E501
     "sfcgal_set_alloc_handlers",
     "sfcgal_set_error_handlers",
 }
