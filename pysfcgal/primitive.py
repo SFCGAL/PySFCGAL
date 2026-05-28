@@ -11,7 +11,7 @@ from enum import Enum, IntEnum
 from typing import Any, Callable, TypeVar
 
 from ._sfcgal import ffi, lib
-from .sfcgal import PolyhedralSurface
+from .geometry import PolyhedralSurface
 
 parameterVal = TypeVar("parameterVal", int, float, list[float])
 
