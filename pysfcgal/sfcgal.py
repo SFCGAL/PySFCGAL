@@ -9,14 +9,14 @@ import warnings
 # API retrocompatibility
 from pysfcgal import sfcgal_full_version, sfcgal_version
 from pysfcgal.exceptions import DimensionError
-from pysfcgal.geometry import (Axis, BufferType, CoordinateSequence, Geometry,
+from pysfcgal.geometry import (BufferType, CoordinateSequence, Geometry,
                                GeometryCollection, GeometrySequence,
                                LineString, MultiLineString, MultiPoint,
                                MultiPolygon, MultiSolid, Point, Polygon,
                                PolyhedralSurface, Solid, Tin, Triangle)
+from pysfcgal.vector import UNIT_X, UNIT_Y, UNIT_Z, Vector3D
 
 __all__ = [
-    "Axis",
     "BufferType",
     "CoordinateSequence",
     "DimensionError",
@@ -34,6 +34,10 @@ __all__ = [
     "Solid",
     "Tin",
     "Triangle",
+    "UNIT_X",
+    "UNIT_Y",
+    "UNIT_Z",
+    "Vector3D",
     "sfcgal_version",
     "sfcgal_full_version",
 ]

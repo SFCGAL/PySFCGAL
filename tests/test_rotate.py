@@ -2,7 +2,8 @@ import math
 
 import pytest
 
-from pysfcgal import Axis, LineString, Point, Polygon
+from pysfcgal import (UNIT_X, UNIT_Y, UNIT_Z, LineString, Point, Polygon,
+                      Vector3D)
 
 
 def is_close(first: float, second: float, tol: float = 1e-9) -> bool:
@@ -82,7 +83,7 @@ def test_rotate_around_3d_axis(
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
-    rotated_point_new_api = point.rotate_3d(angle, Axis(*vector_axis))
+    rotated_point_new_api = point.rotate_3d(angle, Vector3D(*vector_axis))
     assert rotated_point_new_api == rotated_point
 
 
@@ -110,7 +111,7 @@ def test_rotate_3d_around_center(
     )
 
     rotated_point_new_api = point.rotate_3d(
-        angle, Axis(*vector_axis), Point(*center_coordinates))
+        angle, Vector3D(*vector_axis), Point(*center_coordinates))
     assert rotated_point_new_api == rotated_point
 
 
@@ -131,7 +132,7 @@ def test_rotate_x(
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
-    rotated_point_new_api = point.rotate_3d(angle, Axis.X)
+    rotated_point_new_api = point.rotate_3d(angle, UNIT_X)
     assert rotated_point_new_api == rotated_point
 
     rotated_point_new_api_2 = point.rotate_3d_x(angle)
@@ -155,7 +156,7 @@ def test_rotate_y(
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
-    rotated_point_new_api = point.rotate_3d(angle, Axis.Y)
+    rotated_point_new_api = point.rotate_3d(angle, UNIT_Y)
     assert rotated_point_new_api == rotated_point
 
     rotated_point_new_api_2 = point.rotate_3d_y(angle)
@@ -179,7 +180,7 @@ def test_rotate_z(
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
-    rotated_point_new_api = point.rotate_3d(angle, Axis.Z)
+    rotated_point_new_api = point.rotate_3d(angle, UNIT_Z)
     assert rotated_point_new_api == rotated_point
 
     rotated_point_new_api_2 = point.rotate_3d_z(angle)

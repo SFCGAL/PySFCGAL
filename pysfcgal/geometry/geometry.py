@@ -7,39 +7,23 @@ from __future__ import annotations
 
 import platform
 import typing
-from dataclasses import dataclass
-from typing import ClassVar, Optional, Tuple, Union
+from typing import Optional, Tuple, Union
 
 if typing.TYPE_CHECKING:
+    from .vector import Vector3D
     from .point import Point
 
 from .._contracts import cond_icontract
 from .._deprecated import deprecated
 from .._sfcgal import ffi, lib
+from ..vector import UNIT_X, UNIT_Y, UNIT_Z
 from .simplification import SimplificationStrategy
 
-__all__ = ["Axis", "Geometry"]
+__all__ = ["Geometry"]
 
 
 # Required until Alpha Shapes bug is not fixed on MSVC
 compiler = platform.python_compiler()
-
-
-@dataclass(frozen=True)
-class Axis:
-    """Rotation axis"""
-    x: float
-    y: float
-    z: float
-
-    X: ClassVar[Axis]
-    Y: ClassVar[Axis]
-    Z: ClassVar[Axis]
-
-
-Axis.X = Axis(1., 0., 0.)
-Axis.Y = Axis(0., 1., 0.)
-Axis.Z = Axis(0., 0., 1.)
 
 
 class Geometry:
@@ -1674,7 +1658,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     def rotate_3d(
-            self, angle: float, axis: Axis, center: Optional[Point] = None
+            self, angle: float, axis: Vector3D, center: Optional[Point] = None
     ) -> Optional[Geometry]:
         """
         Rotates a geometry in 3D around an axis by a given angle
@@ -1686,7 +1670,7 @@ class Geometry:
         ----------
         angle : float
             Rotation angle in radians
-        axis: Axis
+        axis: Vector3D
             Rotation axis
         center: Point, defaults to the origin (0, 0, 0).
             Rotation center
@@ -1713,7 +1697,7 @@ class Geometry:
         If the center is not provided, the geometry is rotated
         around the origin (0, 0, 0).
 
-        Shorthand for rotate_3d(angle, Axis.X, center).
+        Shorthand for rotate_3d(angle, UNIT_X, center).
 
         Parameters
         ----------
@@ -1727,7 +1711,7 @@ class Geometry:
         Geometry
             The rotated geometry
         """
-        return self.rotate_3d(angle, Axis.X, center)
+        return self.rotate_3d(angle, UNIT_X, center)
 
     def rotate_3d_y(
             self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
@@ -1737,7 +1721,7 @@ class Geometry:
         If the center is not provided, the geometry is rotated
         around the origin (0, 0, 0).
 
-        Shorthand for rotate_3d(angle, Axis.Y, center).
+        Shorthand for rotate_3d(angle, UNIT_Y, center).
 
         Parameters
         ----------
@@ -1751,7 +1735,7 @@ class Geometry:
         Geometry
             The rotated geometry
         """
-        return self.rotate_3d(angle, Axis.Y, center)
+        return self.rotate_3d(angle, UNIT_Y, center)
 
     def rotate_3d_z(
             self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
@@ -1761,7 +1745,7 @@ class Geometry:
         If the center is not provided, the geometry is rotated
         around the origin (0, 0, 0).
 
-        Shorthand for rotate_3d(angle, Axis.Z, center).
+        Shorthand for rotate_3d(angle, UNIT_Z, center).
 
         Parameters
         ----------
@@ -1775,7 +1759,7 @@ class Geometry:
         Geometry
             The rotated geometry
         """
-        return self.rotate_3d(angle, Axis.Z, center)
+        return self.rotate_3d(angle, UNIT_Z, center)
 
     @cond_icontract(lambda self, tolerance: (self.is_valid() and tolerance > 0),
                     "require")
