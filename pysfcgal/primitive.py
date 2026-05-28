@@ -12,6 +12,7 @@ from typing import Any, Callable, Optional, TypeVar
 
 from ._sfcgal import ffi, lib
 from .geometry import PolyhedralSurface
+from .vector import Vector3D
 
 parameterVal = TypeVar("parameterVal", int, float)
 
@@ -361,6 +362,25 @@ class Primitive:
         primitive._Primitive__type = prim_type
         primitive._Primitive__parameters = Primitive._populate_parameters(prim_type)
         return primitive
+
+    def translate(self, offset: Vector3D) -> Optional[Primitive]:
+        """
+        Translates the primitive's center by the given offset, producing
+        a new primitive.
+
+        Parameters
+        ----------
+        offset : Vector3D
+            translation vector
+
+        Returns
+        -------
+        Primitive
+            A Primitive translated from the current primitive
+        """
+        translated = lib.sfcgal_primitive_translate(
+            self.__primitive, offset.x, offset.y, offset.z)
+        return Primitive.from_sfcgal_primitive(translated)
 
     def to_polyhedral_surface(self) -> PolyhedralSurface:
         """

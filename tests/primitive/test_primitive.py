@@ -1,6 +1,18 @@
 import pytest
 
 from pysfcgal import PolyhedralSurface, primitive
+from pysfcgal.vector import Vector3D
+
+
+@pytest.fixture
+def identity() -> list[float]:
+    yield [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]
+
 
 # Factory to test a primitive:
 #   - type
@@ -147,3 +159,20 @@ def test_wrap(primitive_class, init_values):
     first_param = next(iter(init_values))
     prim[first_param] += 1
     assert prim[first_param] != prim_wrap[first_param]
+
+
+@pytest.mark.parametrize(
+    "primitive_class,init_values", [(p[1], p[2]) for p in PRIMITIVES_FACTORY])
+def test_translate(primitive_class, init_values, identity):
+    prim = primitive_class(**init_values)
+    assert prim.transformation == identity
+
+    translated_prim = prim.translate(Vector3D(2, 3, 4))
+    expected_translation = [
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        2, 3, 4, 1
+    ]
+    assert translated_prim.transformation != identity
+    assert translated_prim.transformation == expected_translation
