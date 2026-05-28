@@ -21,7 +21,7 @@ lint:flake8:
       - ".gitlab-ci.yml"
       - "scripts/*.py"
   before_script:
-    - python -m pip install --force-reinstall flake8==7.2.0
+    - python -m pip install --force-reinstall flake8==7.3.0
   script:
     - flake8 scripts/*.py pysfcgal/ tests/ --config=setup.cfg
 
