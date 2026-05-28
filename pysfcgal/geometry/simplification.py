@@ -10,6 +10,8 @@ from __future__ import annotations
 from enum import IntEnum
 from typing import Type
 
+from .._sfcgal import lib
+
 __all__ = ["SimplificationStrategy"]
 
 
@@ -42,9 +44,12 @@ class SimplificationStrategy(IntEnum):
     """
     label: str
 
-    EDGE_LENGTH = 0, "EdgeLength"
-    GARLAND_HECKBERT = 1, "GarlandHeckbert"
-    LINDSTROM_TURK = 2, "LindstromTurk"
+    EDGE_LENGTH = lib.SFCGAL_SIMPLIFICATION_STRATEGY_EDGE_LENGTH, "EdgeLength"
+    GARLAND_HECKBERT = (
+        lib.SFCGAL_SIMPLIFICATION_STRATEGY_GARLAND_HECKBERT,
+        "GarlandHeckbert"
+    )
+    LINDSTROM_TURK = lib.SFCGAL_SIMPLIFICATION_STRATEGY_LINDSTROM_TURK, "LindstromTurk"
 
     def __new__(
         cls: Type["SimplificationStrategy"], value: int, label: str
