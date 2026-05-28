@@ -1700,6 +1700,12 @@ sfcgal_geometry_straight_skeleton_distance_in_m(const sfcgal_geometry_t *geom);
 
 /**
  * Returns the extrude straight skeleton of the given SFCGAL::Polygon
+ *
+ * This algorithm constructs an extrusion with a 45-degree pitch and a maximum
+ * height of height. The height rises until either the extrusion faces meet or
+ * the height reaches height, whichever occurs first. Therefore, height is not
+ * guaranteed to be reached.
+ *
  * @param geom the input geometry
  * @param height extrusion height
  * @pre geom must be a SFCGAL::Polygon
@@ -1718,6 +1724,12 @@ sfcgal_geometry_extrude_straight_skeleton(const sfcgal_geometry_t *geom,
  * Returns the union of the polygon z-extrusion (with respect to
  * building_height) and the extrude straight skeleton (with respect to
  * roof_height) of the given SFCGAL::Polygon
+ *
+ * This algorithm constructs a roof with a 45-degree pitch and a maximum height
+ * of roof_height. The roof rises until either the roof faces meet or the height
+ * reaches roof_height, whichever occurs first. Therefore, roof_height is not
+ * guaranteed to be reached.
+ *
  * @param geom the input geometry
  * @param building_height extrusion height of walls
  * @param roof_height extrusion height of roof
@@ -1757,6 +1769,12 @@ sfcgal_geometry_extrude_straight_skeleton_with_angles(
  * Returns the union of the polygon z-extrusion (with respect to
  * building_height) and the extrude straight skeleton (with respect to
  * roof_height) of the given SFCGAL::Polygon, with custom per-edge angles.
+ *
+ * This algorithm constructs a roof with custom slopes and a maximum height
+ * of roof_height. The roof rises until either the roof faces meet or the height
+ * reaches roof_height, whichever occurs first. Therefore, roof_height is not
+ * guaranteed to be reached.
+ *
  * @param geom the input geometry
  * @param building_height extrusion height of walls
  * @param roof_height extrusion height of roof
@@ -1801,6 +1819,12 @@ sfcgal_geometry_extrude_straight_skeleton_with_weights(
  * Returns the union of the polygon z-extrusion (with respect to
  * building_height) and the extrude straight skeleton (with respect to
  * roof_height) of the given SFCGAL::Polygon, with custom per-edge weights.
+ *
+ * This algorithm constructs a roof with custom edge weights and a maximum
+ * height of roof_height. The roof rises until either the roof faces meet or the
+ * height reaches roof_height, whichever occurs first. Therefore, roof_height is
+ * not guaranteed to be reached.
+ *
  * @param geom the input geometry
  * @param building_height extrusion height of walls
  * @param roof_height extrusion height of roof
@@ -2110,7 +2134,7 @@ sfcgal_geometry_centroid_3d(const sfcgal_geometry_t *geom);
  * @param geom2 second input geometry
  * @pre isValid(geom) == true
  * @post isValid(return) == true
- * @return 1 if geometries are almost equal. 0 otherwise.
+ * @return 1 if geometries are equal. 0 otherwise.
  * @ingroup capi
  */
 int
@@ -2695,67 +2719,6 @@ sfcgal_primitive_set_parameter_int(sfcgal_primitive_t *primitive,
                                    const char *name, unsigned int parameter);
 
 /**
- * @brief Retrieves the value of a primitive parameter as a 3D point: an array
- * of three doubles (x, y, z).
- * @param primitive Pointer to the primitive.
- * @param name Name of the parameter to retrieve.
- * @return A newly allocated array of three doubles representing the 3D point on
- * success, or a nullptr if the operation failed.
- * @pre The parameter identified by @p name must exist and be of type 3D point.
- * @post The returned array must be deallocated by calling
- * sfcgal_free_buffer()
- * @ingroup capi
- */
-double *
-sfcgal_primitive_parameter_point(const sfcgal_primitive_t *primitive,
-                                 const char               *name);
-
-/**
- * @brief Sets the value of a primitive parameter as a 3D point: an array of
- * three doubles (x, y, z).
- * @param primitive Pointer to the primitive.
- * @param name Name of the parameter to set.
- * @param point Array of three doubles representing the new 3D point.
- * @pre The parameter identified by @p name must exist and accept values of type
- * 3D point.
- * @ingroup capi
- */
-void
-sfcgal_primitive_set_parameter_point(sfcgal_primitive_t *primitive,
-                                     const char *name, const double *point);
-
-/**
- * @brief Retrieves the value of a primitive parameter as a 3D vector: an array
- * of three doubles (x, y, z).
- * @param primitive Pointer to the primitive.
- * @param name Name of the parameter to retrieve.
- * @return A newly allocated array of three doubles representing the 3D vector
- * on success, or a nullptr if the operation failed.
- * @pre The parameter identified by @p name must exist and be of type 3D vector.
- * @post The returned array must be deallocated by calling
- * sfcgal_free_buffer()
- * @return Primitive parameter as a 3D vector
- * @ingroup capi
- */
-double *
-sfcgal_primitive_parameter_vector(const sfcgal_primitive_t *primitive,
-                                  const char               *name);
-
-/**
- * @brief Sets the value of a primitive parameter as a 3D vector: an array of
- * three doubles (x, y, z).
- * @param primitive Pointer to the primitive.
- * @param name Name of the parameter to set.
- * @param vector Array of three doubles representing the new 3D vector.
- * @pre The parameter identified by @p name must exist and accept values of type
- * 3D vector.
- * @ingroup capi
- */
-void
-sfcgal_primitive_set_parameter_vector(sfcgal_primitive_t *primitive,
-                                      const char *name, const double *vector);
-
-/**
  * @brief Generates a polyhedral surface representation of the primitive
  * @param primitive Pointer to the primitive.
  * @post The returned geometry must be deallocated by the caller with
@@ -2765,6 +2728,66 @@ sfcgal_primitive_set_parameter_vector(sfcgal_primitive_t *primitive,
  */
 sfcgal_geometry_t *
 sfcgal_primitive_as_polyhedral_surface(const sfcgal_primitive_t *primitive);
+
+/**
+ * @brief Retrieves the primitive's current transformation matrix as an array.
+ * @param primitive Pointer to the primitive.
+ * @return A newly allocated array of doubles representing the current affine
+ * transformation on success, or nullptr on failure.
+ * @post The returned array must be deallocated using sfcgal_free_buffer().
+ * @note The matrix is stored in column-major order (column by column).
+ * @ingroup capi
+ */
+double *
+sfcgal_primitive_transformation(const sfcgal_primitive_t *primitive);
+
+/**
+ * @brief Translates a primitive by a 3D vector
+ * @param primitive the primitive to translate
+ * @param dx x component of the translation vector
+ * @param dy y component of the translation vector
+ * @param dz z component of the translation vector
+ * @return The translated primitive
+ * @ingroup capi
+ */
+sfcgal_primitive_t *
+sfcgal_primitive_translate(const sfcgal_primitive_t *primitive, double dx,
+                           double dy, double dz);
+
+/**
+ * @brief Rotates a primitive around a specified axis and center point
+ * by a given angle
+ * @param primitive The primitive to rotate
+ * @param angle Rotation angle in radians
+ * @param ax X-coordinate of the axis vector
+ * @param ay Y-coordinate of the axis vector
+ * @param az Z-coordinate of the axis vector
+ * @param cx X-coordinate of the center point
+ * @param cy Y-coordinate of the center point
+ * @param cz Z-coordinate of the center point
+ * @return The rotated geometry
+ * @ingroup capi
+ */
+sfcgal_primitive_t *
+sfcgal_primitive_rotate(const sfcgal_primitive_t *primitive, double angle,
+                        double ax, double ay, double az, double cx, double cy,
+                        double cz);
+
+/**
+ * @brief Scales a primitive by the given factor
+ * @param primitive The primitive to scale
+ * @param sx scale factor for x dimension
+ * @param sy scale factor for y dimension
+ * @param sz scale factor for z dimension
+ * @param cx X-coordinate of the center point
+ * @param cy Y-coordinate of the center point
+ * @param cz Z-coordinate of the center point
+ * @return The rotated geometry
+ * @ingroup capi
+ */
+sfcgal_primitive_t *
+sfcgal_primitive_scale(const sfcgal_primitive_t *primitive, double sx,
+                       double sy, double sz, double cx, double cy, double cz);
 
 
 /**
@@ -2787,6 +2810,59 @@ sfcgal_geometry_t *
 sfcgal_geometry_split_3d(const sfcgal_geometry_t *geom, double ptx, double pty,
                          double ptz, double normalx, double normaly,
                          double normalz, bool close_geometries);
+
+/**
+ * Replace sharp edges of a solid with a flat bevelled face (chamfer).
+ *
+ * Each matched edge is cut back by @p radius along both adjacent faces.
+ * When @p radius_y differs from @p radius the bevel is asymmetric: one leg
+ * has length @p radius, the other @p radius_y.
+ *
+ * @param solid The input SFCGAL::Solid
+ * @param edge SFCGAL::LineString or SFCGAL::MultiLineString selecting the edges
+ * to chamfer.
+ * @param radius Leg length on the first face.
+ * @param radius_y Leg length on the second face. If negative, defaults to
+ * radius (symmetric chamfer).
+ * @param epsilon Tolerance (in coordinate units) used to locate @p edge
+ * endpoints on the solid mesh.
+ * @return Modified solid, or clone of input if no edges were chamfered
+ * @pre isValid(solid) == true
+ * @pre radius > 0
+ * @pre epsilon > 0
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_chamfer(const sfcgal_geometry_t *solid,
+                        const sfcgal_geometry_t *edge, double radius,
+                        double radius_y, double epsilon);
+
+/**
+ *
+ * Replace sharp edges of a solid with a smooth circular-arc fillet.
+ *
+ * Each matched edge is replaced by a cylindrical surface of the given
+ * @p radius, approximated by @p segments planar faces.
+ *
+ * @param solid The input SFCGAL::Solid
+ * @param edge SFCGAL::LineString or SFCGAL::MultiLineString selecting the edges
+ * to fillet.
+ * @param radius Fillet radius.
+ * @param segments Number of planar faces approximating the arc.
+ * Typical values: 4 (coarse), 8 (default), 16+ (smooth).
+ * @param epsilon Tolerance (in coordinate units) used to locate @p edge
+ * endpoints on the solid mesh.
+ * @return Modified solid, or clone of input if no edges were chamfered
+ * @pre isValid(solid) == true
+ * @pre radius > 0
+ * @pre segments >= 2
+ * @pre epsilon > 0
+ * @ingroup capi
+ */
+sfcgal_geometry_t *
+sfcgal_geometry_fillet(const sfcgal_geometry_t *solid,
+                       const sfcgal_geometry_t *edge, double radius,
+                       int segments, double epsilon);
 
 /*--------------------------------------------------------------------------------------*
  *

@@ -13,7 +13,7 @@ from typing import Any, Callable, Optional, TypeVar
 from ._sfcgal import ffi, lib
 from .geometry import PolyhedralSurface
 
-parameterVal = TypeVar("parameterVal", int, float, list[float])
+parameterVal = TypeVar("parameterVal", int, float)
 
 
 class PrimitiveType(IntEnum):
@@ -70,16 +70,6 @@ class ParameterType(Enum):
         "int",
         lib.sfcgal_primitive_parameter_int,
         lib.sfcgal_primitive_set_parameter_int,
-    )
-    POINT = (
-        "point3",
-        lib.sfcgal_primitive_parameter_point,
-        lib.sfcgal_primitive_set_parameter_point,
-    )
-    VECTOR = (
-        "vector3",
-        lib.sfcgal_primitive_parameter_vector,
-        lib.sfcgal_primitive_set_parameter_vector,
     )
 
     def __new__(
@@ -177,10 +167,8 @@ class Primitive:
 
         Returns
         -------
-        Any
-            The parameter value. For POINT and VECTOR types, a list of
-            coordinates is returned. Otherwise, a scalar value is
-            returned.
+        int | double
+            The parameter value.
 
         Raises
         ------
@@ -191,13 +179,7 @@ class Primitive:
         if not param_type:
             raise KeyError(f"'{type(self).__name__}' has no attribute '{name}'")
 
-        ffi_value = param_type.getter(self.__primitive, name.encode())
-        if param_type in [ParameterType.POINT, ParameterType.VECTOR]:
-            value = list(ffi_value[0:3])
-            lib.sfcgal_free_buffer(ffi_value)
-            return value
-        else:
-            return ffi_value
+        return param_type.getter(self.__primitive, name.encode())
 
     def __setitem__(self, name: str, value: parameterVal) -> None:
         """

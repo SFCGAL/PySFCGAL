@@ -6,7 +6,7 @@ from typing import Any, Callable, Optional, TypeVar
 from ._sfcgal import ffi
 from .geometry import PolyhedralSurface
 
-parameterVal = TypeVar("parameterVal", int, float, list[float])
+parameterVal = TypeVar("parameterVal", int, float)
 
 
 class PrimitiveType(IntEnum):
@@ -31,8 +31,6 @@ class ParameterType(Enum):
 
     DOUBLE = ...
     INT = ...
-    POINT = ...
-    VECTOR = ...
 
     def __new__(
         cls,
@@ -53,8 +51,8 @@ class Primitive:
     @property
     def parameters(self) -> dict[str, ParameterType]: ...
 
-    def __getitem__(self, name: str) -> int | float | list[float]: ...
-    def __setitem__(self, name: str, value: int | float | list[float]) -> None: ...
+    def __getitem__(self, name: str) -> int | float: ...
+    def __setitem__(self, name: str, value: int | float) -> None: ...
     def __eq__(self, other: object) -> bool: ...
     def __repr__(self) -> str: ...
 
@@ -115,8 +113,6 @@ class Cylinder(Primitive):
     radius: float
     height: float
     num_radial: int
-    axis: list[float]
-    base_center: list[float]
 
     def __init__(
             self,
@@ -124,24 +120,18 @@ class Cylinder(Primitive):
             radius: float = ...,
             height: float = ...,
             num_radial: int = ...,
-            axis: list[float] = ...,
-            base_center: list[float] = ...
     ) -> None: ...
 
 
 class Sphere(Primitive):
     radius: float
     num_subdivisions: int
-    center: list[float]
-    direction: list[float]
 
     def __init__(
             self,
             *,
             radius: float = ...,
             num_subdivisions: int = ...,
-            center: list[float] = ...,
-            direction: list[float] = ...
     ) -> None: ...
 
 

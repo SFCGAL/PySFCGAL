@@ -29,19 +29,13 @@ PRIMITIVES_FACTORY = [
     (
         primitive.PrimitiveType.CYLINDER,
         primitive.Cylinder,
-        {
-            "base_center": [1.0, 1.0, 1.0],
-            "axis": [0.0, 0.0, 1.0],
-            "radius": 5.0,
-            "height": 10.0,
-            "num_radial": 32
-        },
+        {"radius": 5.0, "height": 10.0, "num_radial": 32},
         [(471.238898, 785.398163), (471.238898, 785.398163)],
     ),
     (
         primitive.PrimitiveType.SPHERE,
         primitive.Sphere,
-        {"radius": 8.0, "center": [1.0, 2.0, 3.0], "num_subdivisions": 2},
+        {"radius": 8.0, "num_subdivisions": 2},
         [(804.247719, 2144.66058), (804.247719, 2144.66058)],
     ),
     (
@@ -78,14 +72,6 @@ def test_create_from_base_class(primitive_type):
             assert prim[param_name] != 4
             prim[param_name] = 4
             assert prim[param_name] == 4
-        elif param_type == primitive.ParameterType.POINT:
-            assert prim[param_name] != [1.0, 1.0, 1.0]
-            prim[param_name] = [1.0, 1.0, 1.0]
-            assert prim[param_name] == [1.0, 1.0, 1.0]
-        elif param_type == primitive.ParameterType.VECTOR:
-            assert prim[param_name] != [2.0, 2.0, 2.0]
-            prim[param_name] = [2.0, 2.0, 2.0]
-            assert prim[param_name] == [2.0, 2.0, 2.0]
         else:
             assert False
 
@@ -147,11 +133,7 @@ def test_equality(primitive_class, init_values):
     assert prim == other_prim
 
     first_param = next(iter(init_values))
-    if isinstance(prim[first_param], list):
-        prim[first_param] = [2*val for val in prim[first_param]]
-    else:
-        prim[first_param] = 2 * prim[first_param]
-
+    prim[first_param] += 1
     assert prim != other_prim
 
 
@@ -163,9 +145,5 @@ def test_wrap(primitive_class, init_values):
     assert prim_wrap == prim
 
     first_param = next(iter(init_values))
-    if isinstance(prim[first_param], list):
-        prim[first_param] = [2*val for val in prim[first_param]]
-    else:
-        prim[first_param] = 2 * prim[first_param]
-
+    prim[first_param] += 1
     assert prim[first_param] != prim_wrap[first_param]
