@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import sys
 from enum import Enum, IntEnum
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
 from ._sfcgal import ffi, lib
 from .geometry import PolyhedralSurface
@@ -340,6 +340,37 @@ class Primitive:
 
         return Class
 
+    @staticmethod
+    def from_sfcgal_primitive(prim: ffi.CData) -> Optional[Primitive]:
+        """Wrap the SFCGAL primitive passed as a parameter in a new primitive instance.
+
+        This method allows to build a new Python object from a SFCGAL primitive (which
+        is basically a C pointer).
+
+        Parameters
+        ----------
+        prim : _cffi_backend._CDatabase
+            SFCGAL primitive that will be used as an attribute in the new primitive
+            instance
+
+        Returns
+        -------
+        Primitive
+            A Primitive instance built from the SFCGAL primitive parameter.
+
+        """
+        type_ = lib.sfcgal_primitive_type_id(prim)
+        if type_ == lib.SFCGAL_TYPE_INVALID:
+            return None
+
+        prim_type = PrimitiveType(type_)
+        cls = globals()[prim_type.label]
+        primitive: Primitive = object.__new__(cls)
+        primitive._Primitive__primitive = prim
+        primitive._Primitive__type = prim_type
+        primitive._Primitive__parameters = Primitive._populate_parameters(prim_type)
+        return primitive
+
     def to_polyhedral_surface(self) -> PolyhedralSurface:
         """
         Convert the primitive to a polyhedral surface representation.
@@ -383,6 +414,20 @@ class Primitive:
             The computed volume.
         """
         return lib.sfcgal_primitive_volume(self.__primitive, with_discretization)
+
+    def wrap(self) -> Optional[Primitive]:
+        """Wrap the SFCGAL primitive attribute of the current instance
+        in a new primitive instance. This method produces a deep copy
+        of the primitive instance.
+
+        Returns
+        -------
+        Primitive
+            A cloned Primitive of the current instance
+
+        """
+        cloned_prim = lib.sfcgal_primitive_clone(self.__primitive)
+        return Primitive.from_sfcgal_primitive(cloned_prim)
 
 
 # Generate the different Primitives and store them in the module

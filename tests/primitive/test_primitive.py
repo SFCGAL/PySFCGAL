@@ -153,3 +153,19 @@ def test_equality(primitive_class, init_values):
         prim[first_param] = 2 * prim[first_param]
 
     assert prim != other_prim
+
+
+@pytest.mark.parametrize(
+    "primitive_class,init_values", [(p[1], p[2]) for p in PRIMITIVES_FACTORY])
+def test_wrap(primitive_class, init_values):
+    prim = primitive_class(**init_values)
+    prim_wrap = prim.wrap()
+    assert prim_wrap == prim
+
+    first_param = next(iter(init_values))
+    if isinstance(prim[first_param], list):
+        prim[first_param] = [2*val for val in prim[first_param]]
+    else:
+        prim[first_param] = 2 * prim[first_param]
+
+    assert prim[first_param] != prim_wrap[first_param]

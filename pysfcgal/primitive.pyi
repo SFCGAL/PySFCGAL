@@ -1,8 +1,9 @@
 from __future__ import annotations
 
 from enum import Enum, IntEnum
-from typing import Any, Callable, TypeVar
+from typing import Any, Callable, Optional, TypeVar
 
+from ._sfcgal import ffi
 from .geometry import PolyhedralSurface
 
 parameterVal = TypeVar("parameterVal", int, float, list[float])
@@ -65,9 +66,13 @@ class Primitive:
     @staticmethod
     def _primitive_factory(primitive_type: PrimitiveType) -> type[Primitive]: ...
 
+    @staticmethod
+    def from_sfcgal_primitive(prim: ffi.CData) -> Optional[type[Primitive]]: ...
+
     def to_polyhedral_surface(self) -> PolyhedralSurface: ...
     def area(self, with_discretization: bool = False) -> float: ...
     def volume(self, with_discretization: bool = False) -> float: ...
+    def wrap(self) -> Optional[type[Primitive]]: ...
 
 
 class Box(Primitive):
