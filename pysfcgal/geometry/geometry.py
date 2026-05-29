@@ -1499,25 +1499,7 @@ class Geometry:
         )
         return Geometry.from_sfcgal_geometry(geom)
 
-    @deprecated("rotate() is deprecated. Use rotate_2d() instead.")
-    def rotate(self, angle: float = 0.) -> Optional[Geometry]:
-        """
-        Rotates a geometry around the origin (0,0,0) by a given angle
-
-        Parameters
-        ----------
-        angle : float, optional
-            Rotation angle in radians
-
-        Returns
-        -------
-        Geometry
-            The rotated geometry
-        """
-        geom = lib.sfcgal_geometry_rotate(self._geom, angle)
-        return Geometry.from_sfcgal_geometry(geom)
-
-    @deprecated("rotate_around_2d_point() is deprecated. Use rotate_2d() instead.")
+    @deprecated("rotate_around_2d_point() is deprecated. Use rotate() instead.")
     def rotate_around_2d_point(
         self, angle: float, cx: float, cy: float
     ) -> Optional[Geometry]:
@@ -1662,8 +1644,9 @@ class Geometry:
         geom = lib.sfcgal_geometry_rotate_z(self._geom, angle)
         return Geometry.from_sfcgal_geometry(geom)
 
-    def rotate_2d(
-            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+    def rotate(
+            self, angle: float = 0.,
+            center: Optional[Point] = None) -> Optional[Geometry]:
         """
         Rotates a geometry in 2D by a given angle
 
@@ -1672,7 +1655,7 @@ class Geometry:
 
         Parameters
         ----------
-        angle : float
+        angle : float, optional
             Rotation angle in radians
         center: Point, defaults to the origin (0, 0).
             Rotation center

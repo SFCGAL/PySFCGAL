@@ -26,7 +26,6 @@ def is_close(first: float, second: float, tol: float = 1e-9) -> bool:
     return abs(first - second) < tol
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -44,11 +43,7 @@ def test_rotate(coordinates, angle, expected_coordinates):
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
 
-    rotated_point_new_api = point.rotate_2d(angle)
-    assert rotated_point_new_api == rotated_point
 
-
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, center_coordinates, expected_coordinates",
     [
@@ -64,9 +59,6 @@ def test_rotate_around_2d_point(
         is_close(rc, ec)
         for rc, ec in zip(rotated_point.to_coordinates(), expected_coordinates)
     )
-
-    rotated_point_new_api = point.rotate_2d(angle, Point(*center_coordinates))
-    assert rotated_point_new_api == rotated_point
 
 
 @pytest.mark.filterwarnings("ignore::DeprecationWarning")
@@ -194,7 +186,6 @@ def test_rotate_z(
     assert rotated_point_new_api_2 == rotated_point
 
 
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "coordinates, angle, expected_coordinates",
     [
@@ -215,11 +206,7 @@ def test_rotate_linestring(
         for rpt, ept in zip(rotated_geom.to_coordinates(), expected_coordinates)
     )
 
-    rotated_geom_new_api = geom.rotate_2d(angle)
-    assert rotated_geom_new_api == rotated_geom
 
-
-@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 @pytest.mark.parametrize(
     "ring, angle, expected_coordinates",
     [
@@ -250,6 +237,3 @@ def test_rotate_polygon(
         )
         for rring, ering in zip(rotated_geom.to_coordinates(), expected_coordinates)
     )
-
-    rotated_geom_new_api = geom.rotate_2d(angle)
-    assert rotated_geom_new_api == rotated_geom
