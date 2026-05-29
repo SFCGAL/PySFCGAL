@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import math
 import typing
 from typing import Optional, Tuple, Union
 
@@ -150,7 +151,7 @@ class Point(Geometry):
         """
         coords: Tuple[Point.Coord, ...] = (self.x, self.y)
         if self.has_m:
-            coords += (self.z if self.has_z else None, self.m)
+            coords += (self.z if self.has_z else math.nan, self.m)
         elif self.has_z:
             coords = (*coords, self.z)
         return coords
