@@ -34,6 +34,12 @@
 
 {{ include_python_file("../cookbook/geom_from_wkt.py") }}
 
+## Primitive
+
+{{ include_python_file("../cookbook/primitive.py") }}
+
+![Sphere](assets/img/cookbook/sphere.png){: width=500 }
+
 ## Algorithms
 
 ### Calculate a [Straight Skeleton](https://en.wikipedia.org/wiki/Straight_skeleton)
