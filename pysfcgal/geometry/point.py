@@ -156,6 +156,11 @@ class Point(Geometry):
             coords = (*coords, self.z)
         return coords
 
+    @property
+    def coords(self) -> Tuple[Coord, ...]:
+        """Propery alias for to_coordinates."""
+        return self.to_coordinates()
+
     @classmethod
     def from_coordinates(cls, coordinates: list) -> Point:
         """Instantiates a Point starting from a list of coordinates.
