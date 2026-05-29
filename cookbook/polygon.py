@@ -1,6 +1,6 @@
-from pysfcgal import sfcgal
+from pysfcgal.geometry import Polygon
 
-polygon = sfcgal.Polygon([(1, 3), (3, 3), (3, 1), (1, 1), (1, 3)])
+polygon = Polygon([(1, 3), (3, 3), (3, 1), (1, 1), (1, 3)])
 print(polygon)
 
 # POLYGON ((1.00000000 3.00000000, 3.00000000 3.00000000,

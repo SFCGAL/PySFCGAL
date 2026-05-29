@@ -1,6 +1,6 @@
-from pysfcgal import sfcgal
+from pysfcgal.geometry import Point
 
-point = sfcgal.Point(1, 3)
+point = Point(1, 3)
 print(point)
 
 # POINT (0.00000000 1.00000000)

@@ -1,10 +1,10 @@
-from pysfcgal import sfcgal
+from pysfcgal.geometry import GeometryCollection, LineString, Point, Polygon
 
-point = sfcgal.Point(1, 3)
-linestring = sfcgal.LineString([(1, 3), (3, 1)])
-polygon = sfcgal.Polygon([(1, 3), (3, 3), (3, 1), (1, 1), (1, 3)])
+point = Point(1, 3)
+linestring = LineString([(1, 3), (3, 1)])
+polygon = Polygon([(1, 3), (3, 3), (3, 1), (1, 1), (1, 3)])
 
-collection = sfcgal.GeometryCollection()
+collection = GeometryCollection()
 
 collection.add_geometry(point)
 collection.add_geometry(linestring)

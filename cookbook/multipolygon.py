@@ -1,6 +1,6 @@
-from pysfcgal import sfcgal
+from pysfcgal.geometry import MultiPolygon
 
-multipolygon = sfcgal.MultiPolygon(
+multipolygon = MultiPolygon(
     [
         [[(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)]],
         [[(5, 5), (7, 5), (7, 7), (5, 7), (5, 5)]],

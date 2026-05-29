@@ -1,7 +1,7 @@
-from pysfcgal import sfcgal
+from pysfcgal.geometry import Geometry
 
 wkt_polygon = "POLYGON ((10 190, 10 70, 80 70, 80 130, 50 160, 120 160, 120 190, 10 190))"  # noqa: E501
-polygon = sfcgal.Geometry.from_wkt(wkt_polygon)
+polygon = Geometry.from_wkt(wkt_polygon)
 
 triangulation = polygon.triangulate_2dz()
 # TIN (((80 130,10 70,80 70,80 130)),

@@ -1,8 +1,8 @@
-from pysfcgal import sfcgal
+from pysfcgal.geometry import Geometry
 
 wkt_polygon = "POLYGON ((0 0,10 0,10 5,5 5,5 2,0 2,0 0))"
 
-input_polygon = sfcgal.Geometry.from_wkt(wkt_polygon)
+input_polygon = Geometry.from_wkt(wkt_polygon)
 
 skeleton = input_polygon.straight_skeleton()
 print(skeleton.to_wkt(1))
