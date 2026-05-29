@@ -380,7 +380,7 @@ def test_alpha_wrapping_3d():
 
 def test_area_3d():
     triangle = Triangle([[0.0, 0.0, 0.0], [0.0, 0.0, 1.0], [0.0, 1.0, 0.0]])
-    assert triangle.area_3d() == 0.5
+    assert triangle.area_3d == 0.5
 
 
 def test_difference_3d():
@@ -399,7 +399,7 @@ def test_difference_3d():
         "((1 1 1, 1 0 1, 1 0 0.5, 1 1 0.5, 1 1 1)),"
         "((1 1 1, 1 1 0.5, 0 1 0.5, 0 1 1, 1 1 1))))")
     diff = geom1.difference_3d(geom2)
-    assert diff.volume() == 0.5
+    assert diff.volume == 0.5
 
 
 def test_covers_3d():

@@ -383,6 +383,7 @@ class Geometry:
             geom = lib.sfcgal_geometry_centroid_3d(self._geom)
         return Geometry.from_sfcgal_geometry(geom)
 
+    @property
     @cond_icontract(lambda self: self.is_valid(), "require")
     def area_3d(self) -> float:
         """
@@ -395,6 +396,7 @@ class Geometry:
         """
         return lib.sfcgal_geometry_area_3d(self._geom)
 
+    @property
     @cond_icontract(lambda self: self.is_valid(), "require")
     def volume(self) -> float:
         """
