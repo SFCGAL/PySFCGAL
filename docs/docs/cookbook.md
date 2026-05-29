@@ -59,3 +59,7 @@
 ### Export a Geometry to GeoPackage with GDAL
 
 {{ include_python_file("../cookbook/export_gpkg.py") }}
+
+### Export a Geometry to a numpy array
+
+{{ include_python_file("../cookbook/numpy_integration.py") }}
