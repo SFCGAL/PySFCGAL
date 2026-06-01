@@ -1997,6 +1997,13 @@ class Geometry:
         """
         Export the geometry to a OBJ file.
 
+        Notes
+        -----
+        The OBJ export does not preserve polygon holes. Geometries
+        containing holes should be triangulated beforehand using
+        `tesselate` if hole information needs to be preserved in the
+        exported mesh.
+
         Parameters
         ----------
         filename : str
@@ -2008,6 +2015,13 @@ class Geometry:
     def to_obj(self) -> str:
         """
         Export the geometry to a OBJ string, i.e. basically the content of a OBJ file.
+
+        Notes
+        -----
+        The OBJ export does not preserve polygon holes. Geometries
+        containing holes should be triangulated beforehand using
+        `tesselate` if hole information needs to be preserved in the
+        exported mesh.
 
         Returns
         -------
