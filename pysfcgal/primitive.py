@@ -402,6 +402,38 @@ class Primitive:
             self.__primitive, offset.x, offset.y, offset.z)
         return Primitive.from_sfcgal_primitive(translated)
 
+    def rotate(
+            self, angle: float, axis: Vector3D,
+            center: Optional[Point] = None) -> Optional[Primitive]:
+        """
+        Rotates the primitive in 3D around an axis by a given angle,
+        producing a new primitive.
+
+        If the center is not provided, the primitive is rotated
+        around the origin (0, 0, 0).
+
+        Parameters
+        ----------
+        angle : float
+            Rotation angle in radians
+        axis: Vector3D
+            Rotation axis
+        center: Point, defaults to the origin (0, 0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Primitive
+            A rotated Primitive
+        """
+        if center is None:
+            center = Point(0, 0, 0)
+
+        rotated = lib.sfcgal_primitive_rotate(
+            self.__primitive, angle, axis.x, axis.y, axis.z, center.x, center.y,
+            center.z)
+        return Primitive.from_sfcgal_primitive(rotated)
+
     def to_polyhedral_surface(self) -> PolyhedralSurface:
         """
         Convert the primitive to a polyhedral surface representation.

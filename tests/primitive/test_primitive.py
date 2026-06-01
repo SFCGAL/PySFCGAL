@@ -1,3 +1,5 @@
+import math
+
 import pytest
 
 from pysfcgal import Point, PolyhedralSurface, primitive
@@ -163,10 +165,11 @@ def test_wrap(primitive_class, init_values):
 
 @pytest.mark.parametrize(
     "primitive_class,init_values", [(p[1], p[2]) for p in PRIMITIVES_FACTORY])
-def test_translate(primitive_class, init_values, identity):
+def test_transformation(primitive_class, init_values, identity):
     prim = primitive_class(**init_values)
     assert prim.transformation == identity
 
+    # translation
     translated_prim = prim.translate(Vector3D(2, 3, 4))
     expected_translation = [
         1, 0, 0, 0,
@@ -176,6 +179,35 @@ def test_translate(primitive_class, init_values, identity):
     ]
     assert translated_prim.transformation != identity
     assert translated_prim.transformation == expected_translation
+
+    # rotation
+    rotated_prim = prim.rotate(45 * math.pi / 180.0, Vector3D(0, 0, 1))
+    assert rotated_prim != prim
+
+    expected_rotation = [
+        math.sqrt(2) / 2., math.sqrt(2) / 2., 0, 0,
+        -math.sqrt(2) / 2., math.sqrt(2) / 2., 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]
+    assert rotated_prim.transformation != identity
+    for result, expected in zip(rotated_prim.transformation, expected_rotation):
+        assert math.isclose(result, expected)
+
+    # rotation, then translation
+    rotated_translated_prim = rotated_prim.translate(Vector3D(4, 5, 6))
+    assert rotated_translated_prim != rotated_prim
+
+    expected_rotation_translation = [
+        math.sqrt(2) / 2., math.sqrt(2) / 2., 0, 0,
+        -math.sqrt(2) / 2., math.sqrt(2) / 2., 0, 0,
+        0, 0, 1, 0,
+        4, 5, 6, 1
+    ]
+    assert rotated_translated_prim.transformation != identity
+    for result, expected in zip(
+            rotated_translated_prim.transformation, expected_rotation_translation):
+        assert math.isclose(result, expected)
 
 
 @pytest.mark.parametrize(
