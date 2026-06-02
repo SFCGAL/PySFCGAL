@@ -166,3 +166,29 @@ def test_polyhedralsurface_n_edges(polyhedralsurface):
     for patch, exp_n_edges in zip(polyhedralsurface, expected_n_edges):
         phs.add_patch(patch)
         assert phs.n_edges == exp_n_edges
+
+
+def test_polyhedralsurface_set_patch_n_too_big(polyhedralsurface):
+    assert len(polyhedralsurface) == 4
+    polygon = polyhedralsurface[1]
+    with pytest.raises(icontract.errors.ViolationError):
+        polyhedralsurface.set_patch_n(polygon, 5)
+
+
+def test_polyhedralsurface_set_patch_n(other_polyhedralsurface):
+    """Test the set_patch_n method for PolyhedralSurface.
+
+    For instance, we should for example fix a validity problem in the
+    PolyhedralSurface by modifying a polygon orientation.
+
+    """
+    assert len(other_polyhedralsurface) == 3
+    assert not other_polyhedralsurface.is_valid()
+
+    polygon = other_polyhedralsurface[1].force_lhr()
+    assert polygon not in other_polyhedralsurface
+
+    other_polyhedralsurface.set_patch_n(polygon, 1)
+    assert len(other_polyhedralsurface) == 3
+    assert polygon in other_polyhedralsurface
+    assert other_polyhedralsurface.is_valid()

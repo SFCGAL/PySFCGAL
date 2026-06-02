@@ -133,3 +133,29 @@ def test_tin_n_edges(expected_triangles):
     for patch, exp_n_edges in zip(expected_triangles, expected_n_edges):
         tin.add_patch(patch)
         assert tin.n_edges == exp_n_edges
+
+
+def test_tin_set_patch_n_too_big(tin):
+    assert len(tin) == 4
+    triangle = tin[1]
+    with pytest.raises(icontract.errors.ViolationError):
+        tin.set_patch_n(triangle, 5)
+
+
+def test_tin_set_patch_n(tin_unordered):
+    """Test the set_patch_n method for Tin.
+
+    For instance, we should for example fix a validity problem in the Tin by modifying
+    a triangle orientation.
+
+    """
+    assert len(tin_unordered) == 3
+    assert not tin_unordered.is_valid()
+
+    triangle = tin_unordered[1].force_lhr()
+    assert triangle not in tin_unordered
+
+    tin_unordered.set_patch_n(triangle, 1)
+    assert len(tin_unordered) == 3
+    assert triangle in tin_unordered
+    assert tin_unordered.is_valid()

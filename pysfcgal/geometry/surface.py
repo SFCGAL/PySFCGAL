@@ -350,7 +350,7 @@ class Tin(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n):
+    def __get_geometry_n(self, n: int):
         """Returns the n-th patch within the TIN.
 
         This method assumes that the index is valid for the TIN.
@@ -409,6 +409,21 @@ class Tin(Geometry):
                     key.__class__.__name__
                 )
             )
+
+    @cond_icontract(lambda self, n: n >= 0 and n < len(self), "require")
+    @cond_icontract(lambda self, patch: patch.geom_type == "Triangle", "require")
+    def set_patch_n(self, patch: Triangle, n: int) -> None:
+        """Set the n-th patch of the Tin.
+
+        Parameters
+        ----------
+        patch: Triangle
+            Geometry that will be set at the i-th position in the Tin
+        n: int
+            Index of the triangle to overwrite.
+        """
+        clone = lib.sfcgal_geometry_clone(patch._geom)
+        lib.sfcgal_triangulated_surface_set_patch_n(self._geom, clone, n)
 
     def __eq__(self, other: object) -> bool:
         """Check if two TINs are equal based on their patches.
@@ -782,6 +797,21 @@ class PolyhedralSurface(Geometry):
                     key.__class__.__name__
                 )
             )
+
+    @cond_icontract(lambda self, n: n >= 0 and n < len(self), "require")
+    @cond_icontract(lambda self, patch: patch.geom_type == "Polygon", "require")
+    def set_patch_n(self, patch: Polygon, n: int) -> None:
+        """Set the n-th patch of the PolyhedralSurface.
+
+        Parameters
+        ----------
+        patch: Polygon
+            Geometry that will be set at the i-th position in the PolyhedralSurface
+        n: int
+            Index of the polygon to overwrite.
+        """
+        clone = lib.sfcgal_geometry_clone(patch._geom)
+        lib.sfcgal_polyhedral_surface_set_patch_n(self._geom, clone, n)
 
     def __eq__(self, other: object) -> bool:
         """Check if two polyhedral surfaces are equal based on their patches.
