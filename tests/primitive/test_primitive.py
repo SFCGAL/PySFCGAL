@@ -209,6 +209,17 @@ def test_transformation(primitive_class, init_values, identity):
             rotated_translated_prim.transformation, expected_rotation_translation):
         assert math.isclose(result, expected)
 
+    # scale
+    scaled_prim = prim.scale(Vector3D(1.2, 2.3, 3.4))
+    expected_scaled = [
+        1.2, 0, 0, 0,
+        0, 2.3, 0, 0,
+        0, 0, 3.4, 0,
+        0, 0, 0, 1
+    ]
+    assert scaled_prim.transformation != identity
+    assert scaled_prim.transformation == expected_scaled
+
 
 @pytest.mark.parametrize(
     "primitive_class,init_values", [(p[1], p[2]) for p in PRIMITIVES_FACTORY])

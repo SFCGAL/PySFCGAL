@@ -434,6 +434,35 @@ class Primitive:
             center.z)
         return Primitive.from_sfcgal_primitive(rotated)
 
+    def scale(
+            self, scale_factor: Vector3D,
+            center: Optional[Point] = None) -> Optional[Primitive]:
+        """
+        Scales the primitive by the given factor
+
+        If the center is not provided, the primitive is scaled
+        around the origin (0, 0, 0).
+
+        Parameters
+        ----------
+        scale_factor: Vector3D
+            Scale factor
+        center: Point, defaults to the origin (0, 0, 0).
+            Rotation center
+
+        Returns
+        -------
+        Primitive
+            A rotated Primitive
+        """
+        if center is None:
+            center = Point(0, 0, 0)
+
+        scaled = lib.sfcgal_primitive_scale(
+            self.__primitive, scale_factor.x, scale_factor.y, scale_factor.z, center.x,
+            center.y, center.z)
+        return Primitive.from_sfcgal_primitive(scaled)
+
     def to_polyhedral_surface(self) -> PolyhedralSurface:
         """
         Convert the primitive to a polyhedral surface representation.
