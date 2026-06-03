@@ -2174,53 +2174,6 @@ class Geometry:
         return cls.from_coordinates(geojson_data["coordinates"])
 
     @staticmethod
-    def from_geojson(geojson: Optional[str]) -> Optional[Geometry]:
-        """Parse a GeoJSON string representation into a Geometry object.
-
-        This function takes a GeoJSON string and converts it into a `Geometry` object
-        by utilizing the SFCGAL library's GeoJSON parsing capabilities.
-
-        Parameters
-        ----------
-        geojson : str
-            The GeoJSON string representing the geometry.
-
-        Returns
-        -------
-        Geometry
-            A `Geometry` object parsed from the GeoJSON string.
-
-        """
-        if not geojson:
-            return None
-
-        sfcgal_geom = Geometry.sfcgal_geom_from_geojson(geojson)
-        return Geometry.from_sfcgal_geometry(sfcgal_geom)
-
-    @staticmethod
-    def sfcgal_geom_from_geojson(geojson: str) -> ffi.CData:
-        """
-        Internal function to read a GeoJSON string and return the SFCGAL geometry
-        object.
-
-        This function converts the GeoJSON string into a UTF-8 encoded byte string,
-        and uses the SFCGAL library to create a geometry object from the GeoJSON.
-
-        Parameters
-        ----------
-        geojson : str
-            The GeoJSON string representing the geometry.
-
-        Returns
-        -------
-        _cffi_backend._CDatabase
-            A pointer towards a SFCGAL Point
-
-        """
-        geojson_bytes = bytes(geojson, encoding="utf-8")
-        return lib.sfcgal_io_read_geojson(geojson_bytes, len(geojson_bytes))
-
-    @staticmethod
     def from_wkt(wkt: Optional[str]) -> Optional[Geometry]:
         """Parse a Well-Known Text (WKT) representation into a Geometry object.
 
@@ -2388,8 +2341,77 @@ class Geometry:
                 lib.free(buf[0])
         return wkb.decode("utf-8") if as_hex else wkb
 
+    @staticmethod
+    def from_geojson(geojson: Optional[str]) -> Optional[Geometry]:
+        """Parse a GeoJSON string representation into a Geometry object.
+
+        This function takes a GeoJSON string and converts it into a `Geometry` object
+        by utilizing the SFCGAL library's GeoJSON parsing capabilities.
+
+        Parameters
+        ----------
+        geojson : str
+            The GeoJSON string representing the geometry.
+
+        Returns
+        -------
+        Geometry
+            A `Geometry` object parsed from the GeoJSON string.
+
+        """
+        if not geojson:
+            return None
+
+        sfcgal_geom = Geometry.sfcgal_geom_from_geojson(geojson)
+        return Geometry.from_sfcgal_geometry(sfcgal_geom)
+
+    @staticmethod
+    def sfcgal_geom_from_geojson(geojson: str) -> ffi.CData:
+        """
+        Internal function to read a GeoJSON string and return the SFCGAL geometry
+        object.
+
+        This function converts the GeoJSON string into a UTF-8 encoded byte string,
+        and uses the SFCGAL library to create a geometry object from the GeoJSON.
+
+        Parameters
+        ----------
+        geojson : str
+            The GeoJSON string representing the geometry.
+
+        Returns
+        -------
+        _cffi_backend._CDatabase
+            A pointer towards a SFCGAL Point
+
+        """
+        geojson_bytes = bytes(geojson, encoding="utf-8")
+        return lib.sfcgal_io_read_geojson(geojson_bytes, len(geojson_bytes))
+
+    @staticmethod
+    def read_geojson(filename: str) -> Optional[Geometry]:
+        """Read a GeoJSON file into a Geometry object.
+
+        This function reads a GeoJSON file and converts its content into a `Geometry`
+        object.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the GeoJSON file that contains the geometry.
+
+        Returns
+        -------
+        Optional[Geometry]
+            A `Geometry` object parsed from the GeoJSON file.
+
+        """
+        with open(filename, "r", encoding="utf-8") as f:
+            content = f.read()
+        return Geometry.from_geojson(content)
+
     def to_geojson(
-        self, strict: bool = False, precision: int = 3, include_bbox: bool = False
+        self, strict: bool = False, precision: int = 8, include_bbox: bool = False
     ) -> str:
         """Convert a geometry object into a GeoJSON string representation.
 
@@ -2398,13 +2420,13 @@ class Geometry:
 
         Parameters
         ----------
-        strict: bool
+        strict : bool
             If True, output strictly RFC 7946 compliant GeoJSON. Non-standard types
-            (TIN, Solid, etc.) are converted to standard types. If false, use SFCGAL
+            (TIN, Solid, etc.) are converted to standard types. If False, use SFCGAL
             type names as extensions (allows round-trip).
-        precision: int
+        precision : int
             Number of decimal places for coordinates. -1 means full precision.
-        include_bbox: bool
+        include_bbox : bool
             Include bounding box in output.
 
         Returns
@@ -2426,3 +2448,15 @@ class Geometry:
             if not buf[0] == ffi.NULL:
                 lib.free(buf[0])
         return geojson
+
+    def write_geojson(self, filename: str) -> None:
+        """Export the geometry to a GeoJSON file.
+
+        Parameters
+        ----------
+        filename : str
+            The name of the file to which the geometry will be exported.
+
+        """
+        with open(filename, "w", encoding="utf-8") as f:
+            f.write(self.to_geojson())
