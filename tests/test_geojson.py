@@ -20,6 +20,39 @@ SFCGAL_TO_GEOJSON_TYPE = {
 
 
 @pytest.mark.parametrize(
+    "geom_factory",
+    GEOMETRY_FACTORIES.values(),
+    ids=GEOMETRY_FACTORIES.keys()
+)
+def test_geom_to_geojson(geom_factory):
+    geom = geom_factory(0)
+    geom_geojson = geom.to_geojson()
+    other_geom = Geometry.from_geojson(geom_geojson)
+    assert other_geom == geom
+
+
+@pytest.mark.parametrize(
+    "geom_factory",
+    GEOMETRY_FACTORIES.values(),
+    ids=GEOMETRY_FACTORIES.keys()
+)
+def test_geom_to_geojson_to_dict(geom_factory):
+    """Test the correspondance between to_dict and to_geojson.
+
+    These methods gives slightly differents outputs for Triangle and TIN, as the square
+    bracket structures are not handled identically in SFCGAL and the Python binding.
+
+    """
+    geom = geom_factory(0)
+    geom_dict = geom.to_dict()
+    if geom.geom_type in ("Triangle", "TriangulatedSurface"):
+        geom_dict["coordinates"] = [geom_dict["coordinates"]]
+    geojson_str = json.dumps(geom_dict)
+    json_geom = Geometry.from_geojson(geojson_str)
+    assert json_geom == geom
+
+
+@pytest.mark.parametrize(
     "geojson_file",
     GEOJSON_FIXTURES,
     ids=[f.stem for f in GEOJSON_FIXTURES],
