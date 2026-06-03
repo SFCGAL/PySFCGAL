@@ -52,7 +52,7 @@ class GeometrySequence:
         for n in range(0, len(self)):
             yield Geometry.from_sfcgal_geometry(
                 lib.sfcgal_geometry_collection_geometry_n(self._parent._geom, n),
-                owned=False, parent=self,
+                owned=False, parent=self._parent,
             )
 
     def __len__(self):
@@ -80,7 +80,7 @@ class GeometrySequence:
         """
         return Geometry.from_sfcgal_geometry(
             lib.sfcgal_geometry_collection_geometry_n(self._parent._geom, n),
-            owned=False, parent=self,
+            owned=False, parent=self._parent,
         )
 
     def __getitem__(self, key):
