@@ -350,7 +350,7 @@ class Tin(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n: int):
+    def __get_geometry_n(self, n: int) -> Optional[Polygon]:
         """Returns the n-th patch within the TIN.
 
         This method assumes that the index is valid for the TIN.
@@ -365,10 +365,10 @@ class Tin(Geometry):
         Geometry
             The patch at the specified index as a Geometry object.
         """
-        return Geometry.from_sfcgal_geometry(
+        return cast(Polygon, Geometry.from_sfcgal_geometry(
             lib.sfcgal_triangulated_surface_patch_n(self._geom, n),
             owned=False, parent=self
-        )
+        ))
 
     def __getitem__(self, key):
         """Get a patch (or several) within the TIN, identified through an index or a
@@ -564,7 +564,7 @@ class Triangle(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n):
+    def __get_geometry_n(self, n: int) -> Optional[Point]:
         """Returns the n-th vertex of the triangle.
 
         This method assumes that the index is valid for the triangle.
@@ -579,10 +579,10 @@ class Triangle(Geometry):
         Geometry
             The vertex at the specified index as a Geometry object.
         """
-        return Geometry.from_sfcgal_geometry(
+        return cast(Point, Geometry.from_sfcgal_geometry(
             lib.sfcgal_triangle_vertex(self._geom, n),
             owned=False, parent=self,
-        )
+        ))
 
     def __getitem__(self, key):
         """Get a vertex (or several) within the triangle, identified through an index
@@ -738,7 +738,7 @@ class PolyhedralSurface(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n):
+    def __get_geometry_n(self, n: int) -> Optional[Polygon]:
         """Returns the n-th polygon within the polyhedral surface.
 
         This method assumes that the index is valid for the geometry.
@@ -753,10 +753,10 @@ class PolyhedralSurface(Geometry):
         Geometry
             The polygon at the specified index as a Geometry object.
         """
-        return Geometry.from_sfcgal_geometry(
+        return cast(Polygon, Geometry.from_sfcgal_geometry(
             lib.sfcgal_polyhedral_surface_patch_n(self._geom, n),
             owned=False, parent=self,
-        )
+        ))
 
     def __getitem__(self, key):
         """Get a patch (or several) within the polyhedral surface, identified through
