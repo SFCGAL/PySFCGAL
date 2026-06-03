@@ -10,9 +10,10 @@ IGNORED_FUNCTIONS = {
     "sfcgal_geometry_as_text",  # sfcgal_geometry_as_text_decim is used instead
     "sfcgal_geometry_rotate",  # sfcgal_geometry_rotate_2d is used instead
     "sfcgal_geometry_rotate_3d",  # sfcgal_geometry_rotate_3d_around_center is used instead  # noqa: E501
-    "sfcgal_io_read_binary_prepared",
+    "sfcgal_io_read_binary_prepared",  # PySFCGAL does not support prepared geometry
     "sfcgal_io_read_ewkt",
     "sfcgal_io_write_binary_prepared",
+    "sfcgal_prepared_geometry_as_geojson",
     "sfcgal_prepared_geometry_create",
     "sfcgal_prepared_geometry_create_from_geometry",
     "sfcgal_prepared_geometry_as_ewkt",
