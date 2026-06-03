@@ -16,7 +16,7 @@ lint:flake8:
       - merge_requests
       - master
     changes:
-      - "pysfcgal/*.py"
+      - "pysfcgal/**/*.py"
       - "tests/**/*.{py,wkt}"
       - ".gitlab-ci.yml"
       - "scripts/*.py"
@@ -45,7 +45,7 @@ lint:mypy:
       - merge_requests
       - master
     changes:
-      - "pysfcgal/*.py"
+      - "pysfcgal/**/*.py"
       - ".gitlab-ci.yml"
       - "scripts/*.py"
   before_script:
