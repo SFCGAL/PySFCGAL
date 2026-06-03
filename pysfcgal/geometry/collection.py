@@ -8,7 +8,7 @@ MultiSolid.
 
 from __future__ import annotations
 
-from typing import Tuple, cast
+from typing import Optional, Tuple, cast
 
 from .._contracts import cond_icontract
 from .._deprecated import deprecated
@@ -65,7 +65,7 @@ class GeometrySequence:
         """
         return lib.sfcgal_geometry_num_geometries(self._parent._geom)
 
-    def __get_geometry_n(self, n):
+    def __get_geometry_n(self, n: int) -> Optional[Geometry]:
         """Retrieve the n-th geometry in the sequence.
 
         Parameters
