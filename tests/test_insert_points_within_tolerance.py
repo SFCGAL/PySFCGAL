@@ -4,7 +4,7 @@ from pysfcgal import Geometry
 
 
 @pytest.mark.parametrize(
-    "base, source, tolerance, expected_wkt",
+    "base, source, tolerance, expected_wkt, is_inserted",
     [
         [
             "POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))",
@@ -14,6 +14,7 @@ from pysfcgal import Geometry
                 "POLYGON ((0.00 0.00,0.00 2.50,0.00 5.00,5.00 5.00,5.00 0.00,"
                 "0.00 0.00))"
             ),
+            True,
         ],
         [
             "POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))",
@@ -22,6 +23,7 @@ from pysfcgal import Geometry
             (
                 "POLYGON ((0.00 0.00,0.00 5.00,5.00 5.00,5.00 0.00,0.00 0.00))"
             ),
+            False,
         ],
         [
             "LINESTRING(0 0, 0 5, 5 5, 5 0, 0 0)",
@@ -31,6 +33,7 @@ from pysfcgal import Geometry
                 "LINESTRING (0.00 0.00,0.00 2.50,0.00 5.00,5.00 5.00,5.00 0.00,"
                 "0.00 0.00)"
             ),
+            True,
         ],
         [
             "LINESTRING(0 0, 0 5, 5 5, 5 0, 0 0)",
@@ -39,6 +42,7 @@ from pysfcgal import Geometry
             (
                 "LINESTRING (0.00 0.00,0.00 5.00,5.00 5.00,5.00 0.00,0.00 0.00)"
             ),
+            False,
         ],
         [
             "POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))",
@@ -48,14 +52,18 @@ from pysfcgal import Geometry
                 "POLYGON ((0.00 0.00,0.00 2.50,0.00 5.00,2.50 5.00,5.00 5.00,"
                 "5.00 2.50,5.00 0.00,2.50 0.00,0.00 0.00))"
             ),
+            True,
         ],
     ]
 )
-def test_insert_points_within_tolerance(base, source, tolerance, expected_wkt):
+def test_insert_points_within_tolerance(base, source, tolerance,
+                                        expected_wkt, is_inserted):
     geom_a = Geometry.from_wkt(base)
     geom_b = Geometry.from_wkt(source)
     assert geom_a.is_valid()
     assert geom_b.is_valid()
     result = geom_a.insert_points_within_tolerance(geom_b, tolerance)
+    if not is_inserted:
+        assert result == geom_a
     assert result.geom_type == geom_a.geom_type
     assert result.to_wkt(2) == expected_wkt
