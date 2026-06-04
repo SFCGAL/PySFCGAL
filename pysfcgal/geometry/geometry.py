@@ -668,6 +668,24 @@ class Geometry:
         tessellation = lib.sfcgal_geometry_tessellate(self._geom)
         return Geometry.from_sfcgal_geometry(tessellation)
 
+    def insert_points_within_tolerance(self, other: Geometry,
+                                       tolerance: float) -> Optional[Geometry]:
+        """
+        Insert points from other geometry into self geometry within tolerance.
+        This function densifies the base geometry by adding points from the other
+        geometry where they are within the specified tolerance distance from the
+        self geometry's segments.
+
+        Returns
+        -------
+        Geometry
+            The resulting geometry including points from other.
+        """
+        geom = lib.sfcgal_geometry_insert_points_within_tolerance(self._geom,
+                                                                  other._geom,
+                                                                  tolerance)
+        return Geometry.from_sfcgal_geometry(geom)
+
     def force_lhr(self) -> Optional[Geometry]:
         """
         Force the geometry to have a left-hand rule (LHR) orientation.
