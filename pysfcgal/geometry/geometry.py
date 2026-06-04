@@ -676,6 +676,13 @@ class Geometry:
         geometry where they are within the specified tolerance distance from the
         self geometry's segments.
 
+        Parameters
+        ----------
+        other : Geometry
+            The other geometry to insert points on self.
+        tolerance : float
+            Maximum distance for a point to be considered for insertion
+
         Returns
         -------
         Geometry
