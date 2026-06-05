@@ -1,0 +1,96 @@
+name: CI
+
+on: [push, pull_request]
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  CGAL_VERSION: 6.1.1
+
+jobs:
+  test-freebsd:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Start FreeBSD 14.3 VM
+        uses: cross-platform-actions/action@master
+        with:
+          operating_system: freebsd
+          version: '14.3'
+          environment_variables: CGAL_VERSION
+
+      - name: Install dependencies
+        shell: cpa.sh {0}
+        run: |
+          ASSUME_ALWAYS_YES=yes sudo pkg install -y \
+            gmp mpfr boost-libs cmake ninja curl nlohmann-json eigen \
+            python311 py311-pip py311-pytest py311-wheel
+
+      - name: Download CGAL and SFCGAL sources
+        shell: cpa.sh {0}
+        run: |
+          curl -L -o CGAL-${CGAL_VERSION}.tar.gz \
+            "https://github.com/CGAL/cgal/archive/refs/tags/v${CGAL_VERSION}.tar.gz"
+          tar xzf CGAL-${CGAL_VERSION}.tar.gz
+          curl -L -o SFCGAL.tar.gz \
+            "https://gitlab.com/SFCGAL/SFCGAL/-/archive/master/SFCGAL-master.tar.gz"
+          tar xzf SFCGAL.tar.gz
+
+      - name: Build and install SFCGAL
+        shell: cpa.sh {0}
+        run: |
+          cd SFCGAL-master
+          cmake -GNinja -S . -B build -DCGAL_DIR=../cgal-${CGAL_VERSION} -DSFCGAL_WITH_EIGEN=ON
+          cmake --build build -j $(sysctl -n hw.ncpu)
+          sudo cmake --install build
+
+      - name: Install PySFCGAL
+        shell: cpa.sh {0}
+        run: |
+          CFLAGS="-I/usr/local/include" \
+          LDFLAGS="-L/usr/local/lib" \
+          python3.11 -m pip install -e . icontract
+
+      - name: Run tests
+        shell: cpa.sh {0}
+        run: LD_LIBRARY_PATH=/usr/local/lib python3.11 -m pytest tests/
+
+  test-macos:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          brew update
+          brew install boost gmp mpfr nlohmann-json cmake ninja eigen
+
+      - name: Download CGAL and SFCGAL sources
+        run: |
+          curl -L -o CGAL-${CGAL_VERSION}.tar.gz \
+            "https://github.com/CGAL/cgal/archive/refs/tags/v${CGAL_VERSION}.tar.gz"
+          tar xzf CGAL-${CGAL_VERSION}.tar.gz
+          curl -L -o SFCGAL.tar.gz \
+            "https://gitlab.com/SFCGAL/SFCGAL/-/archive/master/SFCGAL-master.tar.gz"
+          tar xzf SFCGAL.tar.gz
+
+      - name: Build and install SFCGAL
+        run: |
+          cd SFCGAL-master
+          cmake -GNinja -S . -B build -DCGAL_DIR=../cgal-${CGAL_VERSION} -DSFCGAL_WITH_EIGEN=ON
+          cmake --build build -j $(sysctl -n hw.logicalcpu)
+          sudo cmake --install build
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install PySFCGAL
+        run: |
+          CFLAGS="-I$(brew --prefix)/include -I/usr/local/include" \
+          LDFLAGS="-L$(brew --prefix)/lib -L/usr/local/lib -Wl,-rpath,/usr/local/lib" \
+          pip install -e . icontract pytest
+
+      - name: Run tests
+        run: pytest tests/
