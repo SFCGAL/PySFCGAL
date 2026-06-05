@@ -67,29 +67,51 @@ PRIMITIVES_FACTORY = [
 
 
 @pytest.mark.parametrize(
-    "primitive_type", [p[0] for p in PRIMITIVES_FACTORY])
+    "primitive_type",
+    [p[0] for p in PRIMITIVES_FACTORY if p[0] != primitive.PrimitiveType.TORUS],
+)
 def test_create_from_base_class(primitive_type):
     """
     Create primitives from the base class and check that its parameters
-    can be retrieved and set
+    can be retrieved and set.
+    Torus is excluded: its tube_radius <= main_radius constraint prevents
+    testing each parameter independently in an order-agnostic loop.
+    See test_create_torus_from_base_class for dedicated coverage.
     """
     prim = primitive.Primitive(primitive_type)
     assert prim.type_ == primitive_type
-    # Use descending values so that for Torus, tube_radius stays below
-    # main_radius (newer SFCGAL enforces tube_radius <= main_radius).
-    double_value = 100.0
+    double_value = 5.2
     for param_name, param_type in prim.parameters.items():
         if param_type == primitive.ParameterType.DOUBLE:
             assert prim[param_name] != double_value
             prim[param_name] = double_value
             assert prim[param_name] == double_value
-            double_value -= 10.0
+            double_value += 1.0
         elif param_type == primitive.ParameterType.INT:
             assert prim[param_name] != 4
             prim[param_name] = 4
             assert prim[param_name] == 4
         else:
             assert False
+
+
+def test_create_torus_from_base_class():
+    """
+    Test Torus parameter get/set from the base class.
+    main_radius must be set before tube_radius because SFCGAL enforces
+    tube_radius <= main_radius regardless of iteration order.
+    """
+    prim = primitive.Primitive(primitive.PrimitiveType.TORUS)
+    assert prim.type_ == primitive.PrimitiveType.TORUS
+    prim["main_radius"] = 10.0
+    assert prim["main_radius"] == 10.0
+    prim["tube_radius"] = 4.0
+    assert prim["tube_radius"] == 4.0
+    for param_name, param_type in prim.parameters.items():
+        if param_type == primitive.ParameterType.INT:
+            assert prim[param_name] != 4
+            prim[param_name] = 4
+            assert prim[param_name] == 4
 
 
 @pytest.mark.parametrize(
