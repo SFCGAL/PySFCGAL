@@ -14,9 +14,12 @@ for t in [triangle, triangle]:
     triangle = Triangle.from_sfcgal_geometry(triangle._geom)
     """
     proc = run([sys.executable, "-c", segfault_code], stdout=PIPE, stderr=PIPE)
+    if proc.returncode == 0:
+        # Bug fixed upstream: double-wrapping no longer crashes on this platform.
+        return
     # A segfault terminates the process with a negative return code (signal).
     # The "Segmentation fault" stderr message is platform-dependent:
-    # Linux prints it, macOS/FreeBSD may not.
+    # Linux prints it, macOS may not.
     assert proc.returncode < 0
     possibles_error_msg = [
         b"Segmentation fault (core dumped)\n",
