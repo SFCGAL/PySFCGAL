@@ -1,3 +1,4 @@
+import sys
 from subprocess import PIPE, CalledProcessError, run
 
 import pytest
@@ -12,10 +13,15 @@ triangle = Triangle([(0, 0, 0), (1, 0, 0), (0, 1, 0)])
 for t in [triangle, triangle]:
     triangle = Triangle.from_sfcgal_geometry(triangle._geom)
     """
-    proc = run(f"python3 -c '{segfault_code}'", shell=True, stdout=PIPE, stderr=PIPE)
+    proc = run([sys.executable, "-c", segfault_code], stdout=PIPE, stderr=PIPE)
+    # A segfault terminates the process with a negative return code (signal).
+    # The "Segmentation fault" stderr message is platform-dependent:
+    # Linux prints it, macOS/FreeBSD may not.
+    assert proc.returncode < 0
     possibles_error_msg = [
         b"Segmentation fault (core dumped)\n",
-        b'Segmentation fault\n'
+        b'Segmentation fault\n',
+        b'',
     ]
     assert proc.stderr in possibles_error_msg
     with pytest.raises(CalledProcessError):
