@@ -396,6 +396,47 @@ class Polygon(Geometry):
         geom = Geometry.from_sfcgal_geometry(result_geom)
         return cast(Optional["PolyhedralSurface"], geom)
 
+    @cond_icontract(
+        lambda self, building_height, roof_height, angles: (
+            self.is_valid() and roof_height != 0
+        ),
+        "require",
+    )
+    def extrude_polygon_straight_skeleton_with_angles(
+        self,
+        building_height: float,
+        roof_height: float,
+        angles: typing.List[typing.List[float]],
+    ) -> Optional["PolyhedralSurface"]:
+        """Extrude the polygon with a straight-skeleton roof and per-edge angles.
+
+        Produces the union of the vertical wall extrusion (up to *building_height*)
+        and the angled roof extrusion (up to *roof_height*).
+
+        Parameters
+        ----------
+        building_height : float
+            The height of the building walls.
+        roof_height : float
+            The maximum height of the roof. Must be non-zero.
+        angles : list of list of float
+            Angles in degrees for each edge of each ring.  Requires
+            ``0 < angle < 180`` for every value.
+
+        Returns
+        -------
+        PolyhedralSurface or None
+            The resulting geometry, or ``None`` if SFCGAL returns NULL.
+        """
+        flattened, per_ring, num_rings = self._validate_ring_values(angles, "angles")
+        c_angles = ffi.new("double[]", flattened)
+        c_per_ring = ffi.new("size_t[]", per_ring)
+        result_geom = lib.sfcgal_geometry_extrude_polygon_straight_skeleton_with_angles(
+            self._geom, building_height, roof_height, c_angles, c_per_ring, num_rings
+        )
+        geom = Geometry.from_sfcgal_geometry(result_geom)
+        return cast(Optional["PolyhedralSurface"], geom)
+
     @classmethod
     def from_coordinates(cls, coordinates: list) -> Optional[Polygon]:
         """Instantiates a Polygon starting from a list of coordinates.
