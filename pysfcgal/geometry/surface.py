@@ -304,6 +304,8 @@ class Polygon(Geometry):
         per_ring = []
         for i, ring_values in enumerate(values):
             coords = self.rings[i].to_coordinates()
+            if len(coords) == 0:
+                raise ValueError(f"Ring {i} is empty; cannot validate {label}")
             # A closed ring has first == last point; edges = points - 1.
             num_edges = len(coords) - 1 if coords[0] == coords[-1] else len(coords)
             if len(ring_values) != num_edges:

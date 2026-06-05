@@ -226,6 +226,36 @@ def test_extrude_with_weights_multi_ring():
 
 
 # ---------------------------------------------------------------------------
+# Empty polygon handling for angles/weights variants
+# ---------------------------------------------------------------------------
+
+def test_extrude_straight_skeleton_with_angles_empty_polygon():
+    # An empty polygon has an empty exterior ring; _validate_ring_values must
+    # raise a clear ValueError instead of an IndexError.
+    poly = Polygon()
+    with pytest.raises(ValueError, match="Ring 0 is empty"):
+        poly.extrude_straight_skeleton_with_angles(1.0, [[]])
+
+
+def test_extrude_straight_skeleton_with_weights_empty_polygon():
+    poly = Polygon()
+    with pytest.raises(ValueError, match="Ring 0 is empty"):
+        poly.extrude_straight_skeleton_with_weights(1.0, [[]])
+
+
+def test_extrude_polygon_straight_skeleton_with_angles_empty_polygon():
+    poly = Polygon()
+    with pytest.raises(ValueError, match="Ring 0 is empty"):
+        poly.extrude_polygon_straight_skeleton_with_angles(3.0, 1.0, [[]])
+
+
+def test_extrude_polygon_straight_skeleton_with_weights_empty_polygon():
+    poly = Polygon()
+    with pytest.raises(ValueError, match="Ring 0 is empty"):
+        poly.extrude_polygon_straight_skeleton_with_weights(3.0, 1.0, [[]])
+
+
+# ---------------------------------------------------------------------------
 # Other straight skeleton methods
 # ---------------------------------------------------------------------------
 
