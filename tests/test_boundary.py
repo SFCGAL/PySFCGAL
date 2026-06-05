@@ -1,6 +1,6 @@
 import pytest
 
-from pysfcgal import Geometry
+from pysfcgal import Geometry, MultiPoint
 from tests.utils import GEOMETRY_FACTORIES
 
 WKT_EXPECTED_BOUNDARIES = {
@@ -31,6 +31,12 @@ def test_boundary(geom_factory, wkt_expected_boundary):
     geom = geom_factory(1)
     boundary = geom.boundary()
     expected_boundary = Geometry.from_wkt(wkt_expected_boundary)
-    assert boundary == expected_boundary
+    if isinstance(boundary, MultiPoint) and isinstance(expected_boundary, MultiPoint):
+        # Point order in MultiPoint boundary result may vary across SFCGAL versions
+        assert sorted(p.to_wkt() for p in boundary) == sorted(
+            p.to_wkt() for p in expected_boundary
+        )
+    else:
+        assert boundary == expected_boundary
     # not xor, ensure both predicates have the same value
     assert not (wkt_expected_boundary is None) ^ (boundary is None)
