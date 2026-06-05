@@ -145,7 +145,7 @@ def linestring_factory(coord: float) -> LineString:
     return LineString(
         [
             [coord, coord, coord],
-            [coord, coord, coord + 1]
+            [coord, coord + 1, coord + 1]
         ]
     )
 

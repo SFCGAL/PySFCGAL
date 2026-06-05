@@ -88,6 +88,21 @@ class Geometry:
         """
         lib.sfcgal_geometry_force_valid(self._geom, flag)
 
+    @property
+    def length(self) -> float:
+        """
+        Return the length of the geometry.
+
+        This property returns the length of the geometry
+        - geometry LineString or MultiLineString or GeometryCollection return length
+        - return 0 for the others
+        Returns
+        -------
+        float
+            The length of the geometry.
+        """
+        return lib.sfcgal_geometry_length(self._geom)
+
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
     def distance(self, other: Geometry) -> float:
         """
