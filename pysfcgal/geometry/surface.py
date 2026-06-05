@@ -17,7 +17,6 @@ from typing import Optional, Tuple, Union, cast
 if typing.TYPE_CHECKING:
     from .collection import MultiPolygon
     from .volume import Solid
-
 from .._contracts import cond_icontract
 from .._sfcgal import ffi, lib
 from .curve import LineString, is_segment_in_coordsequence
@@ -266,6 +265,136 @@ class Polygon(Geometry):
             List of the polygon ring coordinates
         """
         return [ring.to_coordinates() for ring in self.rings]
+
+    def _validate_ring_values(
+        self,
+        values: typing.List[typing.List[float]],
+        label: str,
+    ) -> typing.Tuple[typing.List[float], typing.List[int], int]:
+        """Validate per-ring per-edge values and return their flattened form.
+
+        Parameters
+        ----------
+        values : list of list of float
+            One inner list per ring (exterior first, then holes).
+        label : str
+            Human-readable name used in error messages (e.g. ``"angles"``).
+
+        Returns
+        -------
+        tuple
+            ``(flattened, per_ring, num_rings)`` ready for CFFI array creation.
+
+        Raises
+        ------
+        TypeError
+            If *values* is ``None``.
+        ValueError
+            If the number of inner lists does not match the ring count, or if
+            an inner list length does not match the edge count of that ring.
+        """
+        if values is None:
+            raise TypeError(f"'{label}' must be provided")
+        num_rings = 1 + self.n_interiors
+        if len(values) != num_rings:
+            raise ValueError(
+                f"Expected {num_rings} rings of {label}, but got {len(values)}"
+            )
+        flattened = []
+        per_ring = []
+        for i, ring_values in enumerate(values):
+            coords = self.rings[i].to_coordinates()
+            # A closed ring has first == last point; edges = points - 1.
+            num_edges = len(coords) - 1 if coords[0] == coords[-1] else len(coords)
+            if len(ring_values) != num_edges:
+                raise ValueError(
+                    f"Ring {i} has {num_edges} edges, "
+                    f"but {len(ring_values)} {label} were provided"
+                )
+            flattened.extend(ring_values)
+            per_ring.append(len(ring_values))
+        return flattened, per_ring, num_rings
+
+    @cond_icontract(
+        lambda self, height: self.is_valid() and height != 0,
+        "require",
+    )
+    def extrude_straight_skeleton(self, height: float) -> Optional["PolyhedralSurface"]:
+        """Extrude the polygon along its straight skeleton.
+
+        Parameters
+        ----------
+        height : float
+            The extrusion height. Must be non-zero.
+
+        Returns
+        -------
+        PolyhedralSurface or None
+            The resulting extruded geometry, or ``None`` if SFCGAL returns NULL.
+        """
+        geom = lib.sfcgal_geometry_extrude_straight_skeleton(self._geom, height)
+        return cast(Optional["PolyhedralSurface"], Geometry.from_sfcgal_geometry(geom))
+
+    @cond_icontract(
+        lambda self, building_height, roof_height: self.is_valid() and roof_height != 0,
+        "require",
+    )
+    def extrude_polygon_straight_skeleton(
+        self, building_height: float, roof_height: float
+    ) -> Optional["PolyhedralSurface"]:
+        """Extrude the polygon along its straight skeleton with building
+        and roof heights.
+
+        Parameters
+        ----------
+        building_height : float
+            The height of the building walls.
+        roof_height : float
+            The height of the roof. Must be non-zero.
+
+        Returns
+        -------
+        PolyhedralSurface or None
+            The union of the wall extrusion and the roof extrusion, or ``None``
+            if SFCGAL returns NULL.
+        """
+        geom = lib.sfcgal_geometry_extrude_polygon_straight_skeleton(
+            self._geom, building_height, roof_height
+        )
+        return cast(Optional["PolyhedralSurface"], Geometry.from_sfcgal_geometry(geom))
+
+    @cond_icontract(
+        lambda self, height, angles: self.is_valid() and height != 0,
+        "require",
+    )
+    def extrude_straight_skeleton_with_angles(
+        self,
+        height: float,
+        angles: typing.List[typing.List[float]],
+    ) -> Optional["PolyhedralSurface"]:
+        """Extrude the polygon along its straight skeleton using per-edge angles.
+
+        Parameters
+        ----------
+        height : float
+            The extrusion height. Must be non-zero.
+        angles : list of list of float
+            Angles in degrees for each edge of each ring (exterior first, then
+            holes).  The C library requires ``0 < angle < 180`` for every value.
+
+        Returns
+        -------
+        PolyhedralSurface or None
+            The resulting extruded geometry, or ``None`` if SFCGAL returns NULL.
+        """
+        flattened, per_ring, num_rings = self._validate_ring_values(angles, "angles")
+        c_angles = ffi.new("double[]", flattened)
+        c_per_ring = ffi.new("size_t[]", per_ring)
+        result_geom = lib.sfcgal_geometry_extrude_straight_skeleton_with_angles(
+            self._geom, height, c_angles, c_per_ring, num_rings
+        )
+        geom = Geometry.from_sfcgal_geometry(result_geom)
+        return cast(Optional["PolyhedralSurface"], geom)
 
     @classmethod
     def from_coordinates(cls, coordinates: list) -> Optional[Polygon]:

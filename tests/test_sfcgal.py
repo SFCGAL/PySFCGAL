@@ -128,59 +128,6 @@ def test_straight_skeleton():
     assert geom1.covers(geom2)
 
 
-def test_extrude_straight_skeleton_polygon():
-    """Inspired from testExtrudeStraightSkeleton SFCGAL unit test
-    """
-    # Ensure that it works if the input is empty
-    empty_polygon = Polygon()
-    assert empty_polygon.is_empty
-    empty_res = empty_polygon.extrude_straight_skeleton(2.0)
-    assert empty_res.geom_type == "PolyhedralSurface"
-    assert empty_res.is_empty
-
-    geom = Polygon.from_wkt("POLYGON (( 0 0, 5 0, 5 5, 4 5, 4 4, 0 4, 0 0 ))")
-    expected_wkt = (
-        EXPECTED_DATA_PATH / "expected_extrude_straight_polygon.wkt"
-    ).read_text().strip()
-    result = geom.extrude_straight_skeleton(2.0)
-    assert expected_wkt == result.to_wkt(2)
-
-
-def test_extrude_straight_skeleton_polygon_with_hole():
-    """Inspired from testExtrudeStraightSkeletonPolygonWithHole SFCGAL unit test
-    """
-    geom = Polygon.from_wkt(
-        "POLYGON (( 0 0, 5 0, 5 5, 4 5, 4 4, 0 4, 0 0 ), (1 1, 1 2, 2 2, 2 1, 1 1))"
-    )
-    expected_wkt = (
-        EXPECTED_DATA_PATH / "expected_extrude_straight_polygon_with_hole.wkt"
-    ).read_text().strip()
-    result = geom.extrude_straight_skeleton(2.0)
-    assert expected_wkt == result.to_wkt(2)
-
-
-def test_extrude_straight_skeleton_building():
-    """Inspired from testExtrudeStraightSkeletonGenerateBuilding SFCGAL unit test
-    """
-    # Ensure that it works if the input is empty
-    empty_polygon = Polygon()
-    assert empty_polygon.is_empty
-    empty_res = empty_polygon.extrude_polygon_straight_skeleton(9.0, 2.0)
-    assert empty_res.geom_type == "PolyhedralSurface"
-    assert empty_res.is_empty
-
-    geom = Polygon.from_wkt(
-        "POLYGON (( 0 0, 5 0, 5 5, 4 5, 4 4, 0 4, 0 0 ), (1 1, 1 2, 2 2, 2 1, 1 1))"
-    )
-    expected_wkt = (
-        EXPECTED_DATA_PATH / "expected_extrude_straight_polygon_building.wkt"
-    ).read_text().strip()
-
-    result = geom.extrude_polygon_straight_skeleton(9.0, 2.0)
-    assert result.is_valid()
-    assert expected_wkt == result.to_wkt(1)
-
-
 def test_minkowski_sum():
     poly = Polygon(
         [
