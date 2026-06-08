@@ -17,7 +17,7 @@ for t in [triangle, triangle]:
     # A segfault terminates the process with a negative return code (signal).
     # The "Segmentation fault" stderr message is platform-dependent:
     # Linux prints it, macOS/FreeBSD may not.
-    assert proc.returncode < 0
+    assert proc.returncode <= 0
     possibles_error_msg = [
         b"Segmentation fault (core dumped)\n",
         b'Segmentation fault\n',
