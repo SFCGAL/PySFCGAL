@@ -16,6 +16,7 @@ lint:flake8:
       - merge_requests
       - master
     changes:
+      - "cookbook/*.py"
       - "pysfcgal/**/*.py"
       - "tests/**/*.{py,wkt}"
       - ".gitlab-ci.yml"
@@ -45,6 +46,7 @@ lint:mypy:
       - merge_requests
       - master
     changes:
+      - "cookbook/*.py"
       - "pysfcgal/**/*.py"
       - ".gitlab-ci.yml"
       - "scripts/*.py"
