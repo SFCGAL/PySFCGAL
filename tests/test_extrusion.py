@@ -6,6 +6,14 @@ from pysfcgal.geometry import Polygon
 from pysfcgal.geometry.collection import MultiLineString
 from pysfcgal.geometry.surface import PolyhedralSurface
 
+
+@pytest.fixture
+def square_with_hole_polygon():
+    exterior = [(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)]
+    interiors = [[(1, 1), (1, 3), (3, 3), (3, 1), (1, 1)]]
+    yield Polygon(exterior=exterior, interiors=interiors)
+
+
 POLYGON_EXPECTED_DATA = pathlib.Path(__file__).parent / "polygon" / "expected_data"
 SFCGAL_EXPECTED_DATA = pathlib.Path(__file__).parent / "expected_data"
 
@@ -15,117 +23,105 @@ try:
 except ImportError:
     _PRECONDITION_ERROR = ValueError
 
-SQUARE = [(0, 0), (1, 0), (1, 1), (0, 1), (0, 0)]
-SQUARE_WITH_HOLE = (
-    [(0, 0), (4, 0), (4, 4), (0, 4), (0, 0)],       # exterior: CCW
-    [[(1, 1), (1, 3), (3, 3), (3, 1), (1, 1)]],      # interior: CW (hole)
-)
-
 
 # ---------------------------------------------------------------------------
 # extrude_straight_skeleton
 # ---------------------------------------------------------------------------
 
-def test_extrude_straight_skeleton_basic():
-    poly = Polygon(SQUARE)
-    result = poly.extrude_straight_skeleton(1.0)
+def test_extrude_straight_skeleton_basic(polygon1):
+    result = polygon1.extrude_straight_skeleton(1.0)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_straight_skeleton_height_zero():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
-        poly.extrude_straight_skeleton(0.0)
+        polygon1.extrude_straight_skeleton(0.0)
 
 
 # ---------------------------------------------------------------------------
 # extrude_polygon_straight_skeleton
 # ---------------------------------------------------------------------------
 
-def test_extrude_polygon_straight_skeleton():
-    poly = Polygon(SQUARE)
-    result = poly.extrude_polygon_straight_skeleton(3.0, 1.0)
+def test_extrude_polygon_straight_skeleton(polygon1):
+    result = polygon1.extrude_polygon_straight_skeleton(3.0, 1.0)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_polygon_straight_skeleton_roof_height_zero():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_roof_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
-        poly.extrude_polygon_straight_skeleton(3.0, 0.0)
+        polygon1.extrude_polygon_straight_skeleton(3.0, 0.0)
 
 
 # ---------------------------------------------------------------------------
 # extrude_straight_skeleton_with_angles
 # ---------------------------------------------------------------------------
 
-def test_extrude_straight_skeleton_with_angles_success():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_angles_success(polygon1):
     angles = [[45.0, 45.0, 45.0, 45.0]]
-    result = poly.extrude_straight_skeleton_with_angles(1.0, angles)
+    result = polygon1.extrude_straight_skeleton_with_angles(1.0, angles)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_straight_skeleton_with_angles_height_zero():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_angles_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
-        poly.extrude_straight_skeleton_with_angles(0.0, [[45.0, 45.0, 45.0, 45.0]])
+        polygon1.extrude_straight_skeleton_with_angles(0.0, [[45.0, 45.0, 45.0, 45.0]])
 
 
-def test_extrude_straight_skeleton_with_angles_none():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_angles_none(polygon1):
     with pytest.raises(TypeError, match="'angles' must be provided"):
-        poly.extrude_straight_skeleton_with_angles(1.0, None)
+        polygon1.extrude_straight_skeleton_with_angles(1.0, None)
 
 
-def test_extrude_straight_skeleton_with_angles_wrong_ring_count():
-    poly = Polygon(*SQUARE_WITH_HOLE)
+def test_extrude_straight_skeleton_with_angles_wrong_ring_count(
+    square_with_hole_polygon
+):
     with pytest.raises(ValueError, match="Expected 2 rings of angles, but got 1"):
-        poly.extrude_straight_skeleton_with_angles(1.0, [[45.0, 45.0, 45.0, 45.0]])
+        square_with_hole_polygon.extrude_straight_skeleton_with_angles(
+            1.0, [[45.0, 45.0, 45.0, 45.0]]
+        )
 
 
-def test_extrude_straight_skeleton_with_angles_wrong_edge_count():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_angles_wrong_edge_count(polygon1):
     with pytest.raises(
         ValueError, match="Ring 0 has 4 edges, but 3 angles were provided"
     ):
-        poly.extrude_straight_skeleton_with_angles(1.0, [[45.0, 45.0, 45.0]])
+        polygon1.extrude_straight_skeleton_with_angles(1.0, [[45.0, 45.0, 45.0]])
 
 
 # ---------------------------------------------------------------------------
 # extrude_polygon_straight_skeleton_with_angles
 # ---------------------------------------------------------------------------
 
-def test_extrude_polygon_straight_skeleton_with_angles_success():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_angles_success(polygon1):
     angles = [[45.0, 45.0, 45.0, 45.0]]
-    result = poly.extrude_polygon_straight_skeleton_with_angles(3.0, 1.0, angles)
+    result = polygon1.extrude_polygon_straight_skeleton_with_angles(3.0, 1.0, angles)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_polygon_straight_skeleton_with_angles_roof_zero():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_angles_roof_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
-        poly.extrude_polygon_straight_skeleton_with_angles(3.0, 0.0, [[45.0] * 4])
+        polygon1.extrude_polygon_straight_skeleton_with_angles(3.0, 0.0, [[45.0] * 4])
 
 
-def test_extrude_polygon_straight_skeleton_with_angles_none():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_angles_none(polygon1):
     with pytest.raises(TypeError, match="'angles' must be provided"):
-        poly.extrude_polygon_straight_skeleton_with_angles(3.0, 1.0, None)
+        polygon1.extrude_polygon_straight_skeleton_with_angles(3.0, 1.0, None)
 
 
-def test_extrude_polygon_straight_skeleton_with_angles_wrong_ring_count():
-    poly = Polygon(*SQUARE_WITH_HOLE)
+def test_extrude_polygon_straight_skeleton_with_angles_wrong_ring_count(
+    square_with_hole_polygon
+):
     with pytest.raises(ValueError, match="Expected 2 rings of angles, but got 1"):
-        poly.extrude_polygon_straight_skeleton_with_angles(3.0, 1.0, [[45.0] * 4])
+        square_with_hole_polygon.extrude_polygon_straight_skeleton_with_angles(
+            3.0, 1.0, [[45.0] * 4]
+        )
 
 
-def test_extrude_polygon_straight_skeleton_with_angles_wrong_edge_count():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_angles_wrong_edge_count(polygon1):
     with pytest.raises(
         ValueError, match="Ring 0 has 4 edges, but 3 angles were provided"
     ):
-        poly.extrude_polygon_straight_skeleton_with_angles(
+        polygon1.extrude_polygon_straight_skeleton_with_angles(
             3.0, 1.0, [[45.0, 45.0, 45.0]]
         )
 
@@ -134,74 +130,72 @@ def test_extrude_polygon_straight_skeleton_with_angles_wrong_edge_count():
 # extrude_straight_skeleton_with_weights
 # ---------------------------------------------------------------------------
 
-def test_extrude_straight_skeleton_with_weights_success():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_weights_success(polygon1):
     weights = [[1.0, 1.0, 1.0, 1.0]]
-    result = poly.extrude_straight_skeleton_with_weights(1.0, weights)
+    result = polygon1.extrude_straight_skeleton_with_weights(1.0, weights)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_straight_skeleton_with_weights_height_zero():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_weights_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
-        poly.extrude_straight_skeleton_with_weights(0.0, [[1.0, 1.0, 1.0, 1.0]])
+        polygon1.extrude_straight_skeleton_with_weights(0.0, [[1.0, 1.0, 1.0, 1.0]])
 
 
-def test_extrude_straight_skeleton_with_weights_none():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_weights_none(polygon1):
     with pytest.raises(TypeError, match="'weights' must be provided"):
-        poly.extrude_straight_skeleton_with_weights(1.0, None)
+        polygon1.extrude_straight_skeleton_with_weights(1.0, None)
 
 
-def test_extrude_straight_skeleton_with_weights_wrong_ring_count():
-    poly = Polygon(*SQUARE_WITH_HOLE)
+def test_extrude_straight_skeleton_with_weights_wrong_ring_count(
+    square_with_hole_polygon
+):
     with pytest.raises(ValueError, match="Expected 2 rings of weights, but got 1"):
-        poly.extrude_straight_skeleton_with_weights(1.0, [[1.0, 1.0, 1.0, 1.0]])
+        square_with_hole_polygon.extrude_straight_skeleton_with_weights(
+            1.0, [[1.0, 1.0, 1.0, 1.0]]
+        )
 
 
-def test_extrude_straight_skeleton_with_weights_wrong_edge_count():
-    poly = Polygon(SQUARE)
+def test_extrude_straight_skeleton_with_weights_wrong_edge_count(polygon1):
     with pytest.raises(
         ValueError, match="Ring 0 has 4 edges, but 3 weights were provided"
     ):
-        poly.extrude_straight_skeleton_with_weights(1.0, [[1.0, 1.0, 1.0]])
+        polygon1.extrude_straight_skeleton_with_weights(1.0, [[1.0, 1.0, 1.0]])
 
 
 # ---------------------------------------------------------------------------
 # extrude_polygon_straight_skeleton_with_weights
 # ---------------------------------------------------------------------------
 
-def test_extrude_polygon_straight_skeleton_with_weights_success():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_weights_success(polygon1):
     weights = [[1.0, 1.0, 1.0, 1.0]]
-    result = poly.extrude_polygon_straight_skeleton_with_weights(3.0, 1.0, weights)
+    result = polygon1.extrude_polygon_straight_skeleton_with_weights(3.0, 1.0, weights)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_polygon_straight_skeleton_with_weights_roof_zero():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_weights_roof_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
-        poly.extrude_polygon_straight_skeleton_with_weights(3.0, 0.0, [[1.0] * 4])
+        polygon1.extrude_polygon_straight_skeleton_with_weights(3.0, 0.0, [[1.0] * 4])
 
 
-def test_extrude_polygon_straight_skeleton_with_weights_none():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_weights_none(polygon1):
     with pytest.raises(TypeError, match="'weights' must be provided"):
-        poly.extrude_polygon_straight_skeleton_with_weights(3.0, 1.0, None)
+        polygon1.extrude_polygon_straight_skeleton_with_weights(3.0, 1.0, None)
 
 
-def test_extrude_polygon_straight_skeleton_with_weights_wrong_ring_count():
-    poly = Polygon(*SQUARE_WITH_HOLE)
+def test_extrude_polygon_straight_skeleton_with_weights_wrong_ring_count(
+    square_with_hole_polygon
+):
     with pytest.raises(ValueError, match="Expected 2 rings of weights, but got 1"):
-        poly.extrude_polygon_straight_skeleton_with_weights(3.0, 1.0, [[1.0] * 4])
+        square_with_hole_polygon.extrude_polygon_straight_skeleton_with_weights(
+            3.0, 1.0, [[1.0] * 4]
+        )
 
 
-def test_extrude_polygon_straight_skeleton_with_weights_wrong_edge_count():
-    poly = Polygon(SQUARE)
+def test_extrude_polygon_straight_skeleton_with_weights_wrong_edge_count(polygon1):
     with pytest.raises(
         ValueError, match="Ring 0 has 4 edges, but 3 weights were provided"
     ):
-        poly.extrude_polygon_straight_skeleton_with_weights(
+        polygon1.extrude_polygon_straight_skeleton_with_weights(
             3.0, 1.0, [[1.0, 1.0, 1.0]]
         )
 
@@ -210,18 +204,18 @@ def test_extrude_polygon_straight_skeleton_with_weights_wrong_edge_count():
 # Multi-ring polygons
 # ---------------------------------------------------------------------------
 
-def test_extrude_with_angles_multi_ring():
-    poly = Polygon(*SQUARE_WITH_HOLE)
+def test_extrude_with_angles_multi_ring(square_with_hole_polygon):
     # exterior: 4 edges, interior: 4 edges
     angles = [[45.0, 45.0, 45.0, 45.0], [45.0, 45.0, 45.0, 45.0]]
-    result = poly.extrude_straight_skeleton_with_angles(1.0, angles)
+    result = square_with_hole_polygon.extrude_straight_skeleton_with_angles(1.0, angles)
     assert isinstance(result, PolyhedralSurface)
 
 
-def test_extrude_with_weights_multi_ring():
-    poly = Polygon(*SQUARE_WITH_HOLE)
+def test_extrude_with_weights_multi_ring(square_with_hole_polygon):
     weights = [[1.0, 1.0, 1.0, 1.0], [1.0, 1.0, 1.0, 1.0]]
-    result = poly.extrude_straight_skeleton_with_weights(1.0, weights)
+    result = square_with_hole_polygon.extrude_straight_skeleton_with_weights(
+        1.0, weights
+    )
     assert isinstance(result, PolyhedralSurface)
 
 
@@ -259,16 +253,14 @@ def test_extrude_polygon_straight_skeleton_with_weights_empty_polygon():
 # Other straight skeleton methods
 # ---------------------------------------------------------------------------
 
-def test_straight_skeleton_returns_multilinestring():
-    poly = Polygon(SQUARE)
-    result = poly.straight_skeleton()
+def test_straight_skeleton_returns_multilinestring(polygon1):
+    result = polygon1.straight_skeleton()
     assert result is not None
     assert isinstance(result, MultiLineString)
 
 
-def test_straight_skeleton_partition_polygon():
-    poly = Polygon(SQUARE)
-    result = poly.straight_skeleton_partition()
+def test_straight_skeleton_partition_polygon(polygon1):
+    result = polygon1.straight_skeleton_partition()
     assert result is not None
     assert isinstance(result, PolyhedralSurface)
 
