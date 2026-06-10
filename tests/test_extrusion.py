@@ -279,31 +279,28 @@ def heptagon_building_footprint():
 def test_extrude_straight_skeleton_with_angles(
     heptagon_building_footprint: Polygon,
 ) -> None:
+    # Acute angles
     roof = heptagon_building_footprint.extrude_straight_skeleton_with_angles(
         height=10, angles=[[90, 90, 45, 30, 30, 15, 15]]
     )
     assert isinstance(roof, PolyhedralSurface)
-    assert (
-        roof.to_wkt(2)
-        == (POLYGON_EXPECTED_DATA / "straight_skeleton_extrusion_acute_angles.wkt")
-        .read_text()
-        .strip()
-    )
+    expected_wkt = (
+        POLYGON_EXPECTED_DATA / "straight_skeleton_extrusion_acute_angles.wkt"
+    ).read_text().strip()
+    assert roof.to_wkt(2) == expected_wkt
 
     # Obtuse angles (> 90°) cause the straight-skeleton extrusion to project
     # faces *outside* the original polygon footprint, producing coordinates
     # with negative Y values and an apex row beyond the polygon boundary.
-    # The expected output reflects SFCGAL's correct behaviour for obtuse inputs.
+    # The expected output reflects SFCGAL's correct behaviour for obtuse inputs
     roof = heptagon_building_footprint.extrude_straight_skeleton_with_angles(
         height=10, angles=[[100, 90, 145, 145, 145, 145, 145]]
     )
     assert isinstance(roof, PolyhedralSurface)
-    assert (
-        roof.to_wkt(2)
-        == (POLYGON_EXPECTED_DATA / "straight_skeleton_extrusion_obtuse_angles.wkt")
-        .read_text()
-        .strip()
-    )
+    expected_wkt = (
+        POLYGON_EXPECTED_DATA / "straight_skeleton_extrusion_obtuse_angles.wkt"
+    ).read_text().strip()
+    assert roof.to_wkt(2) == expected_wkt
 
 
 def test_extrude_straight_skeleton_polygon():
