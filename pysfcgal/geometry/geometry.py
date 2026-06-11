@@ -1943,6 +1943,112 @@ class Geometry:
         return cast(
             GeometryCollection, Geometry.from_sfcgal_geometry(split_geom))
 
+    def mirror(self, plane_point: Point, plane_normal: Vector3D) -> Optional[Geometry]:
+        """
+        Returns the reflection of the geometry across a plane.
+
+        The reflection plane is defined by a point lying on the plane and a
+        normal vector.
+
+        Parameters
+        ----------
+        plane_point : Point
+            A point belonging to the reflection plane.
+        plane_normal : Vector3D
+            The normal vector defining the orientation of the reflection
+            plane.
+
+        Returns
+        -------
+        Geometry
+            The mirrored geometry
+        """
+        plane_normal.normalize()
+        nx = plane_normal.x
+        ny = plane_normal.y
+        nz = plane_normal.z
+
+        m00 = 1.0 - 2.0 * nx * nx
+        m01 = -2.0 * nx * ny
+        m02 = -2.0 * nx * nz
+
+        m10 = -2.0 * nx * ny
+        m11 = 1.0 - 2.0 * ny * ny
+        m12 = -2.0 * ny * nz
+
+        m20 = -2.0 * nx * nz
+        m21 = -2.0 * ny * nz
+        m22 = 1.0 - 2.0 * nz * nz
+
+        d = nx * plane_point.x + ny * plane_point.y + nz * plane_point.z
+        tx = 2.0 * d * nx
+        ty = 2.0 * d * ny
+        tz = 2.0 * d * nz
+
+        transform_matrix = [
+            m00, m10, m20, 0.0,
+            m01, m11, m21, 0.0,
+            m02, m12, m22, 0.0,
+            tx,  ty,  tz,  1.0,
+        ]
+        transform_matrix_c = ffi.new("double[16]", transform_matrix)
+        transform = lib.sfcgal_geometry_transform(self._geom, transform_matrix_c)
+        return Geometry.from_sfcgal_geometry(transform)
+
+    def mirror_xy(self, z: float = 0.0) -> Optional[Geometry]:
+        """
+        Returns the geometry mirrored across the plane ``z = z``.
+
+        Parameters
+        ----------
+        z : float, defaults to 0.0
+            Z coordinate of the reflection plane.
+
+        Returns
+        -------
+        Geometry
+            The mirrored geometry.
+        """
+        from .point import Point
+
+        return self.mirror(Point(0.0, 0.0, z), UNIT_Z)
+
+    def mirror_xz(self, y: float = 0.0) -> Optional[Geometry]:
+        """
+        Returns the geometry mirrored across the plane ``y = y``.
+
+        Parameters
+        ----------
+        y : float, defaults to 0.0
+            Y coordinate of the reflection plane.
+
+        Returns
+        -------
+        Geometry
+            The mirrored geometry.
+        """
+        from .point import Point
+
+        return self.mirror(Point(0.0, y, 0.0), UNIT_Y)
+
+    def mirror_yz(self, x: float = 0.0) -> Optional[Geometry]:
+        """
+        Returns the geometry mirrored across the plane ``x = x``.
+
+        Parameters
+        ----------
+        x : float, defaults to 0.0
+            X coordinate of the reflection plane.
+
+        Returns
+        -------
+        Geometry
+            The mirrored geometry.
+        """
+        from .point import Point
+
+        return self.mirror(Point(x, 0.0, 0.0), UNIT_X)
+
     def write_vtk(self, filename: str) -> None:
         """
         Export the geometry to a VTK file.

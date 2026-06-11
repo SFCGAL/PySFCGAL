@@ -16,14 +16,14 @@ class Vector3D:
         Nothing happens if this vector is a null vector or the length of
         the vector is very close to 1.
         """
-        len2 = self.x * self.x + self.y * self.y + self.z * self.z
-        if math.isclose(len2, 0.0) or math.isclose(len2, 1.0):
+        squared_norm = self.x * self.x + self.y * self.y + self.z * self.z
+        if math.isclose(squared_norm, 0.0) or math.isclose(squared_norm, 1.0):
             return
 
-        len = math.sqrt(len2)
-        self.x /= len
-        self.y /= len
-        self.z /= len
+        norm = math.sqrt(squared_norm)
+        self.x /= norm
+        self.y /= norm
+        self.z /= norm
 
 
 UNIT_X = Vector3D(1., 0., 0.)
