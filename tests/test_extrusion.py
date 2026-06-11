@@ -20,8 +20,9 @@ SFCGAL_EXPECTED_DATA = pathlib.Path(__file__).parent / "expected_data"
 try:
     import icontract
     _PRECONDITION_ERROR = icontract.errors.ViolationError
+    HAS_ICONTRACT = True
 except ImportError:
-    _PRECONDITION_ERROR = ValueError
+    HAS_ICONTRACT = False
 
 
 # ---------------------------------------------------------------------------
@@ -33,6 +34,7 @@ def test_extrude_straight_skeleton_basic(polygon1):
     assert isinstance(result, PolyhedralSurface)
 
 
+@pytest.mark.skipif(not HAS_ICONTRACT, reason="icontract not installed")
 def test_extrude_straight_skeleton_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
         polygon1.extrude_straight_skeleton(0.0)
@@ -47,6 +49,7 @@ def test_extrude_polygon_straight_skeleton(polygon1):
     assert isinstance(result, PolyhedralSurface)
 
 
+@pytest.mark.skipif(not HAS_ICONTRACT, reason="icontract not installed")
 def test_extrude_polygon_straight_skeleton_roof_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
         polygon1.extrude_polygon_straight_skeleton(3.0, 0.0)
@@ -62,6 +65,7 @@ def test_extrude_straight_skeleton_with_angles_success(polygon1):
     assert isinstance(result, PolyhedralSurface)
 
 
+@pytest.mark.skipif(not HAS_ICONTRACT, reason="icontract not installed")
 def test_extrude_straight_skeleton_with_angles_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
         polygon1.extrude_straight_skeleton_with_angles(0.0, [[45.0, 45.0, 45.0, 45.0]])
@@ -98,6 +102,7 @@ def test_extrude_polygon_straight_skeleton_with_angles_success(polygon1):
     assert isinstance(result, PolyhedralSurface)
 
 
+@pytest.mark.skipif(not HAS_ICONTRACT, reason="icontract not installed")
 def test_extrude_polygon_straight_skeleton_with_angles_roof_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
         polygon1.extrude_polygon_straight_skeleton_with_angles(3.0, 0.0, [[45.0] * 4])
@@ -136,6 +141,7 @@ def test_extrude_straight_skeleton_with_weights_success(polygon1):
     assert isinstance(result, PolyhedralSurface)
 
 
+@pytest.mark.skipif(not HAS_ICONTRACT, reason="icontract not installed")
 def test_extrude_straight_skeleton_with_weights_height_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
         polygon1.extrude_straight_skeleton_with_weights(0.0, [[1.0, 1.0, 1.0, 1.0]])
@@ -172,6 +178,7 @@ def test_extrude_polygon_straight_skeleton_with_weights_success(polygon1):
     assert isinstance(result, PolyhedralSurface)
 
 
+@pytest.mark.skipif(not HAS_ICONTRACT, reason="icontract not installed")
 def test_extrude_polygon_straight_skeleton_with_weights_roof_zero(polygon1):
     with pytest.raises(_PRECONDITION_ERROR):
         polygon1.extrude_polygon_straight_skeleton_with_weights(3.0, 0.0, [[1.0] * 4])
