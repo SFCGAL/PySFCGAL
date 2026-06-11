@@ -1,7 +1,13 @@
+import pathlib
+
 import icontract
 import pytest
 
-from pysfcgal import LineString, Tin, Triangle
+from pysfcgal.geometry import (GeometryCollection, LineString, Point, Tin,
+                               Triangle)
+from pysfcgal.vector import Vector3D
+
+EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 
 
 @pytest.fixture
@@ -159,3 +165,29 @@ def test_tin_set_patch_n(tin_unordered):
     assert len(tin_unordered) == 3
     assert triangle in tin_unordered
     assert tin_unordered.is_valid()
+
+
+def test_tin_split_3d():
+    input_wkt = (
+        "TIN Z (((0 0 0,1 0 1,0 1 2,0 0 0)),"
+        "((1 0 1,1 1 3,0 1 2,1 0 1)),"
+        "((1 0 1,2 0 1,1 1 3,1 0 1)),"
+        "((2 0 1,2 1 2,1 1 3,2 0 1)),"
+        "((2 0 1,3 0 0,2 1 2,2 0 1)),"
+        "((3 0 0,3 1 1,2 1 2,3 0 0)))"
+    )
+    input = Tin.from_wkt(input_wkt)
+    assert isinstance(input, Tin)
+
+    plane_pt = Point(1.5, 0.5, 1.5)
+    plane_normal = Vector3D(1, 0, 0)
+    result = input.split_3d(plane_pt, plane_normal, False)
+
+    assert isinstance(result, GeometryCollection)
+    assert len(result) == 2
+
+    for idx in range(len(result)):
+        expected_wkt = (
+            EXPECTED_DATA_PATH / f"tin_split_3d_expected_{idx}.wkt"
+        ).read_text().strip()
+        assert result[idx].to_wkt(1) == expected_wkt

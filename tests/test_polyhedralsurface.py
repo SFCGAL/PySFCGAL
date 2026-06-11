@@ -1,7 +1,13 @@
+import pathlib
+
 import icontract
 import pytest
 
-from pysfcgal import LineString, Polygon, PolyhedralSurface
+from pysfcgal.geometry import (GeometryCollection, LineString, Point, Polygon,
+                               PolyhedralSurface)
+from pysfcgal.vector import Vector3D
+
+EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 
 
 @pytest.fixture
@@ -192,3 +198,24 @@ def test_polyhedralsurface_set_patch_n(other_polyhedralsurface):
     assert len(other_polyhedralsurface) == 3
     assert polygon in other_polyhedralsurface
     assert other_polyhedralsurface.is_valid()
+
+
+def test_polyhedralsurface_split_3d():
+    from pysfcgal.primitive import Cube
+
+    cube = Cube(size=5)
+    cube_phs = cube.to_polyhedral_surface()
+    assert isinstance(cube_phs, PolyhedralSurface)
+
+    plane_pt = Point(0, 0, 0)
+    plane_normal = Vector3D(1, 0, -1)
+    result = cube_phs.split_3d(plane_pt, plane_normal, False)
+
+    assert isinstance(result, GeometryCollection)
+    assert len(result) == 2
+
+    for idx in range(len(result)):
+        expected_wkt = (
+            EXPECTED_DATA_PATH / f"cube_split_3d_expected_{idx}.wkt"
+        ).read_text().strip()
+        assert result[idx].to_wkt(1) == expected_wkt

@@ -1,7 +1,13 @@
+import pathlib
+
 import icontract
 import pytest
 
-from pysfcgal import LineString, PolyhedralSurface, Solid
+from pysfcgal.geometry import (GeometryCollection, LineString, Point,
+                               PolyhedralSurface, Solid)
+from pysfcgal.vector import Vector3D
+
+EXPECTED_DATA_PATH = pathlib.Path(__file__).parent.resolve() / "expected_data"
 
 
 def test_solid(
@@ -119,3 +125,30 @@ def test_solid_memory_management(points_ext_1, points_int_1, points_int_2):
 
     first_shell = Solid([points_ext_1, points_int_1, points_int_2])[0]
     assert first_shell.to_wkt(0) == first_shell_wkt
+
+
+def test_solid_split_3d():
+    house_wkt = (
+        "SOLID Z ((((10 10 0,10 0 0,0 0 0,0 10 0,10 10 0)),"
+        "((5 0 8,10 0 5,10 10 5,5 10 8,5 0 8)),"
+        "((0 0 5,0 0 0,10 0 0,10 0 5,5 0 8,0 0 5)),"
+        "((5 10 8,0 10 5,0 0 5,5 0 8,5 10 8)),"
+        "((10 0 5,10 0 0,10 10 0,10 10 5,10 0 5)),"
+        "((0 10 5,0 10 0,0 0 0,0 0 5,0 10 5)),"
+        "((10 10 5,10 10 0,0 10 0,0 10 5,5 10 8,10 10 5))))"
+    )
+    input = Solid.from_wkt(house_wkt)
+    assert isinstance(input, Solid)
+
+    plane_pt = Point(0, 0, 2.5)
+    plane_normal = Vector3D(0, 0, 1)
+    result = input.split_3d(plane_pt, plane_normal, True)
+
+    assert isinstance(result, GeometryCollection)
+    assert len(result) == 2
+
+    for idx in range(len(result)):
+        expected_wkt = (
+            EXPECTED_DATA_PATH / f"solid_split_3d_expected_{idx}.wkt"
+        ).read_text().strip()
+        assert result[idx].to_wkt(1) == expected_wkt

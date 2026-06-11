@@ -7,10 +7,11 @@ from __future__ import annotations
 
 import platform
 import typing
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, cast
 
 if typing.TYPE_CHECKING:
     from .vector import Vector3D
+    from .collection import GeometryCollection
     from .point import Point
 
 from .._contracts import cond_icontract
@@ -1894,6 +1895,53 @@ class Geometry:
         else:
             return None
         return Geometry.from_sfcgal_geometry(geom)
+
+    @cond_icontract(
+        lambda self, plane_point, plane_normal, close_geometries: (
+            self.is_valid()
+            and self.geom_type in ("PolyhedralSurface", "Solid", "TriangulatedSurface")
+        ),
+        "require",
+    )
+    def split_3d(
+            self,
+            plane_point: Point,
+            plane_normal: Vector3D,
+            close_geometries: bool = True
+    ) -> Optional[GeometryCollection]:
+        """
+        Split a geometry by a 3D plane.
+
+        The splitting plane is defined by a point lying on the plane and
+        a normal vector. The result is returned as a geometry collection
+        containing the geometries located on each side of the plane, or
+        an empty GeometryCollection if the plane does not intersect the
+        geometry.
+
+        Parameters
+        ----------
+        plane_point : Point
+            A point belonging to the splitting plane.
+        plane_normal : Vector3D
+            The normal vector defining the orientation of the splitting
+            plane.
+        close_geometries : bool, default to True
+           If ``True``, generated geometries are closed when possible.
+
+        Returns
+        -------
+        GeometryCollection
+            A geometry collection containing the split parts, or an
+            empty GeometryCollection if the plane does not intersect the
+            geometry.
+        """
+        from .collection import GeometryCollection
+
+        split_geom = lib.sfcgal_geometry_split_3d(
+            self._geom, plane_point.x, plane_point.y, plane_point.z, plane_normal.x,
+            plane_normal.y, plane_normal.z, close_geometries)
+        return cast(
+            GeometryCollection, Geometry.from_sfcgal_geometry(split_geom))
 
     def write_vtk(self, filename: str) -> None:
         """
