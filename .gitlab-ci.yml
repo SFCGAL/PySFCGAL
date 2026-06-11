@@ -75,7 +75,7 @@ test:unit:
     - pip install -e .
     - python3 -m pip install icontract
   script:
-    - pytest --junitxml=junit/test-results-unit.xml --cov pysfcgal --cov-report=xml:coverage-reports/coverage-unit.xml
+    - pytest  -vv --junitxml=junit/test-results-unit.xml --cov pysfcgal --cov-report=xml:coverage-reports/coverage-unit.xml
   artifacts:
     when: always
     reports:
