@@ -1926,7 +1926,7 @@ class Geometry:
             The normal vector defining the orientation of the splitting
             plane.
         close_geometries : bool, default to True
-           If ``True``, generated geometries are closed when possible.
+            If ``True``, generated geometries are closed when possible.
 
         Returns
         -------
