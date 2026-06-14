@@ -31,7 +31,7 @@ fi
 brew update
 
 # install SFCGAL
-curl -L -o sfcgal.rb https://sfcgal.gitlab.io/SFCGAL/homebrew/sfcgal-latest.rb
+curl -L -o sfcgal.rb https://gitlab.com/api/v4/projects/19674165/packages/generic/homebrew/latest/sfcgal-latest.rb
 brew tap-new local/sfcgal
 mv sfcgal.rb "$(brew --repo local/sfcgal)/Formula/sfcgal.rb"
 brew install local/sfcgal/sfcgal
