@@ -218,12 +218,18 @@ build:macos-wheel-python:
     # on default branch
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: always
+      variables:
+        SFCGAL_VERSION: "latest"
     # on a tag
     - if: $CI_COMMIT_TAG
       when: always
+      variables:
+        SFCGAL_VERSION: "${CI_COMMIT_TAG#v}"
     # on a MR if previous jobs are successful
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      variables:
+        SFCGAL_VERSION: "latest"
       allow_failure: true
   parallel:
     matrix:
@@ -235,7 +241,7 @@ build:macos-wheel-python:
       else
         DEVEL_VERSION=false
       fi
-      ./ci/build-macos-wheel.sh "${PYTHON_VERSION}" "${DEVEL_VERSION}" "${CI_COMMIT_TIMESTAMP}"
+      ./ci/build-macos-wheel.sh "${PYTHON_VERSION}" "${DEVEL_VERSION}" "${CI_COMMIT_TIMESTAMP}" "${SFCGAL_VERSION}"
   artifacts:
     paths:
       - dist_macos_$PYTHON_VERSION
