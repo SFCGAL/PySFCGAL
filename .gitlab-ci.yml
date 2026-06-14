@@ -120,12 +120,18 @@ build:windows-osgeo4w-wheel:
     # on default branch
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
       when: always
+      variables:
+        SFCGAL_VERSION: "latest"
     # on a tag
     - if: $CI_COMMIT_TAG
       when: always
+      variables:
+        SFCGAL_VERSION: "$CI_COMMIT_TAG"
     # on a MR if previous jobs are successful
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
       when: manual
+      variables:
+        SFCGAL_VERSION: "latest"
       allow_failure: true
   artifacts:
     paths:
@@ -145,7 +151,7 @@ build:windows-osgeo4w-wheel:
         --rm `
         --mount type=bind,source=$dir,target=c:\pysfcgal `
         --workdir "c:\pysfcgal" `
-        $env:SFCGAL_REGISTRY":windows-latest" `
+        $env:SFCGAL_REGISTRY":windows-$env:SFCGAL_VERSION" `
         powershell -Command ".\ci\build.ps1 -DEVEL_VERSION $dev_version -DEVEL_DATE $env:CI_COMMIT_TIMESTAMP"
 
 build:linux-wheel-python:
