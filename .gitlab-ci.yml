@@ -156,12 +156,18 @@ build:linux-wheel-python:
   rules:
     # on default branch
     - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH
+      variables:
+        SFCGAL_VERSION: "latest"
       when: always
     # on a tag
     - if: $CI_COMMIT_TAG
+      variables:
+        SFCGAL_VERSION: "$CI_COMMIT_TAG"
       when: always
     # on a MR if previous jobs are successful
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event'
+      variables:
+        SFCGAL_VERSION: "latest"
       when: manual
       allow_failure: true
   variables:
@@ -181,6 +187,7 @@ build:linux-wheel-python:
       --build-arg="DEVEL_DATE=${CI_COMMIT_TIMESTAMP}"
       --build-arg="DEVEL_VERSION=${DEVEL_VERSION}"
       --build-arg="SFCGAL_REGISTRY=${SFCGAL_REGISTRY}"
+      --build-arg="SFCGAL_VERSION=${SFCGAL_VERSION}"
       --build-arg="PYTHON_WHEEL_VERSION=${PYTHON_VERSION}"
       -f "docker/Dockerfile_linux_wheel"
       .
