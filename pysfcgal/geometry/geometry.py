@@ -908,6 +908,82 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(
+        lambda self, edge, radius, radius_y=-1.0, epsilon=1e-3:
+            self.is_valid() and radius > 0 and epsilon > 0, "require"
+    )
+    def chamfer(
+            self, edge: Geometry, radius: float,
+            radius_y: float = -1.0, epsilon: float = 1e-3
+    ) -> Optional[Geometry]:
+        """
+        Replace the sharp edges of a solid with a flat bevelled face (chamfer).
+
+        Each matched edge is cut back by ``radius`` along both adjacent faces.
+        When ``radius_y`` differs from ``radius`` the bevel is asymmetric: one
+        leg has length ``radius``, the other ``radius_y``.
+
+        Parameters
+        ----------
+        edge : Geometry
+            A LineString or MultiLineString selecting the edges to chamfer.
+        radius : float
+            Leg length on the first face.
+        radius_y : float, defaults to -1.0
+            Leg length on the second face. If negative, defaults to ``radius``
+            (symmetric chamfer).
+        epsilon : float, defaults to 1e-3
+            Tolerance (in coordinate units) used to locate the edge endpoints
+            on the solid mesh.
+
+        Returns
+        -------
+        Geometry
+            The chamfered solid, or a clone of the input if no edges were
+            chamfered.
+        """
+        geom = lib.sfcgal_geometry_chamfer(
+            self._geom, edge._geom, radius, radius_y, epsilon)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    @cond_icontract(
+        lambda self, edge, radius, segments=8, epsilon=1e-3:
+            self.is_valid() and radius > 0 and segments >= 2 and epsilon > 0,
+        "require"
+    )
+    def fillet(
+            self, edge: Geometry, radius: float,
+            segments: int = 8, epsilon: float = 1e-3
+    ) -> Optional[Geometry]:
+        """
+        Replace the sharp edges of a solid with a smooth circular-arc fillet.
+
+        Each matched edge is replaced by a cylindrical surface of the given
+        ``radius``, approximated by ``segments`` planar faces.
+
+        Parameters
+        ----------
+        edge : Geometry
+            A LineString or MultiLineString selecting the edges to fillet.
+        radius : float
+            Fillet radius.
+        segments : int, defaults to 8
+            Number of planar faces approximating the arc. Typical values:
+            4 (coarse), 8 (default), 16+ (smooth).
+        epsilon : float, defaults to 1e-3
+            Tolerance (in coordinate units) used to locate the edge endpoints
+            on the solid mesh.
+
+        Returns
+        -------
+        Geometry
+            The filleted solid, or a clone of the input if no edges were
+            filleted.
+        """
+        geom = lib.sfcgal_geometry_fillet(
+            self._geom, edge._geom, radius, segments, epsilon)
+        return Geometry.from_sfcgal_geometry(geom)
+
+    @cond_icontract(
         lambda self, extrude_x, extrude_y, extrude_z: self.is_valid(), "require"
     )
     def extrude(
