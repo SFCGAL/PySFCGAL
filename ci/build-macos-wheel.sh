@@ -28,6 +28,8 @@ else
     echo "DEVEL VERSION is disabled"
 fi
 
+echo "SFCGAL VERSION: ${SFCGAL_VERSION}"
+
 # Update package definitions
 brew update
 
