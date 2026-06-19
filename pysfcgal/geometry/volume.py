@@ -12,7 +12,7 @@ leads to a bunch of lazy imports to handle things.
 from __future__ import annotations
 
 import typing
-from typing import Tuple, Union
+from typing import Tuple
 
 if typing.TYPE_CHECKING:
     from .surface import PolyhedralSurface
@@ -164,7 +164,7 @@ class Solid(Geometry):
         return self.shells[n]
 
     def to_polyhedralsurface(
-            self, wrapped: bool = True) -> Union[PolyhedralSurface, ffi.CData]:
+            self, wrapped: bool = True) -> PolyhedralSurface | ffi.CData:
         """Convert the solid to a PolyhedralSurface.
 
         Parameters

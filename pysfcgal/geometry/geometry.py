@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import platform
 import typing
-from typing import Optional, Tuple, Union, cast
+from typing import Tuple, cast
 
 if typing.TYPE_CHECKING:
     from .vector import Vector3D
@@ -42,7 +42,7 @@ class Geometry:
         SFCGAL geometry associated to the Python Geometry. The operations on the
         geometry are done at the SFCGAL lower level.
 
-    _parent : Optional[Geometry], default None
+    _parent : Geometry | None, default None
         Optional parent Geometry that this geometry depends on.
         This ensures that the parent geometry is not garbage collected by the Python
         interpreter while it is still in use.
@@ -51,7 +51,7 @@ class Geometry:
     """
     _geom: ffi.CData
     _owned = True
-    _parent: Optional[Geometry] = None
+    _parent: Geometry | None = None
 
     @property
     def validity_flag(self) -> bool:
@@ -210,7 +210,7 @@ class Geometry:
         """
         return lib.sfcgal_geometry_dimension(self._geom)
 
-    def drop_z(self, inplace: bool = False) -> Optional[Geometry]:
+    def drop_z(self, inplace: bool = False) -> Geometry | None:
         """
         Drop the z coordinate of the geometry
 
@@ -234,7 +234,7 @@ class Geometry:
                 lib.sfcgal_geometry_drop_z(new_geom._geom)
             return new_geom
 
-    def drop_m(self, inplace: bool = False) -> Optional[Geometry]:
+    def drop_m(self, inplace: bool = False) -> Geometry | None:
         """
         Drop the m coordinate of the geometry
 
@@ -258,7 +258,7 @@ class Geometry:
                 lib.sfcgal_geometry_drop_m(new_geom._geom)
             return new_geom
 
-    def force_z(self, z: float = 0., inplace: bool = False) -> Optional[Geometry]:
+    def force_z(self, z: float = 0., inplace: bool = False) -> Geometry | None:
         """
         Add a z-dimension to the geometry, initialized to a preset value.
         Existing Z values remains unchanged.
@@ -285,7 +285,7 @@ class Geometry:
                 lib.sfcgal_geometry_force_z(new_geom._geom, z)
             return new_geom
 
-    def force_m(self, m: float = 0., inplace: bool = False) -> Optional[Geometry]:
+    def force_m(self, m: float = 0., inplace: bool = False) -> Geometry | None:
         """
         Add a m-dimension to the geometry, initialized to a preset value.
         Existing M values remains unchanged.
@@ -312,7 +312,7 @@ class Geometry:
                 lib.sfcgal_geometry_force_m(new_geom._geom, m)
             return new_geom
 
-    def swap_xy(self, inplace: bool = False) -> Optional[Geometry]:
+    def swap_xy(self, inplace: bool = False) -> Geometry | None:
         """
         Swap the x and y coordinates of the geometry
 
@@ -337,7 +337,7 @@ class Geometry:
             return new_geom
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def centroid(self, compute_2d_area: bool = False) -> Optional[Geometry]:
+    def centroid(self, compute_2d_area: bool = False) -> Geometry | None:
         """Return the centroid of the geometry.
 
         The result is the weighted centroid of a geometry. The implementation follows
@@ -395,7 +395,7 @@ class Geometry:
         return lib.sfcgal_geometry_volume(self._geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def convexhull(self) -> Optional[Geometry]:
+    def convexhull(self) -> Geometry | None:
         """
         Compute the 2D convex hull of the geometry.
 
@@ -408,7 +408,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def convexhull_3d(self) -> Optional[Geometry]:
+    def convexhull_3d(self) -> Geometry | None:
         """
         Compute the 3D convex hull of the geometry.
 
@@ -420,7 +420,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_convexhull_3d(self._geom)
         return Geometry.from_sfcgal_geometry(geom)
 
-    def boundary(self) -> Optional[Geometry]:
+    def boundary(self) -> Geometry | None:
         """
         Compute the boundary of the geometry.
 
@@ -443,7 +443,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(boundary)
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def difference(self, other: Geometry) -> Optional[Geometry]:
+    def difference(self, other: Geometry) -> Geometry | None:
         """
         Compute the difference between this geometry and another in 2D.
 
@@ -461,7 +461,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def difference_3d(self, other: Geometry) -> Optional[Geometry]:
+    def difference_3d(self, other: Geometry) -> Geometry | None:
         """
         Compute the difference between this geometry and another in 3D.
 
@@ -513,7 +513,7 @@ class Geometry:
         return lib.sfcgal_geometry_intersects_3d(self._geom, other._geom) == 1
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def intersection(self, other: Geometry) -> Optional[Geometry]:
+    def intersection(self, other: Geometry) -> Geometry | None:
         """
         Compute the intersection of this geometry and another in 2D.
 
@@ -531,7 +531,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def intersection_3d(self, other: Geometry) -> Optional[Geometry]:
+    def intersection_3d(self, other: Geometry) -> Geometry | None:
         """
         Compute the intersection of this geometry and another in 3D.
 
@@ -549,7 +549,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def union(self, other: Geometry) -> Optional[Geometry]:
+    def union(self, other: Geometry) -> Geometry | None:
         """
         Compute the union of this geometry and another in 2D.
 
@@ -567,7 +567,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def union_3d(self, other: Geometry) -> Optional[Geometry]:
+    def union_3d(self, other: Geometry) -> Geometry | None:
         """
         Compute the union of this geometry and another in 3D.
 
@@ -619,7 +619,7 @@ class Geometry:
         return lib.sfcgal_geometry_covers_3d(self._geom, other._geom) == 1
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def triangulate_2dz(self) -> Optional[Geometry]:
+    def triangulate_2dz(self) -> Geometry | None:
         """
         Compute a constrained Delaunay triangulation, preserving Z values.
 
@@ -633,7 +633,7 @@ class Geometry:
 
     @cond_icontract(lambda self: self.is_valid(), "require")
     @deprecated("tessellate_3d() is deprecated. Use tessellate() instead.")
-    def tessellate_3d(self) -> Optional[Geometry]:
+    def tessellate_3d(self) -> Geometry | None:
         """
         Perform tessellation on the geometry.
 
@@ -645,7 +645,7 @@ class Geometry:
         return self.tessellate()
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def tessellate(self) -> Optional[Geometry]:
+    def tessellate(self) -> Geometry | None:
         """
         Perform tessellation on the geometry.
 
@@ -670,7 +670,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(tessellation)
 
     def insert_points_within_tolerance(self, other: Geometry,
-                                       tolerance: float) -> Optional[Geometry]:
+                                       tolerance: float) -> Geometry | None:
         """
         Insert points from other geometry into self geometry within tolerance.
         This function densifies the base geometry by adding points from the other
@@ -694,7 +694,7 @@ class Geometry:
                                                                   tolerance)
         return Geometry.from_sfcgal_geometry(geom)
 
-    def force_lhr(self) -> Optional[Geometry]:
+    def force_lhr(self) -> Geometry | None:
         """
         Force the geometry to have a left-hand rule (LHR) orientation.
 
@@ -706,7 +706,7 @@ class Geometry:
         geom = lib.sfcgal_geometry_force_lhr(self._geom)
         return Geometry.from_sfcgal_geometry(geom)
 
-    def force_rhr(self) -> Optional[Geometry]:
+    def force_rhr(self) -> Geometry | None:
         """
         Force the geometry to have a right-hand rule (RHR) orientation.
 
@@ -770,7 +770,7 @@ class Geometry:
         self.validity_flag = sfcgal_validity
         return sfcgal_validity
 
-    def is_valid_detail(self) -> Tuple[Optional[str], None]:
+    def is_valid_detail(self) -> Tuple[str | None, None]:
         """
         Provide detailed information about the validity of the geometry.
         At the moment, the invalidity location is not returned (set to
@@ -854,7 +854,7 @@ class Geometry:
         return lib.sfcgal_geometry_orientation(self._geom)
 
     @cond_icontract(lambda self, r: self.is_valid(), "require")
-    def round(self, r: int) -> Optional[Geometry]:
+    def round(self, r: int) -> Geometry | None:
         """
         Round the geometry to a specified precision.
 
@@ -872,7 +872,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self, other: self.is_valid() and other.is_valid(), "require")
-    def minkowski_sum(self, other: Geometry) -> Optional[Geometry]:
+    def minkowski_sum(self, other: Geometry) -> Geometry | None:
         """
         Calculate the Minkowski sum of this geometry and another geometry.
 
@@ -890,7 +890,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self, radius: self.is_valid(), "require")
-    def offset_polygon(self, radius: float) -> Optional[Geometry]:
+    def offset_polygon(self, radius: float) -> Geometry | None:
         """
         Create an offset polygon from the geometry.
 
@@ -914,7 +914,7 @@ class Geometry:
     def chamfer(
             self, edge: Geometry, radius: float,
             radius_y: float = -1.0, epsilon: float = 1e-3
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Replace the sharp edges of a solid with a flat bevelled face (chamfer).
 
@@ -953,7 +953,7 @@ class Geometry:
     def fillet(
             self, edge: Geometry, radius: float,
             segments: int = 8, epsilon: float = 1e-3
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Replace the sharp edges of a solid with a smooth circular-arc fillet.
 
@@ -988,7 +988,7 @@ class Geometry:
     )
     def extrude(
             self, extrude_x: float, extrude_y: float, extrude_z: float
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Extrude the geometry in the specified direction.
 
@@ -1010,7 +1010,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def straight_skeleton(self) -> Optional[Geometry]:
+    def straight_skeleton(self) -> Geometry | None:
         """
         Compute the straight skeleton of the geometry.
 
@@ -1023,7 +1023,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def straight_skeleton_distance_in_m(self) -> Optional[Geometry]:
+    def straight_skeleton_distance_in_m(self) -> Geometry | None:
         """
         Compute the straight skeleton distance in meters.
 
@@ -1055,7 +1055,7 @@ class Geometry:
 
     @cond_icontract(lambda self: self.is_valid(), "require")
     def approximate_medial_axis(
-            self, extend_to_edges: bool = False) -> Optional[Geometry]:
+            self, extend_to_edges: bool = False) -> Geometry | None:
         """
         Compute the approximate medial axis of the geometry.
 
@@ -1082,7 +1082,7 @@ class Geometry:
         "require",
     )
     @cond_icontract(lambda result: result.is_valid(), "ensure")
-    def line_sub_string(self, start: float, end: float) -> Optional[Geometry]:
+    def line_sub_string(self, start: float, end: float) -> Geometry | None:
         """
         Extract a substring from the geometry represented as a line segment.
 
@@ -1108,7 +1108,7 @@ class Geometry:
         "require",
     )
     def alpha_shapes(
-            self, alpha: float = 1.0, allow_holes: bool = False) -> Optional[Geometry]:
+            self, alpha: float = 1.0, allow_holes: bool = False) -> Geometry | None:
         """
         Compute the alpha shapes of the geometry.
 
@@ -1140,7 +1140,7 @@ class Geometry:
     )
     def optimal_alpha_shapes(
         self, allow_holes: bool = False, nb_components: int = 1
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Compute the optimal alpha shapes of the geometry.
 
@@ -1173,7 +1173,7 @@ class Geometry:
         "require",
     )
     def alpha_wrapping_3d(
-            self, relative_alpha: int, relative_offset: int = 0) -> Optional[Geometry]:
+            self, relative_alpha: int, relative_offset: int = 0) -> Geometry | None:
         """
         Compute the 3D alpha wrapping of a geometry
 
@@ -1198,7 +1198,7 @@ class Geometry:
     @cond_icontract(lambda self, allow_holes, nb_components: self.is_valid(), "require")
     def y_monotone_partition_2(
         self, allow_holes: bool = False, nb_components: int = 1
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Compute the Y-monotone partition of the geometry in 2D.
 
@@ -1220,7 +1220,7 @@ class Geometry:
     @cond_icontract(lambda self, allow_holes, nb_components: self.is_valid(), "require")
     def approx_convex_partition_2(
         self, allow_holes: bool = False, nb_components: int = 1
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Compute the approximate convex partition of the geometry in 2D.
 
@@ -1242,7 +1242,7 @@ class Geometry:
     @cond_icontract(lambda self, allow_holes, nb_components: self.is_valid(), "require")
     def greene_approx_convex_partition_2(
         self, allow_holes: bool = False, nb_components: int = 1
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Compute the Greene's approximate convex partition of the geometry in 2D.
 
@@ -1264,7 +1264,7 @@ class Geometry:
     @cond_icontract(lambda self, allow_holes, nb_components: self.is_valid(), "require")
     def optimal_convex_partition_2(
         self, allow_holes: bool = False, nb_components: int = 1
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Compute the optimal convex partition of the geometry in 2D.
 
@@ -1293,7 +1293,7 @@ class Geometry:
         ),
         "require",
     )
-    def point_visibility(self, other: Geometry) -> Optional[Geometry]:
+    def point_visibility(self, other: Geometry) -> Geometry | None:
         """
         Compute the visibility of a point from a polygon geometry.
 
@@ -1324,7 +1324,7 @@ class Geometry:
         "require",
     )
     def segment_visibility(
-            self, other_a: Geometry, other_b: Geometry) -> Optional[Geometry]:
+            self, other_a: Geometry, other_b: Geometry) -> Geometry | None:
         """
         Compute the visibility of a segment between two points from a polygon geometry.
 
@@ -1347,7 +1347,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @deprecated("translate_2d() is deprecated. Use translate() instead.")
-    def translate_2d(self, dx: float = 0, dy: float = 0) -> Optional[Geometry]:
+    def translate_2d(self, dx: float = 0, dy: float = 0) -> Geometry | None:
         """
         This method is an alias for the `translate` function.
 
@@ -1369,7 +1369,7 @@ class Geometry:
         """
         return self.translate(dx, dy)
 
-    def translate(self, dx: float = 0, dy: float = 0) -> Optional[Geometry]:
+    def translate(self, dx: float = 0, dy: float = 0) -> Geometry | None:
         """Translate a geometry by a 2D vector, hence producing a
         2D-geometry as an output.
 
@@ -1389,7 +1389,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(translated_geom)
 
     def translate_3d(
-            self, dx: float = 0, dy: float = 0, dz: float = 0) -> Optional[Geometry]:
+            self, dx: float = 0, dy: float = 0, dz: float = 0) -> Geometry | None:
         """
         Translate a geometry by a 3D vector, hence producing a 3D-geometry as an output.
 
@@ -1412,7 +1412,7 @@ class Geometry:
         translated_geom = lib.sfcgal_geometry_translate_3d(self._geom, dx, dy, dz)
         return Geometry.from_sfcgal_geometry(translated_geom)
 
-    def scale_uniform(self, factor: float = 1.) -> Optional[Geometry]:
+    def scale_uniform(self, factor: float = 1.) -> Geometry | None:
         """Scale a geometry by a given factor
 
         Parameters
@@ -1428,7 +1428,7 @@ class Geometry:
         return self.scale(factor, factor, factor)
 
     def scale(
-            self, fx: float = 1., fy: float = 1., fz: float = 1.) -> Optional[Geometry]:
+            self, fx: float = 1., fy: float = 1., fz: float = 1.) -> Geometry | None:
         """Scale a geometry by different factors for each dimension
 
         Parameters
@@ -1450,7 +1450,7 @@ class Geometry:
 
     def scale_around_center(
             self, fx: float, fy: float, fz: float, cx: float, cy: float, cz: float
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Scale a geometry by different factors for each dimension around a center point
 
@@ -1478,7 +1478,7 @@ class Geometry:
     @deprecated("rotate_around_2d_point() is deprecated. Use rotate() instead.")
     def rotate_around_2d_point(
         self, angle: float, cx: float, cy: float
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Rotates a geometry around a specified point by a given angle
 
@@ -1502,7 +1502,7 @@ class Geometry:
     @deprecated("rotate_around_3d_axis() is deprecated. Use rotate_3d() instead.")
     def rotate_around_3d_axis(
         self, angle: float, ax: float, ay: float, az: float
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Rotates a 3D geometry around a specified axis by a given angle
 
@@ -1535,7 +1535,7 @@ class Geometry:
         cx: float,
         cy: float,
         cz: float,
-    ) -> Optional[Geometry]:
+    ) -> Geometry | None:
         """
         Rotates a 3D geometry around a specified axis and center point by a given
 
@@ -1567,7 +1567,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @deprecated("rotate_x() is deprecated. Use rotate_3d_x() instead.")
-    def rotate_x(self, angle: float = 0.) -> Optional[Geometry]:
+    def rotate_x(self, angle: float = 0.) -> Geometry | None:
         """
         Rotates a geometry around the X axis by a given angle
 
@@ -1585,7 +1585,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @deprecated("rotate_y() is deprecated. Use rotate_3d_y() instead.")
-    def rotate_y(self, angle: float = 0.) -> Optional[Geometry]:
+    def rotate_y(self, angle: float = 0.) -> Geometry | None:
         """
         Rotates a geometry around the Y axis by a given angle
 
@@ -1603,7 +1603,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @deprecated("rotate_z() is deprecated. Use rotate_3d_z() instead.")
-    def rotate_z(self, angle: float = 0.) -> Optional[Geometry]:
+    def rotate_z(self, angle: float = 0.) -> Geometry | None:
         """
         Rotates a geometry around the Z axis by a given angle
 
@@ -1622,7 +1622,7 @@ class Geometry:
 
     def rotate(
             self, angle: float = 0.,
-            center: Optional[Point] = None) -> Optional[Geometry]:
+            center: Point | None = None) -> Geometry | None:
         """
         Rotates a geometry in 2D by a given angle
 
@@ -1650,8 +1650,8 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     def rotate_3d(
-            self, angle: float, axis: Vector3D, center: Optional[Point] = None
-    ) -> Optional[Geometry]:
+            self, angle: float, axis: Vector3D, center: Point | None = None
+    ) -> Geometry | None:
         """
         Rotates a geometry in 3D around an axis by a given angle
 
@@ -1682,7 +1682,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     def rotate_3d_x(
-            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+            self, angle: float, center: Point | None = None) -> Geometry | None:
         """
         Rotates a geometry in 3D around the X axis by a given angle
 
@@ -1706,7 +1706,7 @@ class Geometry:
         return self.rotate_3d(angle, UNIT_X, center)
 
     def rotate_3d_y(
-            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+            self, angle: float, center: Point | None = None) -> Geometry | None:
         """
         Rotates a geometry in 3D around the Y axis by a given angle
 
@@ -1730,7 +1730,7 @@ class Geometry:
         return self.rotate_3d(angle, UNIT_Y, center)
 
     def rotate_3d_z(
-            self, angle: float, center: Optional[Point] = None) -> Optional[Geometry]:
+            self, angle: float, center: Point | None = None) -> Geometry | None:
         """
         Rotates a geometry in 3D around the Z axis by a given angle
 
@@ -1755,7 +1755,7 @@ class Geometry:
 
     @cond_icontract(lambda self, tolerance: (self.is_valid() and tolerance > 0),
                     "require")
-    def simplify(self, tolerance: float, preserve_topology: bool) -> Optional[Geometry]:
+    def simplify(self, tolerance: float, preserve_topology: bool) -> Geometry | None:
         """
         Compute the simplication of the geometry.
 
@@ -1798,12 +1798,10 @@ class Geometry:
     )
     def simplify_surface(
         self,
-        edge_count: Optional[int] = None,
-        edge_ratio: Optional[float] = None,
-        strategy: Union[
-            SimplificationStrategy, int
-        ] = SimplificationStrategy.EDGE_LENGTH,
-    ) -> Optional[Geometry]:
+        edge_count: int | None = None,
+        edge_ratio: float | None = None,
+        strategy: SimplificationStrategy | int = SimplificationStrategy.EDGE_LENGTH,
+    ) -> Geometry | None:
         """Simplify a surface mesh using CGAL edge collapse algorithm.
 
         Two stop predicates may be used: an edge quantity (between 0 and the edge amount
@@ -1874,7 +1872,7 @@ class Geometry:
             plane_point: Point,
             plane_normal: Vector3D,
             close_geometries: bool = True
-    ) -> Optional[GeometryCollection]:
+    ) -> GeometryCollection | None:
         """
         Split a geometry by a 3D plane.
 
@@ -1909,7 +1907,7 @@ class Geometry:
         return cast(
             GeometryCollection, Geometry.from_sfcgal_geometry(split_geom))
 
-    def mirror(self, plane_point: Point, plane_normal: Vector3D) -> Optional[Geometry]:
+    def mirror(self, plane_point: Point, plane_normal: Vector3D) -> Geometry | None:
         """
         Returns the reflection of the geometry across a plane.
 
@@ -1961,7 +1959,7 @@ class Geometry:
         transform = lib.sfcgal_geometry_transform(self._geom, transform_matrix_c)
         return Geometry.from_sfcgal_geometry(transform)
 
-    def mirror_xy(self, z: float = 0.0) -> Optional[Geometry]:
+    def mirror_xy(self, z: float = 0.0) -> Geometry | None:
         """
         Returns the geometry mirrored across the plane ``z = z``.
 
@@ -1979,7 +1977,7 @@ class Geometry:
 
         return self.mirror(Point(0.0, 0.0, z), UNIT_Z)
 
-    def mirror_xz(self, y: float = 0.0) -> Optional[Geometry]:
+    def mirror_xz(self, y: float = 0.0) -> Geometry | None:
         """
         Returns the geometry mirrored across the plane ``y = y``.
 
@@ -1997,7 +1995,7 @@ class Geometry:
 
         return self.mirror(Point(0.0, y, 0.0), UNIT_Y)
 
-    def mirror_yz(self, x: float = 0.0) -> Optional[Geometry]:
+    def mirror_yz(self, x: float = 0.0) -> Geometry | None:
         """
         Returns the geometry mirrored across the plane ``x = x``.
 
@@ -2048,7 +2046,7 @@ class Geometry:
         return vtk_string
 
     @staticmethod
-    def read_obj(filename: str) -> Optional[Geometry]:
+    def read_obj(filename: str) -> Geometry | None:
         """Parse an OBJ file into a Geometry object.
 
         This function takes an OBJ file, read it and converts its content into
@@ -2068,7 +2066,7 @@ class Geometry:
 
         Returns
         -------
-        Optional[Geometry]
+        Geometry | None
             A `Geometry` object parsed from the OBJ string.
 
         """
@@ -2077,7 +2075,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(geom)
 
     @staticmethod
-    def from_obj(obj_str: str) -> Optional[Geometry]:
+    def from_obj(obj_str: str) -> Geometry | None:
         """Parse an OBJ representation into a Geometry object.
 
         This function takes an OBJ string and converts it into a `Geometry` object
@@ -2097,7 +2095,7 @@ class Geometry:
 
         Returns
         -------
-        Optional[Geometry]
+        Geometry | None
             A `Geometry` object parsed from the OBJ string.
 
         """
@@ -2193,7 +2191,7 @@ class Geometry:
     def __str__(self):
         return self.to_wkt(8)
 
-    def wrap(self) -> Optional[Geometry]:
+    def wrap(self) -> Geometry | None:
         """Wrap the SFCGAL geometry attribute of the current instance in a new geometry
         instance. This method produces a deep copy of the geometry instance.
 
@@ -2208,7 +2206,7 @@ class Geometry:
     @staticmethod
     def from_sfcgal_geometry(
             geom: ffi.CData, owned: bool = True,
-            parent: Optional[Geometry] = None) -> Optional[Geometry]:
+            parent: Geometry | None = None) -> Geometry | None:
         """Wrap the SFCGAL geometry passed as a parameter in a new geometry instance.
 
         This method allows to build a new Python object from a SFCGAL geometry (which
@@ -2224,7 +2222,7 @@ class Geometry:
             pointer is owned by several Geometry instances, there might be some trouble
             after removing one of them (or after the garbage collector action).
 
-        parent : Optional[Geometry], default None
+        parent : Geometry | None, default None
             Optional parent Geometry that this geometry depends on.
             This ensures that the parent geometry is not garbage collected by the Python
             interpreter while it is still in use.
@@ -2275,7 +2273,7 @@ class Geometry:
         return {"type": self.geom_type, "coordinates": self.to_coordinates()}
 
     @classmethod
-    def from_coordinates(cls, coordinates: list) -> Optional[Geometry]:
+    def from_coordinates(cls, coordinates: list) -> Geometry | None:
         """Instantiates a Geometry starting from a list of coordinates.
 
         The geometry class may be Point, LineString, Polygon, ...
@@ -2293,7 +2291,7 @@ class Geometry:
         return cls(coordinates)  # type: ignore
 
     @classmethod
-    def from_dict(cls, geojson_data: dict) -> Optional[Geometry]:
+    def from_dict(cls, geojson_data: dict) -> Geometry | None:
         """Instantiates a Geometry starting from a geojson-like dictionnary.
 
         The dictionary must contain 'type' and 'coordinates' keys; the 'type' value
@@ -2319,7 +2317,7 @@ class Geometry:
         return cls.from_coordinates(geojson_data["coordinates"])
 
     @staticmethod
-    def from_wkt(wkt: Optional[str]) -> Optional[Geometry]:
+    def from_wkt(wkt: str | None) -> Geometry | None:
         """Parse a Well-Known Text (WKT) representation into a Geometry object.
 
         This function takes a WKT string and converts it into a `Geometry` object
@@ -2366,7 +2364,7 @@ class Geometry:
         return lib.sfcgal_io_read_wkt(wkt_bytes, len(wkt_bytes))
 
     @staticmethod
-    def from_wkb(wkb: Union[bytes, bytearray]) -> Optional[Geometry]:
+    def from_wkb(wkb: bytes | bytearray) -> Geometry | None:
         """
         Parse a Well-Known Binary (WKB) representation into a Geometry object.
 
@@ -2387,7 +2385,7 @@ class Geometry:
         return Geometry.from_sfcgal_geometry(sfcgal_geom)
 
     @staticmethod
-    def sfcgal_geom_from_wkb(wkb: Union[str, bytes, bytearray]) -> ffi.CData:
+    def sfcgal_geom_from_wkb(wkb: str | bytes | bytearray) -> ffi.CData:
         """Internal function to read a Well-Known Binary (WKB) representation
         and return the SFCGAL geometry object.
 
@@ -2467,7 +2465,7 @@ class Geometry:
 
         Returns
         -------
-        Union[str, bytes]
+        str | bytes
             WKB representation of the geometry
 
         """
@@ -2487,7 +2485,7 @@ class Geometry:
         return wkb.decode("utf-8") if as_hex else wkb
 
     @staticmethod
-    def from_geojson(geojson: Optional[str]) -> Optional[Geometry]:
+    def from_geojson(geojson: str | None) -> Geometry | None:
         """Parse a GeoJSON string representation into a Geometry object.
 
         This function takes a GeoJSON string and converts it into a `Geometry` object
@@ -2534,7 +2532,7 @@ class Geometry:
         return lib.sfcgal_io_read_geojson(geojson_bytes, len(geojson_bytes))
 
     @staticmethod
-    def read_geojson(filename: str) -> Optional[Geometry]:
+    def read_geojson(filename: str) -> Geometry | None:
         """Read a GeoJSON file into a Geometry object.
 
         This function reads a GeoJSON file and converts its content into a `Geometry`
@@ -2547,7 +2545,7 @@ class Geometry:
 
         Returns
         -------
-        Optional[Geometry]
+        Geometry | None
             A `Geometry` object parsed from the GeoJSON file.
 
         """

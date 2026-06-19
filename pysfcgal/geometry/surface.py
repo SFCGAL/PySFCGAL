@@ -12,7 +12,7 @@ rings of Polygon).
 from __future__ import annotations
 
 import typing
-from typing import Optional, Tuple, Union, cast
+from typing import Tuple, cast
 
 if typing.TYPE_CHECKING:
     from .collection import MultiPolygon
@@ -41,7 +41,7 @@ class Polygon(Geometry):
         geometry are done at the SFCGAL lower level.
     """
 
-    def __init__(self, exterior: Tuple = (), interiors: Optional[Tuple] = None):
+    def __init__(self, exterior: Tuple = (), interiors: Tuple | None = None):
         """Initialize a Polygon with given exterior and optional interior rings.
 
         Parameters
@@ -321,7 +321,7 @@ class Polygon(Geometry):
         lambda self, height: self.is_valid() and height != 0,
         "require",
     )
-    def extrude_straight_skeleton(self, height: float) -> Optional["PolyhedralSurface"]:
+    def extrude_straight_skeleton(self, height: float) -> PolyhedralSurface | None:
         """Extrude the polygon along its straight skeleton.
 
         Parameters
@@ -335,7 +335,7 @@ class Polygon(Geometry):
             The resulting extruded geometry, or ``None`` if SFCGAL returns NULL.
         """
         geom = lib.sfcgal_geometry_extrude_straight_skeleton(self._geom, height)
-        return cast(Optional["PolyhedralSurface"], Geometry.from_sfcgal_geometry(geom))
+        return cast(PolyhedralSurface | None, Geometry.from_sfcgal_geometry(geom))
 
     @cond_icontract(
         lambda self, building_height, roof_height: self.is_valid() and roof_height != 0,
@@ -343,7 +343,7 @@ class Polygon(Geometry):
     )
     def extrude_polygon_straight_skeleton(
         self, building_height: float, roof_height: float
-    ) -> Optional["PolyhedralSurface"]:
+    ) -> PolyhedralSurface | None:
         """Extrude the polygon along its straight skeleton with building
         and roof heights.
 
@@ -363,7 +363,7 @@ class Polygon(Geometry):
         geom = lib.sfcgal_geometry_extrude_polygon_straight_skeleton(
             self._geom, building_height, roof_height
         )
-        return cast(Optional["PolyhedralSurface"], Geometry.from_sfcgal_geometry(geom))
+        return cast(PolyhedralSurface | None, Geometry.from_sfcgal_geometry(geom))
 
     @cond_icontract(
         lambda self, height, angles: self.is_valid() and height != 0,
@@ -373,7 +373,7 @@ class Polygon(Geometry):
         self,
         height: float,
         angles: typing.List[typing.List[float]],
-    ) -> Optional["PolyhedralSurface"]:
+    ) -> PolyhedralSurface | None:
         """Extrude the polygon along its straight skeleton using per-edge angles.
 
         Parameters
@@ -396,7 +396,7 @@ class Polygon(Geometry):
             self._geom, height, c_angles, c_per_ring, num_rings
         )
         geom = Geometry.from_sfcgal_geometry(result_geom)
-        return cast(Optional["PolyhedralSurface"], geom)
+        return cast(PolyhedralSurface | None, geom)
 
     @cond_icontract(
         lambda self, building_height, roof_height, angles: (
@@ -409,7 +409,7 @@ class Polygon(Geometry):
         building_height: float,
         roof_height: float,
         angles: typing.List[typing.List[float]],
-    ) -> Optional["PolyhedralSurface"]:
+    ) -> PolyhedralSurface | None:
         """Extrude the polygon with a straight-skeleton roof and per-edge angles.
 
         Produces the union of the vertical wall extrusion (up to *building_height*)
@@ -437,7 +437,7 @@ class Polygon(Geometry):
             self._geom, building_height, roof_height, c_angles, c_per_ring, num_rings
         )
         geom = Geometry.from_sfcgal_geometry(result_geom)
-        return cast(Optional["PolyhedralSurface"], geom)
+        return cast(PolyhedralSurface | None, geom)
 
     @cond_icontract(
         lambda self, height, weights: self.is_valid() and height != 0,
@@ -447,7 +447,7 @@ class Polygon(Geometry):
         self,
         height: float,
         weights: typing.List[typing.List[float]],
-    ) -> Optional["PolyhedralSurface"]:
+    ) -> PolyhedralSurface | None:
         """Extrude the polygon along its straight skeleton using per-edge weights.
 
         Weights are the tangent of the desired roof-face angle (``tan(angle)``).
@@ -471,7 +471,7 @@ class Polygon(Geometry):
             self._geom, height, c_weights, c_per_ring, num_rings
         )
         geom = Geometry.from_sfcgal_geometry(result_geom)
-        return cast(Optional["PolyhedralSurface"], geom)
+        return cast(PolyhedralSurface | None, geom)
 
     @cond_icontract(
         lambda self, building_height, roof_height, weights: (
@@ -484,7 +484,7 @@ class Polygon(Geometry):
         building_height: float,
         roof_height: float,
         weights: typing.List[typing.List[float]],
-    ) -> Optional["PolyhedralSurface"]:
+    ) -> PolyhedralSurface | None:
         """Extrude the polygon with a straight-skeleton roof and per-edge weights.
 
         Produces the union of the vertical wall extrusion (up to *building_height*)
@@ -514,10 +514,10 @@ class Polygon(Geometry):
             )
         )
         geom = Geometry.from_sfcgal_geometry(result_geom)
-        return cast(Optional["PolyhedralSurface"], geom)
+        return cast(PolyhedralSurface | None, geom)
 
     @classmethod
-    def from_coordinates(cls, coordinates: list) -> Optional[Polygon]:
+    def from_coordinates(cls, coordinates: list) -> Polygon | None:
         """Instantiates a Polygon starting from a list of coordinates.
 
         Parameters
@@ -599,7 +599,7 @@ class Tin(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n: int) -> Optional[Polygon]:
+    def __get_geometry_n(self, n: int) -> Polygon | None:
         """Returns the n-th patch within the TIN.
 
         This method assumes that the index is valid for the TIN.
@@ -691,7 +691,7 @@ class Tin(Geometry):
             return False
         return self[:] == other[:]
 
-    def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
+    def to_multipolygon(self, wrapped: bool = True) -> MultiPolygon | ffi.CData:
         """Convert the TIN to a MultiPolygon.
 
         Parameters
@@ -813,7 +813,7 @@ class Triangle(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n: int) -> Optional[Point]:
+    def __get_geometry_n(self, n: int) -> Point | None:
         """Returns the n-th vertex of the triangle.
 
         This method assumes that the index is valid for the triangle.
@@ -890,7 +890,7 @@ class Triangle(Geometry):
             return False
         return all(vertex == other_vertex for vertex, other_vertex in zip(self, other))
 
-    def to_polygon(self, wrapped: bool = True) -> Union[Polygon, ffi.CData]:
+    def to_polygon(self, wrapped: bool = True) -> Polygon | ffi.CData:
         """Convert the triangle to a Polygon.
 
         Parameters
@@ -987,7 +987,7 @@ class PolyhedralSurface(Geometry):
                 owned=False, parent=self,
             )
 
-    def __get_geometry_n(self, n: int) -> Optional[Polygon]:
+    def __get_geometry_n(self, n: int) -> Polygon | None:
         """Returns the n-th polygon within the polyhedral surface.
 
         This method assumes that the index is valid for the geometry.
@@ -1093,7 +1093,7 @@ class PolyhedralSurface(Geometry):
         return lib.sfcgal_polyhedral_surface_num_edges(self._geom)
 
     @cond_icontract(lambda self: self.is_valid(), "require")
-    def to_multipolygon(self, wrapped: bool = True) -> Union[MultiPolygon, ffi.CData]:
+    def to_multipolygon(self, wrapped: bool = True) -> MultiPolygon | ffi.CData:
         """Convert the polyhedralsurface to a MultiPolygon.
 
         Parameters

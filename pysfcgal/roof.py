@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import typing
 from enum import IntEnum
-from typing import Optional, Type
+from typing import Type
 
 from ._contracts import cond_icontract
 from ._sfcgal import lib
@@ -39,7 +39,7 @@ class RoofType(IntEnum):
     ),
     "require",
 )
-def generate_flat_roof(footprint: Polygon, height: float) -> Optional[Geometry]:
+def generate_flat_roof(footprint: Polygon, height: float) -> Geometry | None:
     """Creates a flat roof from the current footprint geometry.
     This is an alias for Polygon.extrude(extrude_z=height).
 
@@ -64,7 +64,7 @@ def generate_flat_roof(footprint: Polygon, height: float) -> Optional[Geometry]:
     ),
     "require",
 )
-def generate_hipped_roof(footprint: Polygon, height: float) -> Optional[Geometry]:
+def generate_hipped_roof(footprint: Polygon, height: float) -> Geometry | None:
     """Creates a hipped roof from the current footprint geometry.
     This is an alias for Polygon.extrude_straight_skeleton(height).
 
@@ -94,7 +94,7 @@ def generate_hipped_roof(footprint: Polygon, height: float) -> Optional[Geometry
 )
 def generate_gable_roof(
     footprint: Polygon, height: float, slope_angle: float
-) -> Optional[Geometry]:
+) -> Geometry | None:
     """Creates a gable roof (dual symmetric slopes) from the current footprint
     geometry.
     Automatically detects gable ends (shortest edges becomes vertical).
@@ -130,7 +130,7 @@ def generate_gable_roof(
 )
 def generate_skillion_roof(
     footprint: Polygon, height: float, slope_angle: float, primary_edge_index: int
-) -> Optional[Geometry]:
+) -> Geometry | None:
     """Creates a skillion (mono-pitched) roof from the current footprint geometry.
 
     Parameters:
@@ -171,7 +171,7 @@ def generate_roof(
     height: float = 3.0,
     slope_angle: float = 30.0,
     primary_edge_index: int = 0,
-) -> Optional[Geometry]:
+) -> Geometry | None:
     """Creates a roof from the current footprint geometry based on the
     specified roof type.
 

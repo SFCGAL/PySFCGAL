@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 import typing
-from typing import Optional, Tuple, Union
+from typing import Tuple
 
 if typing.TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -30,7 +30,7 @@ class Point(Geometry):
         are done at the SFCGAL lower level.
     """
 
-    Coord: TypeAlias = Optional[Union[int, float]]
+    Coord: TypeAlias = int | float | None
 
     def __init__(
         self, x: Coord = None, y: Coord = None, z: Coord = None, m: Coord = None
@@ -120,7 +120,7 @@ class Point(Geometry):
         ),
         "require",
     )
-    def buffer_3d(self, radius: float, segments: int) -> Optional[Geometry]:
+    def buffer_3d(self, radius: float, segments: int) -> Geometry | None:
         """
         Computes a 3D buffer around a Point
 

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from enum import Enum, IntEnum
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, TypeVar
 
 from ._sfcgal import ffi
 from .geometry import Point, PolyhedralSurface
@@ -47,7 +47,7 @@ class Primitive:
     def __init__(
             self,
             primitive_type: PrimitiveType,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...
     def __del__(self) -> None: ...
 
@@ -74,27 +74,27 @@ class Primitive:
     def _primitive_factory(primitive_type: PrimitiveType) -> type[Primitive]: ...
 
     @staticmethod
-    def from_sfcgal_primitive(prim: ffi.CData) -> Optional[type[Primitive]]: ...
+    def from_sfcgal_primitive(prim: ffi.CData) -> type[Primitive] | None: ...
 
-    def translate(self, offset: Vector3D) -> Optional[type[Primitive]]: ...
+    def translate(self, offset: Vector3D) -> type[Primitive] | None: ...
 
     def rotate(
             self,
             angle: float,
             axis: Vector3D,
-            center: Optional[Point] = None
-    ) -> Optional[Primitive]: ...
+            center: Point | None = None
+    ) -> Primitive | None: ...
 
     def scale(
             self,
             scale_factor: Vector3D,
-            center: Optional[Point] = None
-    ) -> Optional[Primitive]: ...
+            center: Point | None = None
+    ) -> Primitive | None: ...
 
     def to_polyhedral_surface(self) -> PolyhedralSurface: ...
     def area(self, with_discretization: bool = False) -> float: ...
     def volume(self, with_discretization: bool = False) -> float: ...
-    def wrap(self) -> Optional[type[Primitive]]: ...
+    def wrap(self) -> type[Primitive] | None: ...
 
 
 class Box(Primitive):
@@ -108,7 +108,7 @@ class Box(Primitive):
             x_extent: float = ...,
             y_extent: float = ...,
             z_extent: float = ...,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...
 
 
@@ -125,7 +125,7 @@ class Cone(Primitive):
             top_radius: float = ...,
             height: float = ...,
             num_radial: int = ...,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...
 
 
@@ -136,7 +136,7 @@ class Cube(Primitive):
             self,
             *,
             size: float = ...,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...
 
 
@@ -151,7 +151,7 @@ class Cylinder(Primitive):
             radius: float = ...,
             height: float = ...,
             num_radial: int = ...,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...
 
 
@@ -164,7 +164,7 @@ class Sphere(Primitive):
             *,
             radius: float = ...,
             num_subdivisions: int = ...,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...
 
 
@@ -181,5 +181,5 @@ class Torus(Primitive):
             tube_radius: float = ...,
             main_num_radial: int = ...,
             tube_num_radial: int = ...,
-            center: Optional[Point] = None
+            center: Point | None = None
     ) -> None: ...

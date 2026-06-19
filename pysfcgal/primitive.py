@@ -8,7 +8,7 @@ from __future__ import annotations
 import json
 import sys
 from enum import Enum, IntEnum
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, Callable, TypeVar
 
 from ._sfcgal import ffi, lib
 from .geometry import Point, PolyhedralSurface
@@ -118,7 +118,7 @@ class Primitive:
 
     __slots__ = ("__parameters", "__primitive", "__type")
 
-    def __init__(self, primitive_type: PrimitiveType, center: Optional[Point] = None):
+    def __init__(self, primitive_type: PrimitiveType, center: Point | None = None):
         """Initialize a Primitive by its type.
 
         Parameters
@@ -353,7 +353,7 @@ class Primitive:
         return Class
 
     @staticmethod
-    def from_sfcgal_primitive(prim: ffi.CData) -> Optional[Primitive]:
+    def from_sfcgal_primitive(prim: ffi.CData) -> Primitive | None:
         """Wrap the SFCGAL primitive passed as a parameter in a new primitive instance.
 
         This method allows to build a new Python object from a SFCGAL primitive (which
@@ -383,7 +383,7 @@ class Primitive:
         primitive._Primitive__parameters = Primitive._populate_parameters(prim_type)
         return primitive
 
-    def translate(self, offset: Vector3D) -> Optional[Primitive]:
+    def translate(self, offset: Vector3D) -> Primitive | None:
         """
         Translates the primitive's center by the given offset, producing
         a new primitive.
@@ -404,7 +404,7 @@ class Primitive:
 
     def rotate(
             self, angle: float, axis: Vector3D,
-            center: Optional[Point] = None) -> Optional[Primitive]:
+            center: Point | None = None) -> Primitive | None:
         """
         Rotates the primitive in 3D around an axis by a given angle,
         producing a new primitive.
@@ -436,7 +436,7 @@ class Primitive:
 
     def scale(
             self, scale_factor: Vector3D,
-            center: Optional[Point] = None) -> Optional[Primitive]:
+            center: Point | None = None) -> Primitive | None:
         """
         Scales the primitive by the given factor
 
@@ -507,7 +507,7 @@ class Primitive:
         """
         return lib.sfcgal_primitive_volume(self.__primitive, with_discretization)
 
-    def wrap(self) -> Optional[Primitive]:
+    def wrap(self) -> Primitive | None:
         """Wrap the SFCGAL primitive attribute of the current instance
         in a new primitive instance. This method produces a deep copy
         of the primitive instance.

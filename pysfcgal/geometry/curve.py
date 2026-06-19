@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Tuple, Union
+from typing import Tuple
 
 from .._contracts import cond_icontract
 from .._sfcgal import ffi, lib
@@ -274,8 +274,8 @@ class LineString(Geometry):
         "require",
     )
     def buffer_3d(
-        self, radius: float, segments: int, buffer_type: Union[BufferType, int]
-    ) -> Optional[Geometry]:
+        self, radius: float, segments: int, buffer_type: BufferType | int
+    ) -> Geometry | None:
         """
         Computes a 3D buffer around a LineString
 
