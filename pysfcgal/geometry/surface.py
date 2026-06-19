@@ -12,7 +12,7 @@ rings of Polygon).
 from __future__ import annotations
 
 import typing
-from typing import Tuple, cast
+from typing import cast
 
 if typing.TYPE_CHECKING:
     from .collection import MultiPolygon
@@ -41,7 +41,7 @@ class Polygon(Geometry):
         geometry are done at the SFCGAL lower level.
     """
 
-    def __init__(self, exterior: Tuple = (), interiors: Tuple | None = None):
+    def __init__(self, exterior: tuple = (), interiors: tuple | None = None):
         """Initialize a Polygon with given exterior and optional interior rings.
 
         Parameters
@@ -268,9 +268,9 @@ class Polygon(Geometry):
 
     def _validate_ring_values(
         self,
-        values: typing.List[typing.List[float]],
+        values: list[list[float]],
         label: str,
-    ) -> typing.Tuple[typing.List[float], typing.List[int], int]:
+    ) -> tuple[list[float], list[int], int]:
         """Validate per-ring per-edge values and return their flattened form.
 
         Parameters
@@ -372,7 +372,7 @@ class Polygon(Geometry):
     def extrude_straight_skeleton_with_angles(
         self,
         height: float,
-        angles: typing.List[typing.List[float]],
+        angles: list[list[float]],
     ) -> PolyhedralSurface | None:
         """Extrude the polygon along its straight skeleton using per-edge angles.
 
@@ -408,7 +408,7 @@ class Polygon(Geometry):
         self,
         building_height: float,
         roof_height: float,
-        angles: typing.List[typing.List[float]],
+        angles: list[list[float]],
     ) -> PolyhedralSurface | None:
         """Extrude the polygon with a straight-skeleton roof and per-edge angles.
 
@@ -446,7 +446,7 @@ class Polygon(Geometry):
     def extrude_straight_skeleton_with_weights(
         self,
         height: float,
-        weights: typing.List[typing.List[float]],
+        weights: list[list[float]],
     ) -> PolyhedralSurface | None:
         """Extrude the polygon along its straight skeleton using per-edge weights.
 
@@ -483,7 +483,7 @@ class Polygon(Geometry):
         self,
         building_height: float,
         roof_height: float,
-        weights: typing.List[typing.List[float]],
+        weights: list[list[float]],
     ) -> PolyhedralSurface | None:
         """Extrude the polygon with a straight-skeleton roof and per-edge weights.
 
@@ -564,12 +564,12 @@ class Polygon(Geometry):
 
 
 class Tin(Geometry):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the Tin with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : Tuple
+        coords : tuple
             A list of coordinate tuples that define the vertices of the TIN.
             If None, initializes an empty TIN.
         """
@@ -952,12 +952,12 @@ class Triangle(Geometry):
 
 
 class PolyhedralSurface(Geometry):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the PolyhedralSurface with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : Tuple
+        coords : tuple
             A tuple of coordinates that define the patches of the polyhedral
             surface. If empty, initializes an empty polyhedral surface.
         """

@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import platform
 import typing
-from typing import Tuple, cast
+from typing import cast
 
 if typing.TYPE_CHECKING:
     from .vector import Vector3D
@@ -729,7 +729,7 @@ class Geometry:
         """
         return lib.sfcgal_geometry_is_simple(self._geom) != 0
 
-    def is_simple_detail(self) -> Tuple[bool, str]:
+    def is_simple_detail(self) -> tuple[bool, str]:
         """
         Test if the geometry is simple and return details in case of
         complexity.
@@ -770,7 +770,7 @@ class Geometry:
         self.validity_flag = sfcgal_validity
         return sfcgal_validity
 
-    def is_valid_detail(self) -> Tuple[str | None, None]:
+    def is_valid_detail(self) -> tuple[str | None, None]:
         """
         Provide detailed information about the validity of the geometry.
         At the moment, the invalidity location is not returned (set to

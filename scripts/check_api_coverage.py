@@ -3,7 +3,6 @@
 import re
 import sys
 from pathlib import Path
-from typing import List, Tuple
 
 IGNORED_FUNCTIONS = {
     "free",
@@ -29,7 +28,7 @@ IGNORED_FUNCTIONS = {
 }
 
 
-def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
+def extract_functions_from_c_file(c_file_path: Path) -> list[str]:
     """
     Extract all the function declaration from a .c/.h file
 
@@ -40,10 +39,10 @@ def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
 
     Returns
     -------
-    List[str]
+    list[str]
         the name of the C functions as string
     """
-    functions: List[str] = []
+    functions: list[str] = []
 
     try:
         with open(c_file_path, "r") as c_file:
@@ -80,8 +79,8 @@ def extract_functions_from_c_file(c_file_path: Path) -> List[str]:
 
 
 def check_function_usage_in_python(
-    py_file_paths: List[Path], function_names: List[str]
-) -> Tuple[List[str], List[str]]:
+    py_file_paths: list[Path], function_names: list[str]
+) -> tuple[list[str], list[str]]:
     """
     Check that all the C functions are used in the python file
 
@@ -89,12 +88,12 @@ def check_function_usage_in_python(
     ----------
     py_file_path : Path
         python file location
-    function_names : List[str]
+    function_names : list[str]
         c functions to check
 
     Returns
     -------
-    Tuple[List[str], List[str]]
+    tuple[list[str], list[str]]
         used C functions
         unused C functions
     """

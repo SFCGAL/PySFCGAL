@@ -8,7 +8,7 @@ MultiSolid.
 
 from __future__ import annotations
 
-from typing import Tuple, cast
+from typing import cast
 
 from .._contracts import cond_icontract
 from .._deprecated import deprecated
@@ -377,12 +377,12 @@ class GeometryCollection(GeometryCollectionBase):
 
 
 class MultiPoint(GeometryCollectionBase):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the MultiPoint with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : Tuple
+        coords : tuple
             MultiPoint coordinates.
             If coords is empty, an empty MultiPoint is created.
 
@@ -395,12 +395,12 @@ class MultiPoint(GeometryCollectionBase):
         self._geom = MultiPoint.sfcgal_geom_from_coordinates(coords)
 
     @staticmethod
-    def sfcgal_geom_from_coordinates(coordinates: Tuple) -> ffi.CData:
+    def sfcgal_geom_from_coordinates(coordinates: tuple) -> ffi.CData:
         """Instantiates a SFCGAL MultiPoint starting from a tuple of coordinates.
 
         Parameters
         ----------
-        coordinates : Tuple
+        coordinates : tuple
             MultiPoint coordinates.
 
         Returns
@@ -441,12 +441,12 @@ class MultiPoint(GeometryCollectionBase):
 
 
 class MultiLineString(GeometryCollectionBase):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the MultiLineString with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : Tuple
+        coords : tuple
             MultiLineString coordinates.
             If coords is empty, an empty MultiLineString is created.
 
@@ -460,12 +460,12 @@ class MultiLineString(GeometryCollectionBase):
 
     @staticmethod
     def sfcgal_geom_from_coordinates(
-            coordinates: Tuple, close: bool = False) -> ffi.CData:
+            coordinates: tuple, close: bool = False) -> ffi.CData:
         """Instantiates a SFCGAL MultiLineString starting from a tuple of coordinates.
 
         Parameters
         ----------
-        coordinates : Tuple
+        coordinates : tuple
             MultiLineString coordinates.
         close : bool
             If True, the linestrings are built as closed even if their coordinates are
@@ -511,12 +511,12 @@ class MultiLineString(GeometryCollectionBase):
 
 
 class MultiPolygon(GeometryCollectionBase):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the MultiPolygon with a tuple of coordinates.
 
         Parameters
         ----------
-        coords : Tuple
+        coords : tuple
             MultiPolygon coordinates.
             If coords is empty, an empty MultiPolygon is created.
 
@@ -529,12 +529,12 @@ class MultiPolygon(GeometryCollectionBase):
         self._geom = MultiPolygon.sfcgal_geom_from_coordinates(coords)
 
     @staticmethod
-    def sfcgal_geom_from_coordinates(coordinates: Tuple) -> ffi.CData:
+    def sfcgal_geom_from_coordinates(coordinates: tuple) -> ffi.CData:
         """Instantiates a SFCGAL MultiPolygon starting from a tuple of coordinates.
 
         Parameters
         ----------
-        coordinates : Tuple
+        coordinates : tuple
             MultiPolygon coordinates.
 
         Returns
@@ -577,7 +577,7 @@ class MultiPolygon(GeometryCollectionBase):
 
 
 class MultiSolid(GeometryCollectionBase):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the MultiSolid with the given coordinates.
 
         Parameters
@@ -590,12 +590,12 @@ class MultiSolid(GeometryCollectionBase):
         self._geom = MultiSolid.sfcgal_geom_from_coordinates(coords)
 
     @staticmethod
-    def sfcgal_geom_from_coordinates(coordinates: Tuple) -> ffi.CData:
+    def sfcgal_geom_from_coordinates(coordinates: tuple) -> ffi.CData:
         """Instantiates a SFCGAL MultiSolid starting from a tuple of coordinates.
 
         Parameters
         ----------
-        coordinates : Tuple
+        coordinates : tuple
             MultiSolid coordinates.
 
         Returns

@@ -12,7 +12,6 @@ leads to a bunch of lazy imports to handle things.
 from __future__ import annotations
 
 import typing
-from typing import Tuple
 
 if typing.TYPE_CHECKING:
     from .surface import PolyhedralSurface
@@ -25,7 +24,7 @@ __all__ = ["Solid"]
 
 
 class Solid(Geometry):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize the Solid with the given coordinates.
 
         Parameters
@@ -190,12 +189,12 @@ class Solid(Geometry):
 
     @staticmethod
     def sfcgal_geom_from_coordinates(
-            coordinates: Tuple, close: bool = False) -> ffi.CData:
+            coordinates: tuple, close: bool = False) -> ffi.CData:
         """Instantiates a SFCGAL Solid starting from a tuple of coordinates.
 
         Parameters
         ----------
-        coordinates : Tuple
+        coordinates : tuple
             A tuple of coordinate tuples representing the solid's shells.
 
         Returns

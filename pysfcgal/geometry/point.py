@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import typing
-from typing import Tuple
 
 if typing.TYPE_CHECKING:
     from typing_extensions import TypeAlias
@@ -140,7 +139,7 @@ class Point(Geometry):
         geom = lib.sfcgal_geometry_buffer3d(self._geom, radius, segments, 0)
         return Geometry.from_sfcgal_geometry(geom)
 
-    def to_coordinates(self) -> Tuple[Coord, ...]:
+    def to_coordinates(self) -> tuple[Coord, ...]:
         """Generates the coordinates of the Point.
 
         Returns
@@ -148,7 +147,7 @@ class Point(Geometry):
         tuple
             Two, three or four floating points depending on the point nature.
         """
-        coords: Tuple[Point.Coord, ...] = (self.x, self.y)
+        coords: tuple[Point.Coord, ...] = (self.x, self.y)
         if self.has_m:
             coords += (self.z if self.has_z else None, self.m)
         elif self.has_z:

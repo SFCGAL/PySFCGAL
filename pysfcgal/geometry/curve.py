@@ -3,8 +3,6 @@
 
 from __future__ import annotations
 
-from typing import Tuple
-
 from .._contracts import cond_icontract
 from .._sfcgal import ffi, lib
 from .buffer import BufferType
@@ -133,7 +131,7 @@ class CoordinateSequence:
 
 
 class LineString(Geometry):
-    def __init__(self, coords: Tuple = ()):
+    def __init__(self, coords: tuple = ()):
         """Initialize a LineString with a tuple of point coordinates.
 
         Parameters
