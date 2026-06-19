@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="PySFCGAL",
-    version="2.3.0",
+    version="3.0.0.dev",
     description="Python binding of SFCGAL.",
     long_description="""Python binding of SFCGAL. SFCGAL is a C++ wrapper
     library around CGAL with the aim of supporting ISO 191007:2013 and OGC
