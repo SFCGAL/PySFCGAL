@@ -1,5 +1,129 @@
 # PySFCGAL Changelog
 
+## v2.3.0 (2026-06-19)
+
+This version follows the changes upstream on the SFCGAL side (see [the SFCGAL documentation](https://sfcgal.gitlab.io/SFCGAL/history/#changelog-sfcgal-230-2026-06-12)).
+
+Disclaimer: the NURBSCurve are not implemented yet in PySFCGAL.
+
+### Feat
+
+- **geometry**: add chamfer/fillet
+- **polygon**: add sk extrude variants with per-edge weights
+- **polygon**: add extrude_polygon_straight_skeleton_with_angles
+- **geometry**: Add support for mirror operation
+- **vector**: Add normalize operator
+- **geometry**: Add support for split_3d algorithm
+- Add insert_points_within_tolerance algorithm
+- **pysfcgal/geometry/geometry.py**: improve *geojson methods
+- **pysfcgal/geometry/geometry.py**: implement from_geojson and to_geojson
+- **primitive**: Add support for scale
+- **primitive**: Add support for rotation
+- **primitive**: Add support for center
+- **primitive**: Add support for translate operation
+- **pysfcgal**: Introduce a Vector3D class
+- **primitive**: Add a property to retrieve primitive transformation
+- **pysfcgal/geometry/surface.py**: set n-th patch for Tin and PolyhedralSurface
+- **primitive**: Add logic to clone a primitive
+- **primitive**: Add support for equality operator
+- **cookbook**: Add GDAL export example
+- **collection**: Add support to set the nth geometry of a collection
+- surface edge number
+- implement the surface simplification algorithm from the C API
+- **linestring**: Add add_point method
+- Add a deprecation mechanism
+- **sfcgal**: Add a unified API for rotation
+- **sfcgal**: Add support for boundary
+- define a property setter
+- checking the geometry validity updates its validity flag
+- exploit the SFCGAL validity flag
+- Add primitive support
+- add OBJ reader methods
+- **sfcgal**: Implement linestring close method
+- Add roof related API
+- **sfcgal**: Add support for extrude_straight_skeleton_with_angles
+- **check_api_coverage**: Add support to hanlde multiple python files
+- **sfcgal**: Add extend to edges option to approximate_medial_axis
+- implement centroid functions
+- Add polyhedral surface to multi polygon converter
+- use the sfcgal_geometry_geom_type function from the C API
+- Allow to retrieve buffer types values as string
+- **sfcgal**: Update c file to ignore CGAL 6 functions
+- **scripts/update_def**: Ignore CGAL 6 functions
+- **sfcgal**: Add support for polygon set_exterior_ring
+- **sfcgal**: Add the geometry's dimension as a property
+- **sfcgal**: Add support for geometry is_simple_detail
+- **sfcgal**: Add support for geometry is_simple
+- **sfcgal**: Add support for is_closed
+- fixes
+- Add a script to check api coverage
+- **sfcgal**: Update c file from latest SFCGAL devs
+- **sfcgal**: Add support for linestring add_interior_ring
+- **sfcgal**: Add support for swap_xy
+- **sfcgal**: Add support for force_z and force_m
+- **sfcgal**: Add support for drop_z and drop_m
+- **sfcgal**: Improve is_valid_detail docstring
+
+### Fix
+
+- **polygon**: raise ValueError on empty ring in _validate_ring_values
+- **geometry**: Fix indentation in split_3d docstring
+- **collection**: Fix parent in Geometry.from_sfcgal_geometry calls
+- **cookbook/export_geometry.py**: rename to export_gpkg.py
+- **cookbook**: Fix linestring wkt example in geom_from_wkt
+- **scripts/check_api_coverage.py**: consider every Python modules
+- **setup.py**: use setuptools find_package to get every subpackages
+- **sfcgal**: Protect against null wkt in Geometry.from_wkt
+- **check_api_coverage**: Add support for reference in c parsing
+- **sfcgal**: Properly handle memory management on subgeometries
+- **tests**: Use a valid tin fixture
+- **tests**: Use a valid polyhedralsurface fixture
+- **sfcgal**: Change default wrapped value for tin to multi_polygon
+- **ci**: Ensure to start docker for windows wheel job
+- **tests**: Fix alphashapes unit test for SFCGAL 2.3
+- **scripts/update_def**: Fix windows_version typing
+- **update_def**: Fix doxygen parser if block is not a function
+- **docs/cookbook**: Fix paragraphs indentation
+- **sfcgal**: Fix memory leak in is_valid_detail
+
+### Refactor
+
+- **polygon**: move sk extrude methods from Geometry to Polygon
+- **primitive**: Adapt to upstream primitives changes
+- **check_api_coverage**: Ignore sfcgal_prepared_geometry_as_geojson
+- **primitive**: Add missing annotations to the stub file
+- **capi**: Update c api files
+- **geometry**: Do not use deprecated 2d suffix in rotate
+- **geometry.py**: area_3d and volume are properties
+- **cookbook**: Switch to the new import logic
+- **roof**: Directly use c lib in PrimitiveType
+- **simplification**: Directly use c lib in SimplificationStrategy
+- **roof**: Directly use c lib in RoofType
+- **buffer**: Directly use c lib in BufferType
+- **roof**: Fix deprecated import warning
+- **primitive**: Fix deprecated import warning
+- **capi**: Update c api files
+- **collection**: Mark addGeometry as deprecated
+- **cookbook**: Do not use deprecated addGeometry
+- **geometry**: Mark translate_2d as deprecated
+- move Solid to volume.py
+- **pysfcgal/sfcgal.py**: split the main module into smaller modules
+- **sfcgal**: Simplify Geometry.to_wkt
+- **sfcgal**: Deprecate tessellate method
+- API break change tessellate behavior
+- **sfcgal**: Improve triangulate_2dz documentation
+- **scripts/api_coverage**: Ignore rotate default values
+- **sfcgal**: Deprecate previous rotation API
+- **sfcgal**: Fix simplify parameters naming convention
+- **tests**: Move some polygon fixtures to the base conftest
+- **pysfcgal**: Move contract logic to its own module
+- **sfcgal**: Move lib init to __init__
+- **capi**: Update c api files
+- **tests/utils.py**: design simple geometry factories
+- **tests/test_wkt.py**: add tests for to_wkt/from_wkt
+- **pysfcgal**: Update solid and multisolid type ids
+- **docs/cookbook**: Improve structure
+
 ## v2.2.0 (2025-07-31)
 
 ### Feat
