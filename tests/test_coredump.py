@@ -1,3 +1,4 @@
+import signal
 from subprocess import PIPE, CalledProcessError, run
 
 import pytest
@@ -12,12 +13,8 @@ triangle = Triangle([(0, 0, 0), (1, 0, 0), (0, 1, 0)])
 for t in [triangle, triangle]:
     triangle = Triangle.from_sfcgal_geometry(triangle._geom)
     """
-    proc = run(f"python3 -c '{segfault_code}'", shell=True, stdout=PIPE, stderr=PIPE)
-    possibles_error_msg = [
-        b"Segmentation fault (core dumped)\n",
-        b'Segmentation fault\n'
-    ]
-    assert proc.stderr in possibles_error_msg
+    proc = run(("python3", "-c", segfault_code), stdout=PIPE, stderr=PIPE)
+    assert proc.returncode in (-signal.SIGSEGV, -signal.SIGBUS)
     with pytest.raises(CalledProcessError):
         proc.check_returncode()
 
