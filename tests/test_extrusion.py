@@ -297,6 +297,8 @@ def test_extrude_straight_skeleton_with_angles(
     ).read_text().strip()
     expected_roof = Geometry.from_wkt(expected_wkt)
     expected_roof.validity_flag = True
+    print("ROOF", roof)
+    print("EPXECTED ROOF", roof)
     assert roof.covers_3d(expected_roof)
 
 
