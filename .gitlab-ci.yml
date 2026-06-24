@@ -55,7 +55,7 @@ lint:mypy:
   script:
     - mypy scripts/*.py pysfcgal/
 
-test:unit:
+test:unit-linux:
   stage: 🤞 test
   image: ${SFCGAL_REGISTRY}:debian-latest
   only:
