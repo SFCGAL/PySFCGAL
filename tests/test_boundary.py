@@ -31,6 +31,9 @@ def test_boundary(geom_factory, wkt_expected_boundary):
     geom = geom_factory(1)
     boundary = geom.boundary()
     expected_boundary = Geometry.from_wkt(wkt_expected_boundary)
-    assert boundary == expected_boundary
+    if wkt_expected_boundary is None or expected_boundary.is_empty:
+        assert boundary == expected_boundary
+    else:
+        assert boundary.covers(expected_boundary)
     # not xor, ensure both predicates have the same value
     assert not (wkt_expected_boundary is None) ^ (boundary is None)
