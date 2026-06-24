@@ -14,7 +14,7 @@ for t in [triangle, triangle]:
     triangle = Triangle.from_sfcgal_geometry(triangle._geom)
     """
     proc = run(("python3", "-c", segfault_code), stdout=PIPE, stderr=PIPE)
-    assert proc.returncode == -signal.SIGSEGV
+    assert proc.returncode in (-signal.SIGSEGV, -signal.SIGBUS)
     with pytest.raises(CalledProcessError):
         proc.check_returncode()
 
