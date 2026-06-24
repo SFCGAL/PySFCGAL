@@ -76,12 +76,12 @@ def test_create_from_base_class(primitive_type):
     prim = primitive.Primitive(primitive_type)
     assert prim.type_ == primitive_type
     double_value = 5.2
-    for param_name, param_type in prim.parameters.items():
+    for param_name, param_type in sorted(prim.parameters.items()):
         if param_type == primitive.ParameterType.DOUBLE:
             assert prim[param_name] != double_value
             prim[param_name] = double_value
             assert prim[param_name] == double_value
-            double_value += 1.0
+            double_value -= 1.0
         elif param_type == primitive.ParameterType.INT:
             assert prim[param_name] != 4
             prim[param_name] = 4
