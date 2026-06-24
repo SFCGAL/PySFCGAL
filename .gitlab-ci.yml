@@ -116,7 +116,7 @@ test:unit-macos:
     - pip install -e .
     - python3 -m pip install icontract
   script:
-    - pytest  -vv --junitxml=junit/test-results-unit.xml --cov pysfcgal --cov-report=xml:coverage-reports/coverage-unit.xml
+    - pytest  -vv --junitxml=junit/test-results-unit.xml --cov pysfcgal --cov-report=xml:coverage-reports/coverage-unit.xml -s
   artifacts:
     when: always
     reports:

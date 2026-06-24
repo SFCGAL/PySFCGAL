@@ -29,6 +29,7 @@ WKT_EXPECTED_BOUNDARIES = {
 )
 def test_boundary(geom_factory, wkt_expected_boundary):
     geom = geom_factory(1)
+    print("input geom", geom)
     boundary = geom.boundary()
     expected_boundary = Geometry.from_wkt(wkt_expected_boundary)
     if wkt_expected_boundary is None or expected_boundary.is_empty:
