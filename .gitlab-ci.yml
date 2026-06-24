@@ -85,6 +85,47 @@ test:unit-linux:
       junit:
         - junit/test-results-unit.xml
 
+test:unit-macos:
+  stage: 🤞 test
+  tags:
+    - saas-macos-large-m2pro
+  image: macos-15-xcode-16
+  variables:
+    HOMEBREW_NO_AUTO_UPDATE: 1
+    HOMEBREW_NO_INSTALL_UPGRADE: 1
+    HOMEBREW_NO_INSTALL_CLEANUP: 1
+    HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK: 1
+  only:
+    refs:
+      - merge_requests
+      - master
+    changes:
+      - "pysfcgal/*.py"
+      - "pysfcgal/*.c"
+      - "tests/**/*.py"
+      - ".gitlab-ci.yml"
+  before_script:
+    - brew update
+    - curl -L -o sfcgal.rb "https://gitlab.com/api/v4/projects/19674165/packages/generic/homebrew/latest/sfcgal-latest.rb"
+    - brew tap-new local/sfcgal
+    - mv sfcgal.rb "$(brew --repo local/sfcgal)/Formula/sfcgal.rb"
+    - brew install local/sfcgal/sfcgal
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - python3 -m pip install -U pytest pytest-cov
+    - pip install -e .
+    - python3 -m pip install icontract
+  script:
+    - pytest  -vv --junitxml=junit/test-results-unit.xml --cov pysfcgal --cov-report=xml:coverage-reports/coverage-unit.xml
+  artifacts:
+    when: always
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage-reports/coverage-unit.xml
+      junit:
+        - junit/test-results-unit.xml
+
 test:cookbook:
   stage: 🤞 test
   image: ${SFCGAL_REGISTRY}:debian-latest
