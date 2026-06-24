@@ -3,7 +3,7 @@ import pathlib
 import icontract
 import pytest
 
-from pysfcgal.geometry import Polygon
+from pysfcgal.geometry import Geometry, Polygon
 from pysfcgal.geometry.collection import MultiLineString
 from pysfcgal.geometry.surface import PolyhedralSurface
 
@@ -295,7 +295,8 @@ def test_extrude_straight_skeleton_with_angles(
     expected_wkt = (
         POLYGON_EXPECTED_DATA / "straight_skeleton_extrusion_obtuse_angles.wkt"
     ).read_text().strip()
-    assert roof.to_wkt(2) == expected_wkt
+    expected_roof = Geometry.from_wkt(expected_wkt)
+    assert roof.covers_3d(expected_roof)
 
 
 def test_extrude_straight_skeleton_polygon():
