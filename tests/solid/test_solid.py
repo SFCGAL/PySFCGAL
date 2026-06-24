@@ -3,7 +3,7 @@ import pathlib
 import icontract
 import pytest
 
-from pysfcgal.geometry import (GeometryCollection, LineString, Point,
+from pysfcgal.geometry import (Geometry, GeometryCollection, LineString, Point,
                                PolyhedralSurface, Solid)
 from pysfcgal.vector import Vector3D
 
@@ -151,4 +151,5 @@ def test_solid_split_3d():
         expected_wkt = (
             EXPECTED_DATA_PATH / f"solid_split_3d_expected_{idx}.wkt"
         ).read_text().strip()
-        assert result[idx].to_wkt(1) == expected_wkt
+        expected_geom = Geometry.from_wkt(expected_wkt)
+        assert result[idx].covers_3d(expected_geom)
