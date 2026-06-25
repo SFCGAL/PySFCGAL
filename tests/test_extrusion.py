@@ -288,6 +288,7 @@ def test_extrude_straight_skeleton_with_angles(
     # faces *outside* the original polygon footprint, producing coordinates
     # with negative Y values and an apex row beyond the polygon boundary.
     # The expected output reflects SFCGAL's correct behaviour for obtuse inputs
+    print("INPUT", heptagon_building_footprint)
     roof = heptagon_building_footprint.extrude_straight_skeleton_with_angles(
         height=10, angles=[[100, 90, 145, 145, 145, 145, 145]]
     )
