@@ -24,7 +24,7 @@ jobs:
         run: |
           ASSUME_ALWAYS_YES=yes sudo pkg install -y \
             gmp mpfr boost-libs cmake ninja curl nlohmann-json eigen \
-            python311 py311-pip py311-pytest py311-wheel
+            python3 python312 py312-pip py312-pytest py312-wheel
 
       - name: Download CGAL and SFCGAL sources
         shell: cpa.sh {0}
