@@ -59,7 +59,7 @@ fi
 ${PYTHON_EXEC} -m venv venv
 . ./venv/bin/activate
 python3 -m pip install -U pip build delocate twine
-CFLAGS="-I$(brew --prefix)/include" LDFLAGS="-L$(brew --prefix)/lib" python3 -m build
+python3 -m build
 
 # repair wheel to include external libs with delocate-wheel
 WHEEL_DIR="dist_macos_${PYTHON_VERSION}"
