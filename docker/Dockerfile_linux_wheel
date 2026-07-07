@@ -14,11 +14,12 @@ ARG PYTHON_WHEEL_VERSION
 
 # copy sfcgal build
 COPY --from=sfcgal_build /SFCGAL/build/ /SFCGAL/build/
-RUN echo "/SFCGAL/build/src" > /etc/ld.so.conf.d/sfcgal.conf && \
-    ldconfig
 
 # install dependencies
-RUN apt update && apt install --yes --no-install-recommends gcc libboost-serialization1.74.0 libgmpxx4ldbl libstdc++-12-dev patchelf
+RUN apt update && apt install --yes --no-install-recommends cmake gcc libboost-serialization1.74.0 libgmpxx4ldbl libstdc++-12-dev make patchelf
+
+# install SFCGAL
+RUN cmake --install /SFCGAL/build
 
 # copy files
 COPY setup.py README.md ci/increment_version.py ./
