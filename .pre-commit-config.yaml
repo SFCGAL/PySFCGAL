@@ -9,6 +9,7 @@ repos:
       - id: check-case-conflict
       - id: check-xml
       - id: check-yaml
+        args: [--unsafe]  # "!!python/name:" is not supported
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: fix-byte-order-marker

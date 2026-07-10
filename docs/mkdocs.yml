@@ -19,6 +19,8 @@ theme:
   favicon: assets/img/sfcgal.png
   icon:
     repo: fontawesome/brands/gitlab
+    tag:
+      default: fontawesome/solid/tag
   palette:
      primary: custom
      accent: custom
@@ -30,6 +32,10 @@ markdown_extensions:
   - codehilite
   - pymdownx.highlight
   - pymdownx.superfences
+  - md_in_html
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji ""
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg ""
 
 plugins:
 - search

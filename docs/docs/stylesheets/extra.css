@@ -4,3 +4,9 @@
     --md-accent-fg-color: #f0d500ff;
     --md-accent-bg-color: #3a74acff;
   }
+
+.center-img {
+    display: block;
+    margin: auto;
+    max-height: 400px;
+}
