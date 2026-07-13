@@ -54,5 +54,6 @@ extra_css:
 nav:
   - Home: index.md
   - Installation: build.md
+  - Getting started: getting_started.md
   - API Reference: api.md
   - Cookbook: cookbook.md
