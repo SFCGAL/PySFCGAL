@@ -16,7 +16,7 @@ An official wrapper around the [SFCGAL](https://sfcgal.gitlab.io/SFCGAL/) librar
 
     [:octicons-arrow-right-24: Look for the public PySFCGAL objects](./api.md)
 
-- :fontawesome-solid-running: __Getting started__
+- :fontawesome-solid-person-running: __Getting started__
 
     ----
 
