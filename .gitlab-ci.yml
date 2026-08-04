@@ -85,6 +85,28 @@ test:unit:
       junit:
         - junit/test-results-unit.xml
 
+test:mkdocs:
+  stage: 🤞 test
+  image: ${SFCGAL_REGISTRY}:debian-latest
+  only:
+    refs:
+      - merge_requests
+      - master
+    changes:
+      - "pysfcgal/*.py"
+      - "pysfcgal/*.c"
+      - "tests/**/*.py"
+      - "docs/docs/getting_started.md"
+      - ".gitlab-ci.yml"
+  before_script:
+    - apt install --no-install-recommends --yes python3 python3-pip python3-dev python3-venv gcc
+    - python3 -m venv venv
+    - source venv/bin/activate
+    - python3 -m pip install -U pytest mktestdocs
+    - pip install -e .
+  script:
+    - pytest -vv tests/docs
+
 test:cookbook:
   stage: 🤞 test
   image: ${SFCGAL_REGISTRY}:debian-latest
