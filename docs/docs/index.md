@@ -20,7 +20,13 @@ An official wrapper around the [SFCGAL](https://sfcgal.gitlab.io/SFCGAL/) librar
 
     ----
 
-    [:octicons-arrow-right-24: Create your first geometries](./cookbook.md)
+    [:octicons-arrow-right-24: Create your first geometries](./getting_started.md)
+
+- :fontawesome-solid-cookie-bite: __Cookbook__
+
+    ----
+
+    [:octicons-arrow-right-24: Dive deeper into PySFCGAL](./cookbook.md)
 
 
 </div>

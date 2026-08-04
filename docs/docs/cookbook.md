@@ -1,3 +1,13 @@
+---
+title: Cookbook
+icon: fontawesome/solid/cookie-bite
+date: 2026-08-04
+description: "Dive deeper into PySFCGAL with complete examples"
+tags:
+    - documentation
+    - user
+---
+
 # Cookbook
 
 ## Geometry creation
