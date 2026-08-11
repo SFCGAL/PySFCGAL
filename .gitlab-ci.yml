@@ -261,7 +261,7 @@ build:documentation:
     - python -m pip install -U -r requirements/documentation.txt
   script:
     - export PYTHONPATH=$(pwd)
-    - cd docs && mkdocs build --verbose --strict
+    - cd docs && properdocs build --verbose --strict
   artifacts:
     name: documentation
     expose_as: "built_documentation"

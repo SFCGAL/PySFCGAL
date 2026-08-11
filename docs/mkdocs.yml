@@ -3,7 +3,7 @@ repo_name: "pysfcgal"
 repo_url: "https://gitlab.com/sfcgal/pysfcgal/"
 
 theme:
-  name: material
+  name: materialx
   features:
     - navigation.hide
     - navigation.instant
