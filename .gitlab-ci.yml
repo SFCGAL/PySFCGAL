@@ -16,7 +16,7 @@ lint:flake8:
       - merge_requests
       - master
     changes:
-      - "cookbook/*.py"
+      - "docs/cookbook/*.py"
       - "pysfcgal/**/*.py"
       - "tests/**/*.{py,wkt}"
       - ".gitlab-ci.yml"
@@ -46,7 +46,7 @@ lint:mypy:
       - merge_requests
       - master
     changes:
-      - "cookbook/*.py"
+      - "docs/cookbook/*.py"
       - "pysfcgal/**/*.py"
       - ".gitlab-ci.yml"
       - "scripts/*.py"
@@ -115,7 +115,7 @@ test:cookbook:
       - merge_requests
       - master
     changes:
-      - "cookbook/*.py"
+      - "docs/cookbook/*.py"
   before_script:
     # use conda to easily install gdal
     # install conda
@@ -132,7 +132,7 @@ test:cookbook:
   script:
     - source /opt/conda/etc/profile.d/conda.sh
     - conda activate venv
-    - for file in ./cookbook/*.py; do python3 "$file"; done
+    - for file in ./docs/cookbook/*.py; do python3 "$file"; done
 
 build:windows-osgeo4w-wheel:
   stage: 📦 build
