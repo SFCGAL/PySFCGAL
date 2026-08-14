@@ -780,11 +780,15 @@ class Triangle(Geometry):
     def __init__(self, coords=None):
         """Initialize the Triangle with the given coordinates.
 
+        If the coordinates sequence does not contain three items, an empty Triangle is
+        returned.
+
         Parameters
         ----------
         coords : list of tuples, optional
             A list of coordinate tuples that define the vertices of the triangle.
             If None, initializes an empty triangle.
+
         """
         self._geom = Triangle.sfcgal_geom_from_coordinates(coords)
 
@@ -926,7 +930,8 @@ class Triangle(Geometry):
     def sfcgal_geom_from_coordinates(coordinates: list) -> ffi.CData:
         """Instantiates a SFCGAL Triangle starting from a list of coordinates.
 
-        If the coordinates does not contain three items, an empty Triangle is returned
+        If the coordinates sequence does not contain three items, an empty Triangle is
+        returned
 
         Parameters
         ----------
@@ -937,6 +942,7 @@ class Triangle(Geometry):
         -------
         _cffi_backend._CDatabase
             A pointer towards a SFCGAL Triangle
+
         """
         triangle = None
         if coordinates and len(coordinates) == 3:
