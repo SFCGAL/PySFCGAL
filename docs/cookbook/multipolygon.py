@@ -1,4 +1,4 @@
-from pysfcgal.geometry import MultiPolygon
+from pysfcgal import MultiPolygon
 
 multipolygon = MultiPolygon(
     [

@@ -42,6 +42,26 @@ tags:
 
 {{ include_python_file("cookbook/geometry_collection.py") }}
 
+#### Create a Triangle
+
+{{ include_python_file("cookbook/triangle.py") }}
+
+#### Create a TriangulatedSurface
+
+{{ include_python_file("cookbook/triangulatedsurface.py") }}
+
+#### Create a PolyhedralSurface
+
+{{ include_python_file("cookbook/polyhedralsurface.py") }}
+
+#### Create a Solid
+
+{{ include_python_file("cookbook/solid.py") }}
+
+#### Create a MultiSolid
+
+{{ include_python_file("cookbook/multisolid.py") }}
+
 ### Create a Geometry from [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)
 
 {{ include_python_file("cookbook/geom_from_wkt.py") }}

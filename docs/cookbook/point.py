@@ -1,4 +1,4 @@
-from pysfcgal.geometry import Point
+from pysfcgal import Point
 
 point = Point(1, 3)
 print(point)

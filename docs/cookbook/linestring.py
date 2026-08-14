@@ -1,4 +1,4 @@
-from pysfcgal.geometry import LineString
+from pysfcgal import LineString
 
 linestring = LineString([(1, 3), (3, 1)])
 print(linestring)

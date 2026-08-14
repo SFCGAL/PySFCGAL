@@ -1,4 +1,4 @@
-from pysfcgal.geometry import Geometry
+from pysfcgal import Geometry
 
 wkt_point = "POINT (1 3)"
 wkt_linestring = "LINESTRING (1 3,3 3)"
