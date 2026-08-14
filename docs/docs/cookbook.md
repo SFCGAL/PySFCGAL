@@ -62,9 +62,23 @@ tags:
 
 {{ include_python_file("cookbook/multisolid.py") }}
 
-### Create a Geometry from [WKT](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)
+### Create geometries from external formats
+
+#### Create a Geometry from [WKT/WKB](https://en.wikipedia.org/wiki/Well-known_text_representation_of_geometry)
 
 {{ include_python_file("cookbook/geom_from_wkt.py") }}
+
+{{ include_python_file("cookbook/geom_from_wkb.py") }}
+
+#### Create a Geometry from [GeoJSON](https://en.wikipedia.org/wiki/GeoJSON)
+
+See the [GeoJSON format RFC](https://www.rfc-editor.org/info/rfc7946/) for more details about the GeoJSON format.
+
+{{ include_python_file("cookbook/geom_from_geojson.py") }}
+
+#### Create a Geometry from [OBJ](https://en.wikipedia.org/wiki/Wavefront_.obj_file)
+
+{{ include_python_file("cookbook/geom_from_obj.py") }}
 
 ## Primitive
 
