@@ -2364,7 +2364,7 @@ class Geometry:
         return lib.sfcgal_io_read_wkt(wkt_bytes, len(wkt_bytes))
 
     @staticmethod
-    def from_wkb(wkb: bytes | bytearray) -> Geometry | None:
+    def from_wkb(wkb: str | bytes | bytearray) -> Geometry | None:
         """
         Parse a Well-Known Binary (WKB) representation into a Geometry object.
 
@@ -2373,7 +2373,7 @@ class Geometry:
 
         Parameters
         ----------
-        wkb : bytes
+        wkb : bytes, bytearray, or str
             The Well-Known Binary (WKB) byte string representing the geometry.
 
         Returns
