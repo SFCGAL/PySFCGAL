@@ -4,36 +4,23 @@ ARG PYTHON_WHEEL_VERSION=3.14
 ARG SFCGAL_REGISTRY=registry.gitlab.com/sfcgal/sfcgal
 ARG SFCGAL_VERSION=latest
 
-FROM ${SFCGAL_REGISTRY}:debian-${SFCGAL_VERSION} AS sfcgal_build
-
-FROM python:${PYTHON_WHEEL_VERSION}-slim-bookworm AS container
-
-ARG DEVEL_DATE
-ARG DEVEL_VERSION
-ARG PYTHON_WHEEL_VERSION
-
-# copy sfcgal build
-COPY --from=sfcgal_build /SFCGAL/build/ /SFCGAL/build/
-
-# install dependencies
-RUN apt update && apt install --yes --no-install-recommends cmake gcc libboost-serialization1.74.0 libgmpxx4ldbl libstdc++-12-dev make patchelf pkgconf
-
-# install SFCGAL
-RUN cmake --install /SFCGAL/build
+FROM ${SFCGAL_REGISTRY}:manylinux-${SFCGAL_VERSION}
 
 # copy files
 COPY setup.py README.md ci/increment_version.py ./
 COPY ./pysfcgal ./pysfcgal
 
 # Increase the dev version number to upload the wheel to gitlab package registry
+ARG DEVEL_DATE
+ARG DEVEL_VERSION
 RUN if [ "$DEVEL_VERSION" = "true" ]; then python3 increment_version.py ${DEVEL_DATE}; fi
 
-# generate the wheel
-RUN python3 -m venv venv && \
-    . venv/bin/activate
-RUN python3 -m pip install -U pip build auditwheel twine
-RUN python3 -m build
-RUN auditwheel repair dist/*.whl -w /dist_linux_${PYTHON_WHEEL_VERSION}/ --plat manylinux_2_35_x86_64
-
-# check the generated wheel with twine
-RUN twine check --strict /dist_linux_${PYTHON_WHEEL_VERSION}/*
+# generate the wheels
+ARG PYTHON_WHEEL_VERSION
+RUN PY_VER=$(echo "$PYTHON_WHEEL_VERSION" | tr -d '.') && \
+    /opt/python/cp$PY_VER-cp$PY_VER/bin/python -m venv venv && \
+    . venv/bin/activate && \
+    pip install -U auditwheel build patchelf pip twine && \
+    python -m build && \
+    auditwheel repair dist/*.whl -w /dist_linux_$PYTHON_WHEEL_VERSION/ --plat manylinux_2_26_x86_64 && \
+    twine check --strict /dist_linux_$PYTHON_WHEEL_VERSION/*
