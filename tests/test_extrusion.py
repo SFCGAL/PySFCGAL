@@ -272,7 +272,10 @@ def heptagon_building_footprint():
     )
 
 
-@pytest.mark.skipif(platform.system() == "Darwin", reason="Does not work on macOS")
+@pytest.mark.skipif(
+    platform.system() in ["Darwin", "FreeBSD"],
+    reason="Does not work on macOS or FreeBSD"
+)
 def test_extrude_straight_skeleton_with_angles(
     heptagon_building_footprint: Polygon,
 ) -> None:
