@@ -49,11 +49,11 @@ jobs:
         run: |
           CFLAGS="-I/usr/local/include" \
           LDFLAGS="-L/usr/local/lib" \
-          python3.11 -m pip install -e . icontract
+          python3 -m pip install -e . icontract
 
       - name: Run tests
         shell: cpa.sh {0}
-        run: LD_LIBRARY_PATH=/usr/local/lib python3.11 -m pytest tests/
+        run: LD_LIBRARY_PATH=/usr/local/lib python3 -m pytest tests/
 
   test-macos:
     runs-on: macos-14
