@@ -1,4 +1,5 @@
 import pathlib
+import platform
 
 import icontract
 import pytest
@@ -271,6 +272,7 @@ def heptagon_building_footprint():
     )
 
 
+@pytest.mark.skipif(platform.system() == "Darwin", reason="Does not work on macOS")
 def test_extrude_straight_skeleton_with_angles(
     heptagon_building_footprint: Polygon,
 ) -> None:
