@@ -12,11 +12,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Start FreeBSD 14.3 VM
+      - name: Start FreeBSD 14.5 VM
         uses: cross-platform-actions/action@master
         with:
           operating_system: freebsd
-          version: '14.3'
+          version: '14.5'
           environment_variables: CGAL_VERSION
 
       - name: Install dependencies
