@@ -1,3 +1,4 @@
+import platform
 import signal
 from subprocess import PIPE, CalledProcessError, run
 
@@ -6,6 +7,7 @@ import pytest
 from pysfcgal import LineString, Triangle
 
 
+@pytest.mark.skipif(platform.system() == "FreeBSD", reason="Does not work on FreeBSD")
 def test_wrap_geom_segfault():
     segfault_code = """
 from pysfcgal.geometry import Triangle
