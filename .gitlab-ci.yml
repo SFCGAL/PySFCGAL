@@ -156,6 +156,7 @@ test:cookbook:
       - merge_requests
       - master
     changes:
+      - ".gitlab-ci.yml"
       - "docs/cookbook/*.py"
   before_script:
     # use conda to easily install gdal
