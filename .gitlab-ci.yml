@@ -162,7 +162,7 @@ test:cookbook:
   before_script:
     # use conda to easily install gdal
     # install conda
-    - apt install --no-install-recommends --yes ca-certificates gcc wget
+    - apt install --no-install-recommends --yes build-essential ca-certificates wget
     - wget https://github.com/conda-forge/miniforge/releases/latest/download/Miniforge3-Linux-x86_64.sh -O /tmp/miniforge.sh
     - bash /tmp/miniforge.sh -b -p /opt/conda
     - /opt/conda/bin/conda init bash
