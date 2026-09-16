@@ -158,6 +158,7 @@ test:cookbook:
     changes:
       - ".gitlab-ci.yml"
       - "docs/cookbook/*.py"
+      - "pysfcgal/**/*.{c,py}"
   before_script:
     # use conda to easily install gdal
     # install conda
