@@ -63,8 +63,7 @@ test:unit-linux:
       - merge_requests
       - master
     changes:
-      - "pysfcgal/*.py"
-      - "pysfcgal/*.c"
+      - "pysfcgal/**/*.{c,py}"
       - "tests/**/*.py"
       - ".gitlab-ci.yml"
   before_script:
@@ -100,8 +99,7 @@ test:unit-macos:
       - merge_requests
       - master
     changes:
-      - "pysfcgal/*.py"
-      - "pysfcgal/*.c"
+      - "pysfcgal/**/*.{c,py}"
       - "tests/**/*.py"
       - ".gitlab-ci.yml"
   before_script:
@@ -134,8 +132,7 @@ test:mkdocs:
       - merge_requests
       - master
     changes:
-      - "pysfcgal/*.py"
-      - "pysfcgal/*.c"
+      - "pysfcgal/**/*.{c,py}"
       - "tests/**/*.py"
       - "docs/docs/getting_started.md"
       - ".gitlab-ci.yml"
@@ -313,7 +310,7 @@ build:documentation:
       when: always
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
-        - "pysfcgal/*.py"
+        - "pysfcgal/**/*.py"
         - ".gitlab-ci.yml"
         - "requirements/documentation.txt"
         - "docs/docs/**/*.md"
